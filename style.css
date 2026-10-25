@@ -1,46 +1,44 @@
-
 /* =========================================================
-   VEIL & VECTOR — COMPLETE STYLESHEET
-   Editorial cyber-future / retro-magazine aesthetic
-   Dark default · Aged-paper light mode · Responsive layout
+   VEIL & VECTOR
+   Editorial cyber-future / retro-magazine
+   Dark by default · Aged-paper light mode
    ========================================================= */
 
-/* ---------- 1. DESIGN TOKENS ---------- */
+/* 1. DESIGN TOKENS */
 
 :root {
   color-scheme: dark;
 
-  --page-width: 1440px;
-  --page-gutter: clamp(24px, 5.2vw, 76px);
-  --section-space: clamp(84px, 9vw, 132px);
+  --page-width: 1320px;
+  --page-gutter: clamp(22px, 5vw, 68px);
+  --section-space: clamp(76px, 8vw, 112px);
 
   --bg: #11100f;
   --bg-soft: #171513;
-  --bg-raised: #1e1a17;
-  --surface: #211d19;
+  --bg-raised: #1d1916;
+  --surface: #231e19;
 
   --text: #e9e0d2;
-  --text-soft: #c0b5a5;
-  --muted: #958879;
+  --text-soft: #c3b7a7;
+  --muted: #968878;
 
   --accent: #c5a276;
   --accent-strong: #dfbd8b;
-  --accent-faint: rgba(197, 162, 118, 0.12);
+  --accent-faint: rgba(197, 162, 118, 0.09);
 
-  --line: rgba(233, 224, 210, 0.16);
-  --line-strong: rgba(233, 224, 210, 0.28);
+  --line: rgba(233, 224, 210, 0.14);
+  --line-strong: rgba(233, 224, 210, 0.27);
 
   --serif: Georgia, "Times New Roman", serif;
   --sans: "Inter", "Helvetica Neue", Arial, sans-serif;
   --mono: "DM Mono", "Courier New", monospace;
 
   --body-size: 16px;
-  --body-leading: 1.85;
-
-  --transition: 220ms ease;
+  --body-leading: 1.8;
+  --transition: 200ms ease;
 }
 
-/* ---------- 2. LIGHT MODE ---------- */
+/* 2. AGED-PAPER LIGHT MODE */
 
 html[data-theme="light"],
 body[data-theme="light"],
@@ -59,13 +57,13 @@ body.light {
 
   --accent: #855b3d;
   --accent-strong: #68452f;
-  --accent-faint: rgba(133, 91, 61, 0.1);
+  --accent-faint: rgba(133, 91, 61, 0.08);
 
-  --line: rgba(40, 35, 30, 0.17);
-  --line-strong: rgba(40, 35, 30, 0.3);
+  --line: rgba(40, 35, 30, 0.15);
+  --line-strong: rgba(40, 35, 30, 0.28);
 }
 
-/* ---------- 3. RESET ---------- */
+/* 3. RESET */
 
 *,
 *::before,
@@ -86,18 +84,16 @@ body {
   width: 100%;
   min-width: 320px;
   margin: 0;
-  overflow-x: clip;
+  overflow-x: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: var(--sans);
   font-size: var(--body-size);
-  line-height: var(--body-leading);
   font-weight: 400;
+  line-height: var(--body-leading);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  transition:
-    background-color var(--transition),
-    color var(--transition);
+  transition: background-color var(--transition), color var(--transition);
 }
 
 img,
@@ -131,16 +127,18 @@ a {
 button,
 a,
 input,
-select {
+select,
+textarea {
   -webkit-tap-highlight-color: transparent;
 }
 
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
-select:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 5px;
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 4px;
 }
 
 ::selection {
@@ -148,12 +146,11 @@ select:focus-visible {
   color: var(--bg);
 }
 
-/* ---------- 4. SHARED PAGE WIDTH ---------- */
+[hidden] {
+  display: none !important;
+}
 
-/*
-   Every main area uses the same outer gutter.
-   Do not add another global padding override below this.
-*/
+/* 4. SHARED PAGE WIDTH */
 
 .nav-wrap,
 .hero,
@@ -168,13 +165,34 @@ select:focus-visible {
   padding-left: var(--page-gutter);
 }
 
-.section,
+.nav-wrap,
 .hero,
-.nav-wrap {
+.section {
   position: relative;
 }
 
-/* ---------- 5. NAVIGATION ---------- */
+main {
+  width: 100%;
+}
+
+p {
+  overflow-wrap: break-word;
+}
+
+hr {
+  height: 1px;
+  margin: 30px 0;
+  border: 0;
+  background: var(--line);
+}
+
+small,
+.small-text {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* 5. HEADER & NAVIGATION */
 
 .site-header {
   position: relative;
@@ -185,13 +203,13 @@ select:focus-visible {
 }
 
 .nav-wrap {
-  min-height: 92px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 28px;
-  padding-top: 18px;
-  padding-bottom: 18px;
+  gap: 30px;
+  min-height: 82px;
+  padding-top: 16px;
+  padding-bottom: 16px;
 }
 
 .brand,
@@ -200,10 +218,10 @@ select:focus-visible {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  gap: 12px;
+  gap: 11px;
   color: var(--text);
   font-family: var(--serif);
-  font-size: clamp(19px, 2vw, 25px);
+  font-size: clamp(19px, 1.8vw, 24px);
   font-weight: 700;
   letter-spacing: -0.045em;
   line-height: 1.2;
@@ -211,8 +229,8 @@ select:focus-visible {
 
 .brand-mark,
 .logo-mark {
-  width: 30px;
-  height: 30px;
+  width: 29px;
+  height: 29px;
   flex-shrink: 0;
 }
 
@@ -221,7 +239,7 @@ select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: clamp(20px, 3vw, 42px);
+  gap: clamp(16px, 2.4vw, 32px);
 }
 
 .nav-links a,
@@ -229,7 +247,7 @@ select:focus-visible {
   color: var(--text-soft);
   font-family: var(--mono);
   font-size: 11px;
-  letter-spacing: 0.075em;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
   transition: color var(--transition);
 }
@@ -255,10 +273,7 @@ select:focus-visible {
   background: transparent;
   color: var(--text);
   cursor: pointer;
-  transition:
-    border-color var(--transition),
-    background-color var(--transition),
-    color var(--transition);
+  transition: border-color var(--transition), background-color var(--transition);
 }
 
 .theme-toggle:hover,
@@ -277,48 +292,47 @@ select:focus-visible {
   display: none;
 }
 
-/* ---------- 6. HERO ---------- */
+/* 6. HERO */
 
 .hero {
-  padding-top: clamp(78px, 9vw, 132px);
-  padding-bottom: 38px;
+  padding-top: clamp(72px, 8vw, 112px);
+  padding-bottom: 32px;
 }
 
 .hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.02fr) minmax(300px, 0.98fr);
+  grid-template-columns: minmax(0, 1.04fr) minmax(0, 0.96fr);
   align-items: center;
-  gap: clamp(42px, 7vw, 108px);
+  gap: clamp(38px, 6vw, 82px);
 }
 
 .hero-copy {
   min-width: 0;
-  padding-top: 16px;
-  padding-bottom: 16px;
+  padding: 8px 0;
 }
 
 .eyebrow,
 .section-label,
 .kicker {
-  margin: 0 0 24px;
+  margin: 0 0 20px;
   color: var(--accent-strong);
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 400;
-  letter-spacing: 0.16em;
-  line-height: 1.7;
+  letter-spacing: 0.15em;
+  line-height: 1.8;
   text-transform: uppercase;
 }
 
 .hero h1 {
-  max-width: 760px;
+  max-width: 700px;
   margin: 0;
   color: var(--text);
   font-family: var(--serif);
-  font-size: clamp(50px, 6.4vw, 92px);
+  font-size: clamp(48px, 6.1vw, 84px);
   font-weight: 400;
-  letter-spacing: -0.065em;
-  line-height: 0.99;
+  letter-spacing: -0.06em;
+  line-height: 1.02;
   text-wrap: balance;
 }
 
@@ -329,19 +343,19 @@ select:focus-visible {
 }
 
 .hero-description {
-  max-width: 550px;
-  margin: 30px 0 0;
+  max-width: 510px;
+  margin: 25px 0 0;
   color: var(--text-soft);
-  font-size: clamp(15px, 1.25vw, 17px);
-  line-height: 2;
+  font-size: clamp(14px, 1.15vw, 16px);
+  line-height: 1.95;
 }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px 30px;
-  margin-top: 36px;
+  gap: 12px 22px;
+  margin-top: 30px;
 }
 
 .button,
@@ -351,22 +365,20 @@ select:focus-visible {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  min-height: 48px;
-  padding: 12px 18px;
+  gap: 10px;
+  min-height: 46px;
+  padding: 11px 16px;
   border: 1px solid var(--line-strong);
   border-radius: 0;
   background: transparent;
   color: var(--text);
   font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.07em;
-  line-height: 1.5;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  line-height: 1.6;
   text-transform: uppercase;
-  transition:
-    background-color var(--transition),
-    border-color var(--transition),
-    color var(--transition);
+  cursor: pointer;
+  transition: background-color var(--transition), border-color var(--transition), color var(--transition);
 }
 
 .button:hover,
@@ -387,9 +399,9 @@ select:focus-visible {
 }
 
 .text-link {
-  min-height: auto;
+  min-height: 0;
   padding: 8px 0;
-  border: 0;
+  border-color: transparent;
   color: var(--accent-strong);
 }
 
@@ -424,15 +436,14 @@ select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  margin-top: clamp(54px, 7vw, 88px);
-  padding-top: 22px;
-  padding-bottom: 12px;
+  gap: 18px 28px;
+  margin-top: clamp(44px, 6vw, 72px);
+  padding: 18px 0 10px;
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.11em;
+  font-size: 9px;
+  letter-spacing: 0.09em;
   line-height: 1.8;
   text-transform: uppercase;
 }
@@ -441,7 +452,7 @@ select:focus-visible {
   min-width: 0;
 }
 
-/* ---------- 7. SHARED SECTION STYLES ---------- */
+/* 7. SECTION HEADINGS */
 
 .section {
   padding-top: var(--section-space);
@@ -456,8 +467,8 @@ select:focus-visible {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 28px 64px;
-  margin: 0 0 clamp(34px, 4.4vw, 56px);
+  gap: 24px 48px;
+  margin: 0 0 clamp(30px, 4vw, 48px);
 }
 
 .section-heading > * {
@@ -466,7 +477,7 @@ select:focus-visible {
 
 .section-heading .eyebrow,
 .section-heading .section-label {
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .section-heading h2,
@@ -474,37 +485,38 @@ select:focus-visible {
   margin: 0;
   color: var(--text);
   font-family: var(--serif);
-  font-size: clamp(36px, 4.3vw, 58px);
+  font-size: clamp(34px, 4vw, 54px);
   font-weight: 400;
-  letter-spacing: -0.05em;
-  line-height: 1.08;
+  letter-spacing: -0.045em;
+  line-height: 1.12;
   text-wrap: balance;
 }
 
 .section-intro {
-  max-width: 440px;
-  margin: 0 0 4px;
+  max-width: 410px;
+  margin: 0 0 3px;
   color: var(--text-soft);
-  font-size: 14px;
-  line-height: 2;
+  font-size: 13px;
+  line-height: 1.95;
 }
 
 .section-number {
   color: var(--accent);
   font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.1em;
+  font-size: 11px;
+  letter-spacing: 0.08em;
 }
 
-/* ---------- 8. ARTICLE ARCHIVE ---------- */
+/* 8. ARTICLE ARCHIVE */
 
 .archive-tools {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  margin: 0 0 22px;
-  padding: 16px 0;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin: 0 0 18px;
+  padding: 13px 0;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
@@ -515,7 +527,7 @@ select:focus-visible {
   color: var(--muted);
   font-family: var(--mono);
   font-size: 10px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.07em;
   line-height: 1.8;
   text-transform: uppercase;
 }
@@ -523,13 +535,25 @@ select:focus-visible {
 .archive-tools select,
 .archive-tools input,
 .archive-search {
+  width: auto;
   max-width: 100%;
-  min-height: 42px;
-  padding: 9px 12px;
+  min-height: 40px;
+  padding: 8px 11px;
   border: 1px solid var(--line);
   border-radius: 0;
   background: var(--bg-soft);
   color: var(--text);
+}
+
+.archive-tools input::placeholder,
+.archive-search::placeholder {
+  color: var(--muted);
+}
+
+.archive-tools select:focus-visible,
+.archive-tools input:focus-visible,
+.archive-search:focus-visible {
+  border-color: var(--accent);
 }
 
 .archive-list {
@@ -542,22 +566,17 @@ select:focus-visible {
 
 .archive-row {
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr) auto;
+  grid-template-columns: 42px minmax(0, 1fr) 24px;
   align-items: start;
-  gap: clamp(20px, 3vw, 42px);
+  gap: clamp(18px, 2.8vw, 36px);
   width: 100%;
   margin: 0;
-  padding: 34px 18px 36px 8px;
+  padding: 29px 10px;
   border-bottom: 1px solid var(--line);
-  transition:
-    padding var(--transition),
-    background-color var(--transition),
-    border-color var(--transition);
+  transition: background-color var(--transition), border-color var(--transition);
 }
 
 .archive-row:hover {
-  padding-right: 24px;
-  padding-left: 18px;
   border-bottom-color: var(--line-strong);
   background: var(--accent-faint);
 }
@@ -568,17 +587,17 @@ select:focus-visible {
   padding-top: 5px;
   color: var(--accent);
   font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.08em;
+  font-size: 10px;
+  letter-spacing: 0.07em;
 }
 
 .article-copy {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
-  padding: 1px 0;
+  padding: 0;
 }
 
 .article-category,
@@ -586,8 +605,8 @@ select:focus-visible {
 .article-date {
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: 9px;
+  letter-spacing: 0.08em;
   line-height: 1.8;
   text-transform: uppercase;
 }
@@ -595,14 +614,14 @@ select:focus-visible {
 .article-copy strong,
 .article-title {
   display: block;
-  max-width: 850px;
+  max-width: 800px;
   margin: 0;
   color: var(--text);
   font-family: var(--serif);
-  font-size: clamp(23px, 2.5vw, 34px);
+  font-size: clamp(23px, 2.3vw, 32px);
   font-weight: 400;
-  letter-spacing: -0.035em;
-  line-height: 1.28;
+  letter-spacing: -0.03em;
+  line-height: 1.3;
   transition: color var(--transition);
 }
 
@@ -612,38 +631,36 @@ select:focus-visible {
 }
 
 .article-description {
-  max-width: 720px;
+  max-width: 680px;
   margin: 0;
   color: var(--text-soft);
-  font-size: 14px;
-  line-height: 1.95;
+  font-size: 13px;
+  line-height: 1.9;
 }
 
 .article-arrow,
 .archive-row .arrow {
   align-self: center;
-  padding: 8px 0 8px 12px;
+  padding: 5px 0;
   color: var(--accent);
-  font-size: 20px;
-  transition:
-    color var(--transition),
-    transform var(--transition);
+  font-size: 19px;
+  transition: color var(--transition), transform var(--transition);
 }
 
 .archive-row:hover .article-arrow,
 .archive-row:hover .arrow {
   color: var(--accent-strong);
-  transform: translateX(4px);
+  transform: translateX(3px);
 }
 
 .archive-note {
-  margin: 28px 0 0;
+  margin: 22px 0 0;
   color: var(--muted);
-  font-size: 13px;
-  line-height: 2;
+  font-size: 12px;
+  line-height: 1.9;
 }
 
-/* ---------- 9. LEARNING PATHS ---------- */
+/* 9. LEARNING PATHS */
 
 .path-list {
   width: 100%;
@@ -655,21 +672,18 @@ select:focus-visible {
 
 .path-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 24px;
   align-items: center;
-  gap: 24px 40px;
+  gap: 20px 32px;
   width: 100%;
   margin: 0;
-  padding: 29px 16px;
+  padding: 25px 14px;
   border-bottom: 1px solid var(--line);
-  transition:
-    padding var(--transition),
-    background-color var(--transition);
+  transition: background-color var(--transition), border-color var(--transition);
 }
 
 .path-row:hover {
-  padding-right: 24px;
-  padding-left: 24px;
+  border-bottom-color: var(--line-strong);
   background: var(--accent-faint);
 }
 
@@ -677,7 +691,7 @@ select:focus-visible {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 9px;
+  gap: 8px;
   min-width: 0;
 }
 
@@ -686,8 +700,8 @@ select:focus-visible {
 .path-meta {
   color: var(--accent);
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.11em;
+  font-size: 9px;
+  letter-spacing: 0.09em;
   line-height: 1.8;
   text-transform: uppercase;
 }
@@ -695,17 +709,17 @@ select:focus-visible {
 .path-main strong {
   color: var(--text);
   font-family: var(--serif);
-  font-size: clamp(23px, 2.5vw, 33px);
+  font-size: clamp(22px, 2.3vw, 31px);
   font-weight: 400;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.03em;
   line-height: 1.35;
   transition: color var(--transition);
 }
 
 .path-main > span:not(.path-number):not(.path-level):not(.path-meta) {
-  max-width: 700px;
+  max-width: 680px;
   color: var(--text-soft);
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.9;
 }
 
@@ -715,23 +729,24 @@ select:focus-visible {
 
 .path-arrow {
   color: var(--accent);
-  font-size: 20px;
-  transition: transform var(--transition);
+  font-size: 19px;
+  transition: color var(--transition), transform var(--transition);
 }
 
 .path-row:hover .path-arrow {
-  transform: translateX(4px);
+  color: var(--accent-strong);
+  transform: translateX(3px);
 }
 
-/* ---------- 10. ABOUT / MANIFESTO ---------- */
+/* 10. ABOUT / MANIFESTO */
 
 .manifesto-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   align-items: start;
-  gap: clamp(44px, 8vw, 112px);
+  gap: clamp(38px, 7vw, 90px);
   margin: 0;
-  padding: clamp(48px, 6.5vw, 86px) 0;
+  padding: clamp(42px, 6vw, 76px) 0;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
@@ -741,14 +756,14 @@ select:focus-visible {
 }
 
 .manifesto-copy h2 {
-  margin: 0 0 26px;
+  margin: 0 0 22px;
 }
 
 .manifesto-copy p:not(.eyebrow) {
-  margin: 0 0 20px;
+  margin: 0 0 17px;
   color: var(--text-soft);
-  font-size: 15px;
-  line-height: 2;
+  font-size: 14px;
+  line-height: 1.95;
 }
 
 .manifesto-copy p:last-child {
@@ -758,11 +773,11 @@ select:focus-visible {
 .manifesto-aside,
 .manifesto-note {
   min-width: 0;
-  padding-top: 8px;
+  padding-top: 5px;
   color: var(--text-soft);
   font-family: var(--serif);
-  font-size: clamp(22px, 2.8vw, 34px);
-  line-height: 1.55;
+  font-size: clamp(21px, 2.5vw, 32px);
+  line-height: 1.5;
 }
 
 .manifesto-aside p,
@@ -776,7 +791,7 @@ select:focus-visible {
   font-weight: 400;
 }
 
-/* ---------- 11. FOOTER ---------- */
+/* 11. FOOTER */
 
 .site-footer {
   width: 100%;
@@ -787,16 +802,16 @@ select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 28px;
-  min-height: 108px;
-  padding-top: 24px;
-  padding-bottom: 24px;
+  gap: 24px;
+  min-height: 98px;
+  padding-top: 22px;
+  padding-bottom: 22px;
 }
 
 .footer-brand {
   color: var(--text);
   font-family: var(--serif);
-  font-size: 23px;
+  font-size: 22px;
   letter-spacing: -0.04em;
 }
 
@@ -804,14 +819,14 @@ select:focus-visible {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 14px 28px;
+  gap: 12px 24px;
 }
 
 .footer-links a {
   color: var(--text-soft);
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  font-size: 9px;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
   transition: color var(--transition);
 }
@@ -824,15 +839,15 @@ select:focus-visible {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  min-height: 70px;
-  padding-top: 17px;
-  padding-bottom: 17px;
+  gap: 16px;
+  min-height: 64px;
+  padding-top: 15px;
+  padding-bottom: 15px;
   border-top: 1px solid var(--line);
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.045em;
+  font-size: 9px;
+  letter-spacing: 0.035em;
   line-height: 1.8;
 }
 
@@ -840,78 +855,57 @@ select:focus-visible {
   margin: 0;
 }
 
-/* ---------- 12. GENERAL CONTENT ---------- */
-
-main {
-  width: 100%;
-}
-
-p {
-  overflow-wrap: break-word;
-}
-
-hr {
-  height: 1px;
-  margin: 32px 0;
-  border: 0;
-  background: var(--line);
-}
-
-small,
-.small-text {
-  color: var(--muted);
-  font-size: 12px;
-}
-
-[hidden] {
-  display: none !important;
-}
-
-/* ---------- 13. TABLET ---------- */
+/* 12. TABLET */
 
 @media (max-width: 960px) {
   :root {
-    --page-gutter: clamp(26px, 4.5vw, 44px);
-    --section-space: 88px;
+    --page-gutter: clamp(24px, 4.2vw, 40px);
+    --section-space: 78px;
   }
 
   .nav-wrap {
-    min-height: 82px;
+    min-height: 76px;
+    gap: 18px;
   }
 
   .nav-links,
   .nav-actions {
-    gap: 18px;
+    gap: 16px;
+  }
+
+  .nav-links a,
+  .nav-actions a {
+    font-size: 10px;
   }
 
   .hero-grid {
-    grid-template-columns: minmax(0, 1fr) minmax(260px, 0.85fr);
-    gap: 38px;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.88fr);
+    gap: 32px;
   }
 
   .hero h1 {
-    font-size: clamp(48px, 6.2vw, 70px);
+    font-size: clamp(46px, 6vw, 66px);
   }
 
   .section-heading {
-    gap: 28px;
+    gap: 24px;
   }
 
   .manifesto-grid {
-    gap: 48px;
+    gap: 40px;
   }
 }
 
-/* ---------- 14. MOBILE ---------- */
+/* 13. MOBILE */
 
 @media (max-width: 700px) {
   :root {
-    --page-gutter: 23px;
-    --section-space: 76px;
+    --page-gutter: 22px;
+    --section-space: 68px;
   }
 
   html {
-    scroll-padding-top: 78px;
+    scroll-padding-top: 76px;
   }
 
   body {
@@ -919,17 +913,17 @@ small,
   }
 
   .nav-wrap {
-    min-height: 74px;
-    gap: 12px;
-    padding-top: 13px;
-    padding-bottom: 13px;
+    min-height: 70px;
+    gap: 10px;
+    padding-top: 12px;
+    padding-bottom: 12px;
   }
 
   .brand,
   .site-brand,
   .logo {
-    gap: 9px;
-    font-size: 19px;
+    gap: 8px;
+    font-size: 18px;
   }
 
   .brand-mark,
@@ -943,19 +937,19 @@ small,
   }
 
   .nav-actions {
-    gap: 9px;
+    gap: 7px;
   }
 
   .nav-actions a {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .theme-toggle,
   .menu-toggle,
   .mobile-menu-toggle {
-    min-width: 38px;
-    min-height: 38px;
-    padding: 7px 9px;
+    min-width: 37px;
+    min-height: 37px;
+    padding: 6px 8px;
   }
 
   .menu-toggle,
@@ -965,8 +959,8 @@ small,
 
   .mobile-nav {
     display: none;
-    padding-top: 12px;
-    padding-bottom: 20px;
+    padding-top: 8px;
+    padding-bottom: 16px;
     border-top: 1px solid var(--line);
   }
 
@@ -979,23 +973,28 @@ small,
   }
 
   .mobile-nav a {
-    padding: 13px 0;
+    padding: 12px 0;
     border-bottom: 1px solid var(--line);
     color: var(--text-soft);
     font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
+    font-size: 10px;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
+    transition: color var(--transition);
+  }
+
+  .mobile-nav a:hover {
+    color: var(--accent-strong);
   }
 
   .hero {
-    padding-top: 66px;
-    padding-bottom: 30px;
+    padding-top: 56px;
+    padding-bottom: 24px;
   }
 
   .hero-grid {
     grid-template-columns: minmax(0, 1fr);
-    gap: 34px;
+    gap: 30px;
   }
 
   .hero-copy {
@@ -1005,43 +1004,43 @@ small,
   .eyebrow,
   .section-label,
   .kicker {
-    margin-bottom: 19px;
-    font-size: 10px;
+    margin-bottom: 16px;
+    font-size: 9px;
   }
 
   .hero h1 {
-    max-width: 580px;
-    font-size: clamp(48px, 11.5vw, 72px);
-    line-height: 1.01;
+    max-width: 560px;
+    font-size: clamp(45px, 10.8vw, 66px);
+    line-height: 1.04;
   }
 
   .hero-description {
-    margin-top: 23px;
+    margin-top: 20px;
     font-size: 14px;
-    line-height: 1.95;
+    line-height: 1.9;
   }
 
   .hero-actions {
-    gap: 12px 20px;
-    margin-top: 28px;
+    gap: 10px 16px;
+    margin-top: 24px;
   }
 
   .hero-art,
   .hero-visual,
   .hero-illustration {
     width: 100%;
-    max-width: 520px;
+    max-width: 460px;
     margin: 0 auto;
   }
 
   .hero-rule {
     align-items: flex-start;
     flex-wrap: wrap;
-    gap: 10px 22px;
-    margin-top: 42px;
-    padding-top: 17px;
-    padding-bottom: 8px;
-    font-size: 9px;
+    gap: 8px 18px;
+    margin-top: 34px;
+    padding-top: 14px;
+    padding-bottom: 7px;
+    font-size: 8px;
   }
 
   .section {
@@ -1056,187 +1055,192 @@ small,
   .section-heading {
     align-items: flex-start;
     flex-direction: column;
-    gap: 16px;
-    margin-bottom: 32px;
+    gap: 13px;
+    margin-bottom: 27px;
   }
 
   .section-heading .eyebrow,
   .section-heading .section-label {
-    margin-bottom: 13px;
+    margin-bottom: 10px;
   }
 
   .section-heading h2,
   .manifesto-copy h2 {
-    font-size: clamp(36px, 9vw, 48px);
+    font-size: clamp(34px, 8.5vw, 45px);
   }
 
   .section-intro {
-    max-width: 560px;
-    font-size: 13px;
-    line-height: 1.95;
+    max-width: 540px;
+    font-size: 12px;
+    line-height: 1.9;
   }
 
   .archive-tools {
     align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 10px 18px;
-    margin-bottom: 16px;
-    padding: 13px 0;
+    gap: 10px 14px;
+    margin-bottom: 14px;
+    padding: 12px 0;
+  }
+
+  .archive-tools select,
+  .archive-tools input,
+  .archive-search {
+    min-width: 0;
+    font-size: 12px;
   }
 
   .archive-row {
-    grid-template-columns: 29px minmax(0, 1fr) 16px;
-    gap: 12px;
-    padding: 25px 4px 27px 0;
-  }
-
-  .archive-row:hover {
-    padding-right: 8px;
-    padding-left: 7px;
+    grid-template-columns: 25px minmax(0, 1fr) 15px;
+    gap: 10px;
+    padding: 23px 3px;
   }
 
   .article-index,
   .archive-row .index,
   .article-number {
-    padding-top: 5px;
-    font-size: 10px;
+    padding-top: 4px;
+    font-size: 9px;
   }
 
   .article-copy {
-    gap: 9px;
-    padding: 0;
+    gap: 8px;
   }
 
   .article-category,
   .article-meta,
   .article-date {
-    font-size: 9px;
+    font-size: 8px;
   }
 
   .article-copy strong,
   .article-title {
-    font-size: clamp(22px, 5.6vw, 29px);
+    font-size: clamp(21px, 5.4vw, 28px);
     line-height: 1.3;
   }
 
   .article-description {
     font-size: 12px;
-    line-height: 1.9;
+    line-height: 1.85;
   }
 
   .article-arrow,
   .archive-row .arrow {
-    padding: 4px 0 4px 2px;
-    font-size: 17px;
+    padding: 4px 0;
+    font-size: 16px;
   }
 
   .archive-note {
-    margin-top: 21px;
-    font-size: 12px;
+    margin-top: 18px;
+    font-size: 11px;
   }
 
   .path-row {
-    grid-template-columns: minmax(0, 1fr) 18px;
-    gap: 14px;
-    padding: 24px 5px;
-  }
-
-  .path-row:hover {
-    padding-right: 10px;
-    padding-left: 10px;
+    grid-template-columns: minmax(0, 1fr) 16px;
+    gap: 12px;
+    padding: 21px 5px;
   }
 
   .path-main {
-    gap: 8px;
-    padding: 0;
+    gap: 7px;
   }
 
   .path-main strong {
-    font-size: clamp(22px, 5.5vw, 29px);
-    line-height: 1.32;
+    font-size: clamp(21px, 5.3vw, 28px);
+    line-height: 1.33;
   }
 
   .path-main > span:not(.path-number):not(.path-level):not(.path-meta) {
-    font-size: 12px;
-    line-height: 1.9;
+    font-size: 11px;
+    line-height: 1.85;
   }
 
   .manifesto-grid {
     grid-template-columns: minmax(0, 1fr);
-    gap: 29px;
-    padding-top: 36px;
-    padding-bottom: 36px;
+    gap: 25px;
+    padding-top: 32px;
+    padding-bottom: 32px;
   }
 
   .manifesto-copy h2 {
-    margin-bottom: 21px;
+    margin-bottom: 18px;
   }
 
   .manifesto-copy p:not(.eyebrow) {
-    margin-bottom: 17px;
-    font-size: 14px;
-    line-height: 1.95;
+    margin-bottom: 15px;
+    font-size: 13px;
+    line-height: 1.9;
   }
 
   .manifesto-aside,
   .manifesto-note {
     padding-top: 0;
-    font-size: clamp(22px, 6vw, 29px);
+    font-size: clamp(21px, 5.8vw, 28px);
   }
 
   .footer-top {
     align-items: flex-start;
     flex-direction: column;
-    gap: 20px;
+    gap: 18px;
     min-height: auto;
-    padding-top: 25px;
-    padding-bottom: 25px;
+    padding-top: 23px;
+    padding-bottom: 23px;
   }
 
   .footer-links {
     justify-content: flex-start;
-    gap: 13px 21px;
+    gap: 12px 18px;
   }
 
   .footer-bottom {
     align-items: flex-start;
     flex-direction: column;
     justify-content: center;
-    gap: 7px;
+    gap: 6px;
     min-height: auto;
-    padding-top: 17px;
-    padding-bottom: 17px;
+    padding-top: 15px;
+    padding-bottom: 15px;
   }
 }
 
-/* ---------- 15. SMALL PHONES ---------- */
+/* 14. SMALL PHONES */
 
 @media (max-width: 390px) {
   :root {
-    --page-gutter: 18px;
-    --section-space: 65px;
+    --page-gutter: 17px;
+    --section-space: 60px;
   }
 
   .nav-wrap {
-    gap: 8px;
+    gap: 7px;
   }
 
   .brand,
   .site-brand,
   .logo {
-    font-size: 17px;
+    gap: 6px;
+    font-size: 16px;
+  }
+
+  .brand-mark,
+  .logo-mark {
+    width: 22px;
+    height: 22px;
   }
 
   .nav-actions {
-    gap: 6px;
+    gap: 5px;
+  }
+
+  .nav-actions a {
+    font-size: 8px;
   }
 
   .hero {
-    padding-top: 54px;
+    padding-top: 48px;
   }
 
   .hero h1 {
-    font-size: clamp(43px, 12vw, 53px);
+    font-size: clamp(41px, 11.5vw, 49px);
   }
 
   .hero-actions {
@@ -1245,24 +1249,37 @@ small,
   }
 
   .archive-row {
-    grid-template-columns: 24px minmax(0, 1fr) 14px;
-    gap: 9px;
-    padding-top: 23px;
-    padding-bottom: 25px;
+    grid-template-columns: 22px minmax(0, 1fr) 13px;
+    gap: 8px;
+    padding-top: 21px;
+    padding-bottom: 23px;
   }
 
   .article-copy strong,
   .article-title {
-    font-size: 22px;
+    font-size: 21px;
   }
 
   .path-row {
-    padding-top: 22px;
-    padding-bottom: 22px;
+    padding-top: 19px;
+    padding-bottom: 19px;
   }
 }
 
-/* ---------- 16. REDUCED MOTION ---------- */
+/* 15. HOVER SUPPORT & REDUCED MOTION */
+
+@media (hover: none) {
+  .archive-row:hover,
+  .path-row:hover {
+    background: transparent;
+  }
+
+  .archive-row:hover .article-copy strong,
+  .archive-row:hover .article-title,
+  .path-row:hover .path-main strong {
+    color: var(--text);
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *,
