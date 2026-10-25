@@ -1464,3 +1464,354 @@ body {
   }
 }
 
+
+:root {
+  --page-width: 1360px;
+  --page-gutter: clamp(24px, 5.5vw, 80px);
+  --section-space: clamp(80px, 9vw, 120px);
+}
+
+/* Prevent horizontal overflow */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+/* Consistent left and right margins */
+.nav-wrap,
+.hero,
+.section,
+.site-footer > *,
+.mobile-nav {
+  width: 100%;
+  max-width: 1360px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--page-gutter);
+  padding-right: var(--page-gutter);
+}
+
+/* Header: breathing room above and below */
+.nav-wrap {
+  min-height: 100px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+/* Hero: space on all four sides */
+.hero {
+  padding-top: clamp(80px, 9vw, 125px);
+  padding-right: var(--page-gutter);
+  padding-bottom: 45px;
+  padding-left: var(--page-gutter);
+}
+
+.hero-grid {
+  gap: clamp(40px, 6vw, 90px);
+}
+
+.hero-copy {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.hero-description {
+  margin-top: 30px;
+  margin-bottom: 0;
+  line-height: 2;
+}
+
+.hero-actions {
+  margin-top: 36px;
+}
+
+.hero-rule {
+  margin-top: 75px;
+  padding-top: 20px;
+  padding-bottom: 10px;
+}
+
+/* Main sections: equal side margins and generous vertical space */
+.section {
+  padding-top: var(--section-space);
+  padding-right: var(--page-gutter);
+  padding-bottom: var(--section-space);
+  padding-left: var(--page-gutter);
+}
+
+.section + .section {
+  padding-top: 0;
+}
+
+/* Heading and introductory paragraph spacing */
+.section-heading {
+  gap: 36px 64px;
+  margin-top: 0;
+  margin-bottom: 52px;
+}
+
+.section-heading h2 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.section-intro {
+  margin-top: 0;
+  margin-bottom: 5px;
+  line-height: 2;
+}
+
+/* Archive: padding on every row and clear separation */
+.archive-tools {
+  margin-top: 0;
+  margin-bottom: 24px;
+  padding: 18px 0;
+}
+
+.archive-list {
+  margin: 0;
+  padding: 0;
+}
+
+.archive-row {
+  margin: 0;
+  padding: 38px 22px 40px 12px;
+  gap: 30px;
+}
+
+.archive-row:hover {
+  padding-left: 22px;
+  padding-right: 22px;
+}
+
+.article-copy {
+  padding: 2px 0;
+  gap: 13px;
+}
+
+.article-copy strong {
+  margin: 0;
+  line-height: 1.45;
+}
+
+.article-description {
+  margin: 0;
+  line-height: 2;
+}
+
+.archive-note {
+  margin-top: 30px;
+  margin-bottom: 0;
+  line-height: 2;
+}
+
+/* Learning paths: comfortable internal spacing */
+.path-list {
+  margin: 0;
+  padding: 0;
+}
+
+.path-row {
+  margin: 0;
+  padding: 32px 16px;
+  gap: 30px;
+}
+
+.path-row:hover {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.path-main {
+  padding: 2px 0;
+  gap: 10px;
+}
+
+.path-main strong {
+  line-height: 1.5;
+}
+
+.path-main > span {
+  line-height: 2;
+}
+
+/* About section: space inside the bordered area */
+.manifesto-grid {
+  margin: 0;
+  padding: clamp(45px, 6vw, 80px) 0;
+  gap: clamp(45px, 8vw, 110px);
+}
+
+.manifesto-copy h2 {
+  margin-top: 0;
+  margin-bottom: 28px;
+}
+
+.manifesto-copy p:not(.eyebrow) {
+  margin-top: 0;
+  margin-bottom: 22px;
+  line-height: 2;
+}
+
+/* Footer: space on every side */
+.footer-top {
+  min-height: 110px;
+  padding-top: 25px;
+  padding-bottom: 25px;
+}
+
+.footer-bottom {
+  min-height: 75px;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+/* Mobile: maintain side gutters without squeezing the content */
+@media (max-width: 700px) {
+  :root {
+    --page-gutter: 22px;
+    --section-space: 76px;
+  }
+
+  .nav-wrap {
+    min-height: 76px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .hero {
+    padding-top: 68px;
+    padding-bottom: 30px;
+  }
+
+  .hero-grid {
+    gap: 40px;
+  }
+
+  .hero-copy {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .hero-rule {
+    margin-top: 48px;
+    padding-top: 17px;
+    padding-bottom: 8px;
+  }
+
+  .section {
+    padding-top: var(--section-space);
+    padding-bottom: var(--section-space);
+  }
+
+  .section + .section {
+    padding-top: 0;
+  }
+
+  .section-heading {
+    margin-bottom: 34px;
+    gap: 18px;
+  }
+
+  .archive-tools {
+    margin-bottom: 18px;
+    padding: 14px 0;
+  }
+
+  .archive-row {
+    padding: 27px 5px 30px 0;
+    gap: 13px;
+  }
+
+  .archive-row:hover {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .article-copy {
+    padding: 0;
+    gap: 10px;
+  }
+
+  .article-description {
+    line-height: 1.9;
+  }
+
+  .archive-note {
+    margin-top: 23px;
+  }
+
+  .path-row {
+    padding: 26px 5px;
+    gap: 12px 16px;
+  }
+
+  .path-row:hover {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .path-main {
+    padding: 0;
+    gap: 8px;
+  }
+
+  .manifesto-grid {
+    padding-top: 38px;
+    padding-bottom: 38px;
+    gap: 32px;
+  }
+
+  .manifesto-copy h2 {
+    margin-bottom: 22px;
+  }
+
+  .manifesto-copy p:not(.eyebrow) {
+    margin-bottom: 18px;
+    line-height: 1.95;
+  }
+
+  .footer-top {
+    min-height: 85px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+
+  .footer-bottom {
+    padding-top: 17px;
+    padding-bottom: 17px;
+    gap: 8px;
+  }
+}
+
+/* Extra-small phones */
+@media (max-width: 390px) {
+  :root {
+    --page-gutter: 18px;
+  }
+
+  .archive-row {
+    grid-template-columns: 24px minmax(0, 1fr) 16px;
+    gap: 10px;
+    padding-top: 24px;
+    padding-bottom: 26px;
+  }
+
+  .path-row {
+    padding-top: 23px;
+    padding-bottom: 23px;
+  }
+}
+
