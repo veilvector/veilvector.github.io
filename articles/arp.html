@@ -1,1067 +1,410 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>ARP — Finding Devices on a Local Network · KSCybSec</title>
-  <meta name="description" content="Understand how ARP connects IP addresses to MAC addresses on a local network, one clue at a time.">
+  <title>What Is ARP? Finding Devices on a Local Network | Veil &amp; Vector</title>
+  <meta name="description" content="Learn how ARP maps IPv4 addresses to MAC addresses on a local network, how ARP requests and replies work, and why ARP spoofing matters for cybersecurity.">
+  <meta name="author" content="Veil &amp; Vector">
+  <meta name="theme-color" content="#11100f">
+  <meta name="robots" content="index, follow">
+
+  <!-- Keep this canonical URL if it matches your published article URL. -->
+  <link rel="canonical" href="https://kscybsec.github.io/articles/what-is-arp.html">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --bg: #070B14;
-      --surface: #0B1120;
-      --surface-2: #101827;
-      --text: #E8EDF5;
-      --muted: #8995AA;
-      --cyan: #4DE8FF;
-      --purple: #8B7CFF;
-      --border: rgba(232, 237, 245, 0.10);
-      --soft-border: rgba(77, 232, 255, 0.18);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: "Space Grotesk", sans-serif;
-      line-height: 1.7;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    .container {
-      width: min(1080px, calc(100% - 40px));
-      margin: 0 auto;
-    }
-
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(7, 11, 20, 0.88);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-inner {
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-    }
-
-    .brand {
-      text-decoration: none;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    .brand span {
-      color: var(--cyan);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-    }
-
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.92rem;
-      transition: color 0.2s ease;
-    }
-
-    .nav-links a:hover {
-      color: var(--text);
-    }
-
-    .menu-btn {
-      display: none;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text);
-      padding: 9px 11px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    .mobile-menu {
-      display: none;
-      padding-bottom: 18px;
-    }
-
-    .mobile-menu a {
-      display: block;
-      padding: 11px 0;
-      color: var(--muted);
-      text-decoration: none;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .article-hero {
-      padding: 105px 0 65px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .eyebrow {
-      font-family: "DM Mono", monospace;
-      color: var(--cyan);
-      font-size: 0.74rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 22px;
-    }
-
-    h1 {
-      max-width: 850px;
-      margin: 0;
-      font-size: clamp(2.7rem, 7vw, 5.3rem);
-      line-height: 1.02;
-      letter-spacing: -0.055em;
-      font-weight: 600;
-    }
-
-    .hero-description {
-      max-width: 650px;
-      margin: 27px 0 0;
-      color: var(--muted);
-      font-size: 1.12rem;
-    }
-
-    .article-meta {
-      margin-top: 30px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px 26px;
-      color: var(--muted);
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-    }
-
-    .article {
-      width: min(760px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 78px 0 100px;
-    }
-
-    .article p {
-      margin: 0 0 25px;
-      color: #C5CEDD;
-      font-size: 1.03rem;
-    }
-
-    .story {
-      border-left: 2px solid var(--cyan);
-      padding: 4px 0 4px 25px;
-      margin: 0 0 65px;
-    }
-
-    .story p {
-      color: var(--text);
-      font-size: 1.13rem;
-      margin-bottom: 0;
-    }
-
-    .visual {
-      position: relative;
-      margin: 55px 0 65px;
-      min-height: 350px;
-      border: 1px solid var(--border);
-      background:
-        linear-gradient(rgba(77, 232, 255, 0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(77, 232, 255, 0.035) 1px, transparent 1px),
-        var(--surface);
-      background-size: 34px 34px;
-      overflow: hidden;
-    }
-
-    .visual-label {
-      position: absolute;
-      top: 20px;
-      left: 22px;
-      font-family: "DM Mono", monospace;
-      color: var(--muted);
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-    }
-
-    .network {
-      position: absolute;
-      inset: 0;
-    }
-
-    .device {
-      position: absolute;
-      width: 105px;
-      height: 70px;
-      border: 1px solid rgba(232, 237, 245, 0.18);
-      background: rgba(16, 24, 39, 0.92);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-    }
-
-    .device strong {
-      font-size: 0.82rem;
-      font-weight: 500;
-    }
-
-    .device span {
-      font-family: "DM Mono", monospace;
-      color: var(--muted);
-      font-size: 0.59rem;
-    }
-
-    .laptop {
-      left: 10%;
-      top: 42%;
-    }
-
-    .phone {
-      right: 11%;
-      top: 42%;
-    }
-
-    .router {
-      left: 50%;
-      top: 42%;
-      transform: translateX(-50%);
-      border-color: var(--soft-border);
-    }
-
-    .router strong {
-      color: var(--cyan);
-    }
-
-    .line {
-      position: absolute;
-      height: 1px;
-      background: rgba(77, 232, 255, 0.28);
-      top: calc(42% + 35px);
-    }
-
-    .line-left {
-      left: 20%;
-      width: 30%;
-    }
-
-    .line-right {
-      left: 50%;
-      width: 30%;
-    }
-
-    .packet {
-      position: absolute;
-      top: 32%;
-      left: 22%;
-      color: var(--cyan);
-      font-family: "DM Mono", monospace;
-      font-size: 0.65rem;
-      white-space: nowrap;
-    }
-
-    .packet::after {
-      content: "";
-      position: absolute;
-      width: 180px;
-      height: 1px;
-      background: rgba(77, 232, 255, 0.45);
-      top: 10px;
-      left: 0;
-    }
-
-    .arp-question {
-      position: absolute;
-      left: 50%;
-      top: 67%;
-      transform: translateX(-50%);
-      padding: 10px 16px;
-      border: 1px solid rgba(139, 124, 255, 0.3);
-      background: rgba(139, 124, 255, 0.06);
-      color: #D8D2FF;
-      font-family: "DM Mono", monospace;
-      font-size: 0.66rem;
-      text-align: center;
-      white-space: nowrap;
-    }
-
-    .section {
-      margin: 70px 0;
-    }
-
-    h2 {
-      margin: 0 0 24px;
-      font-size: clamp(1.65rem, 4vw, 2.25rem);
-      line-height: 1.15;
-      letter-spacing: -0.035em;
-    }
-
-    h2::before {
-      content: "";
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      margin: 0 12px 5px 0;
-      border-radius: 50%;
-      background: var(--cyan);
-    }
-
-    h3 {
-      margin: 38px 0 13px;
-      font-size: 1.15rem;
-    }
-
-    .flow {
-      margin: 45px 0;
-      padding: 28px 24px;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .flow-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-      flex-wrap: wrap;
-      font-family: "DM Mono", monospace;
-      font-size: 0.74rem;
-    }
-
-    .flow-item {
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      background: var(--surface-2);
-      color: #C5CEDD;
-    }
-
-    .flow-item.highlight {
-      color: var(--cyan);
-      border-color: var(--soft-border);
-    }
-
-    .flow-arrow {
-      color: var(--muted);
-    }
-
-    .cache-visual {
-      margin: 50px 0;
-      border: 1px solid var(--border);
-      background: var(--surface);
-    }
-
-    .cache-title {
-      padding: 17px 20px;
-      border-bottom: 1px solid var(--border);
-      font-family: "DM Mono", monospace;
-      color: var(--muted);
-      font-size: 0.7rem;
-      letter-spacing: 0.06em;
-    }
-
-    .cache-row {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr;
-      border-bottom: 1px solid var(--border);
-      font-family: "DM Mono", monospace;
-      font-size: 0.74rem;
-    }
-
-    .cache-row:last-child {
-      border-bottom: 0;
-    }
-
-    .cache-row div {
-      padding: 14px 20px;
-    }
-
-    .cache-row div:first-child {
-      color: var(--cyan);
-      border-right: 1px solid var(--border);
-    }
-
-    .cache-row div:last-child {
-      color: var(--muted);
-    }
-
-    .security-note {
-      margin: 45px 0;
-      padding: 22px 24px;
-      border-left: 2px solid var(--purple);
-      background: rgba(139, 124, 255, 0.045);
-    }
-
-    .security-note p {
-      margin: 0;
-    }
-
-    .question {
-      margin: 70px 0;
-      padding: 30px 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .question-label {
-      margin-bottom: 12px;
-      color: var(--cyan);
-      font-family: "DM Mono", monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-    }
-
-    .question p {
-      color: var(--text);
-      font-size: 1.2rem;
-      margin: 0;
-    }
-
-    .takeaway {
-      margin-top: 80px;
-      padding: 30px 0;
-      border-top: 1px solid var(--border);
-    }
-
-    .takeaway-label {
-      margin-bottom: 15px;
-      color: var(--cyan);
-      font-family: "DM Mono", monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-    }
-
-    .takeaway p {
-      color: var(--text);
-      font-size: 1.08rem;
-      margin: 0;
-    }
-
-    .article-next {
-      margin-top: 80px;
-      padding-top: 32px;
-      border-top: 1px solid var(--border);
-    }
-
-    .article-next-label {
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-
-    .article-next a {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text);
-      text-decoration: none;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.15rem;
-      transition: color 0.2s ease;
-    }
-
-    .article-next a:hover {
-      color: var(--cyan);
-    }
-
-    .article-next .next-arrow {
-      color: var(--cyan);
-      font-size: 1rem;
-    }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(14px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 35px 0;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-
-    @media (max-width: 700px) {
-      .container {
-        width: min(100% - 28px, 1080px);
-      }
-
-      .nav-links {
-        display: none;
-      }
-
-      .menu-btn {
-        display: block;
-      }
-
-      .mobile-menu.open {
-        display: block;
-      }
-
-      .article-hero {
-        padding: 78px 0 50px;
-      }
-
-      .article {
-        width: min(100% - 28px, 760px);
-        padding-top: 58px;
-      }
-
-      .visual {
-        min-height: 390px;
-      }
-
-      .device {
-        width: 90px;
-      }
-
-      .laptop {
-        left: 4%;
-      }
-
-      .phone {
-        right: 4%;
-      }
-
-      .packet {
-        left: 8%;
-      }
-
-      .arp-question {
-        width: calc(100% - 32px);
-        white-space: normal;
-      }
-    }
-
-    @media (max-width: 500px) {
-      .article-meta {
-        flex-direction: column;
-        gap: 7px;
-      }
-
-      .visual {
-        min-height: 440px;
-      }
-
-      .line-left {
-        left: 16%;
-        width: 34%;
-      }
-
-      .line-right {
-        left: 50%;
-        width: 34%;
-      }
-
-      .laptop {
-        top: 38%;
-      }
-
-      .router {
-        top: 38%;
-      }
-
-      .phone {
-        top: 38%;
-      }
-
-      .line {
-        top: calc(38% + 35px);
-      }
-
-      .packet {
-        top: 27%;
-      }
-
-      .arp-question {
-        top: 66%;
-      }
-
-      .cache-row {
-        grid-template-columns: 1fr;
-      }
-
-      .cache-row div:first-child {
-        border-right: 0;
-        border-bottom: 1px solid var(--border);
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
-
-      .reveal {
-        opacity: 1;
-        transform: none;
-        transition: none;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="../article.css">
 </head>
 
 <body>
 
-  <nav>
-    <div class="container">
-      <div class="nav-inner">
-        <a href="../index.html" class="brand">KSCyb<span>Sec</span></a>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a class="brand" href="../index.html" aria-label="Veil & Vector homepage">
+        <span class="brand-mark" aria-hidden="true">V.</span>
+        <span>Veil &amp; Vector</span>
+      </a>
 
-        <div class="nav-links">
-          <a href="../index.html#start">Start Here</a>
-          <a href="../index.html#latest">Articles</a>
-          <a href="../index.html#topics">Topics</a>
-          <a href="../index.html#explore">Explore</a>
-          <a href="../index.html#about">About</a>
-        </div>
+      <a class="back-link" href="../index.html#articles">
+        <span aria-hidden="true">←</span> All articles
+      </a>
 
-        <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
-          ☰
-        </button>
-      </div>
-
-      <div class="mobile-menu">
-        <a href="../index.html#start">Start Here</a>
-        <a href="../index.html#latest">Articles</a>
-        <a href="../index.html#topics">Topics</a>
-        <a href="../index.html#explore">Explore</a>
-        <a href="../index.html#about">About</a>
-      </div>
-    </div>
-  </nav>
-
-  <header class="article-hero">
-    <div class="container">
-      <div class="eyebrow">Guide 019 · Networking · Beginner</div>
-
-      <h1>ARP: Finding Devices on a Local Network</h1>
-
-      <p class="hero-description">
-        You know the IP address. You know the device exists.
-        But how does your computer find the actual network interface that should receive the data?
-      </p>
-
-      <div class="article-meta">
-        <span>NETWORKING</span>
-        <span>BEGINNER</span>
-        <span>~5 MIN READ</span>
-      </div>
+      <button
+        class="theme-toggle"
+        id="theme-toggle"
+        type="button"
+        aria-label="Switch to light theme"
+        title="Toggle light and dark themes"
+      >
+        <span class="theme-icon" aria-hidden="true">☼</span>
+        <span class="theme-text">Light</span>
+      </button>
     </div>
   </header>
 
-  <main class="article">
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress" id="progress"></div>
+  </div>
 
-    <section class="story reveal">
-      <p>
-        Your laptop wants to send something to your phone.
-        It knows the phone's IP address:
-        <strong>192.168.1.20</strong>.
-      </p>
+  <main>
 
-      <p style="margin-top:18px;">
-        There is just one problem.
-        An IP address alone is not enough for local delivery.
-        The laptop needs to know which network interface has that address.
-      </p>
-    </section>
-
-    <div class="visual reveal">
-      <div class="visual-label">LOCAL NETWORK · LOOKING FOR A DEVICE</div>
-
-      <div class="network">
-
-        <div class="device laptop">
-          <strong>LAPTOP</strong>
-          <span>192.168.1.10</span>
-        </div>
-
-        <div class="device router">
-          <strong>ROUTER</strong>
-          <span>LOCAL NETWORK</span>
-        </div>
-
-        <div class="device phone">
-          <strong>PHONE</strong>
-          <span>192.168.1.20</span>
-        </div>
-
-        <div class="line line-left"></div>
-        <div class="line line-right"></div>
-
-        <div class="packet">
-          WHO HAS 192.168.1.20?
-        </div>
-
-        <div class="arp-question">
-          ARP REQUEST → “Who has this IP address?”
-        </div>
-
-      </div>
-    </div>
-
-    <section class="section reveal">
-      <h2>The missing clue</h2>
-
-      <p>
-        Earlier, we saw that an <strong>IP address</strong> identifies a device's
-        network location, while a <strong>MAC address</strong> identifies a network
-        interface on the local network.
-      </p>
-
-      <p>
-        ARP connects those two pieces of information.
-      </p>
-
-      <p>
-        ARP stands for <strong>Address Resolution Protocol</strong>.
-        For IPv4 networks, it is used to discover the MAC address associated
-        with a known IPv4 address on the local network.
-      </p>
-    </section>
-
-    <section class="section reveal">
-      <h2>So the laptop asks</h2>
-
-      <p>
-        Imagine the laptop knows that the phone is at
-        <strong>192.168.1.20</strong>.
-      </p>
-
-      <p>
-        It sends an ARP request onto the local network:
-      </p>
-
-      <div class="flow">
-        <div class="flow-row">
-          <div class="flow-item">Laptop</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item highlight">“Who has 192.168.1.20?”</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item">Local Network</div>
-        </div>
+    <header class="article-header">
+      <div class="article-meta">
+        <span class="category">Networking · Beginner</span>
+        <span aria-hidden="true">·</span>
+        <span>5 min read</span>
       </div>
 
-      <p>
-        Devices on that local network receive the request.
-        The device whose IPv4 address matches the question can answer.
+      <h1>ARP: Finding Devices on a Local Network</h1>
+
+      <p class="article-intro">
+        Your computer knows the IP address it wants to reach. But how does it
+        find the right device on the local network? ARP helps it connect the
+        address it knows to the hardware address it needs.
       </p>
 
-      <p>
-        The phone responds with something like:
-      </p>
-
-      <div class="flow">
-        <div class="flow-row">
-          <div class="flow-item highlight">“192.168.1.20 is me.”</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item">MAC: 3C:52:82:7A:91:4F</div>
-        </div>
+      <div class="article-meta">
+        <span>Networking fundamentals</span>
+        <span aria-hidden="true">·</span>
+        <span>Guide 019</span>
       </div>
+    </header>
 
-      <p>
-        Now the laptop has the missing clue.
-        It can associate the IP address with the MAC address needed
-        for local delivery.
-      </p>
-    </section>
+    <article>
 
-    <section class="section reveal">
-      <h2>Request → Reply</h2>
+      <section class="story-section reveal">
+        <span class="section-index">01 — The missing clue</span>
 
-      <p>
-        That gives us the basic ARP conversation:
-      </p>
+        <h2>Your computer knows where. But does it know who?</h2>
 
-      <div class="visual" style="min-height:260px;">
-        <div class="visual-label">ARP · TWO-STEP EXCHANGE</div>
-
-        <div style="
-          position:absolute;
-          left:9%;
-          top:32%;
-          width:82%;
-          height:1px;
-          background:rgba(77,232,255,.24);
-        "></div>
-
-        <div style="
-          position:absolute;
-          left:10%;
-          top:20%;
-          color:#E8EDF5;
-          font-size:.85rem;
-        ">
-          LAPTOP
-        </div>
-
-        <div style="
-          position:absolute;
-          right:10%;
-          top:20%;
-          color:#E8EDF5;
-          font-size:.85rem;
-        ">
-          PHONE
-        </div>
-
-        <div style="
-          position:absolute;
-          left:12%;
-          top:40%;
-          color:#4DE8FF;
-          font-family:'DM Mono',monospace;
-          font-size:.67rem;
-        ">
-          ARP REQUEST
-        </div>
-
-        <div style="
-          position:absolute;
-          right:12%;
-          top:58%;
-          color:#8B7CFF;
-          font-family:'DM Mono',monospace;
-          font-size:.67rem;
-        ">
-          ARP REPLY
-        </div>
-
-        <div style="
-          position:absolute;
-          left:31%;
-          top:38%;
-          color:#8995AA;
-          font-family:'DM Mono',monospace;
-          font-size:.65rem;
-        ">
-          Who has 192.168.1.20?
-        </div>
-
-        <div style="
-          position:absolute;
-          right:28%;
-          top:56%;
-          color:#8995AA;
-          font-family:'DM Mono',monospace;
-          font-size:.65rem;
-        ">
-          192.168.1.20 → MAC
-        </div>
-      </div>
-    </section>
-
-    <section class="section reveal">
-      <h2>It doesn't ask every time</h2>
-
-      <p>
-        Once a computer learns the IP-to-MAC mapping, it can keep that
-        information temporarily in an <strong>ARP cache</strong>.
-      </p>
-
-      <p>
-        That means the laptop does not need to repeat the same ARP request
-        every time it communicates with the phone.
-      </p>
-
-      <div class="cache-visual">
-        <div class="cache-title">ARP CACHE · EXAMPLE</div>
-
-        <div class="cache-row">
-          <div>192.168.1.20</div>
-          <div>3C:52:82:7A:91:4F</div>
-        </div>
-
-        <div class="cache-row">
-          <div>192.168.1.1</div>
-          <div>84:16:F9:2B:44:08</div>
-        </div>
-      </div>
-
-      <p>
-        The exact entries and their lifetime can change as the network changes.
-        The important idea is simple:
-        <strong>the cache remembers recently learned mappings.</strong>
-      </p>
-    </section>
-
-    <section class="section reveal">
-      <h2>Why does this matter in security?</h2>
-
-      <p>
-        ARP is a normal and necessary part of IPv4 local networking.
-        But because local devices trust ARP information, incorrect mappings
-        can cause problems.
-      </p>
-
-      <p>
-        One example is <strong>ARP spoofing</strong>, where forged ARP information
-        can make a device associate an IP address with the wrong MAC address.
-      </p>
-
-      <div class="security-note">
         <p>
-          You do not need to learn the attack yet.
-          For now, remember the security lesson:
-          <strong>when a system relies on a mapping, changing that mapping can change where traffic goes.</strong>
+          Imagine your laptop wants to send data to your phone. The phone is
+          connected to the same local network, and your laptop knows its IPv4
+          address: <strong>192.168.1.20</strong>.
         </p>
-      </div>
 
-      <p>
-        This is exactly the kind of relationship security analysts learn
-        to recognize: one small piece of network information can explain
-        what happened to the traffic.
-      </p>
-    </section>
+        <p>
+          There is just one missing piece. To deliver a frame across the local
+          network, the laptop needs the destination's MAC address.
+        </p>
 
-    <section class="question reveal">
-      <div class="question-label">PAUSE FOR A SECOND</div>
-      <p>
-        If your computer knows an IP address but not the corresponding MAC address,
-        what protocol can help it discover that mapping on an IPv4 local network?
-      </p>
-    </section>
+        <p>
+          An IP address and a MAC address serve different purposes. An IP
+          address helps identify a device's location at the network layer.
+          A MAC address identifies a network interface on the local link.
+        </p>
 
-    <section class="section reveal">
-      <h2>One important boundary</h2>
+        <p>
+          How does the laptop connect the two? For IPv4, one answer is ARP.
+        </p>
+      </section>
 
-      <p>
-        ARP is associated with <strong>IPv4</strong>.
-      </p>
+      <section class="story-section reveal">
+        <span class="section-index">02 — Meet ARP</span>
 
-      <p>
-        IPv6 uses a different mechanism called
-        <strong>Neighbor Discovery Protocol (NDP)</strong>.
-      </p>
+        <h2>The network asks a question</h2>
 
-      <p>
-        You do not need to dive into NDP yet.
-        Just keep the distinction in mind as you continue learning networking.
-      </p>
-    </section>
+        <p>
+          ARP stands for <strong>Address Resolution Protocol</strong>. On an
+          IPv4 local network, it helps a device discover which MAC address
+          corresponds to a known IPv4 address.
+        </p>
 
-    <section class="section reveal">
-      <h2>The bigger picture</h2>
+        <p>
+          Picture your laptop asking everyone on the local network:
+          “Who has 192.168.1.20? Please tell me your MAC address.”
+        </p>
 
-      <p>
-        We have now connected several clues:
-      </p>
+        <div class="email-visual" role="img" aria-label="Illustration of a laptop broadcasting an ARP request asking which device owns IPv4 address 192.168.1.20">
 
-      <div class="flow">
-        <div class="flow-row">
-          <div class="flow-item">IP Address</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item">Local Network</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item highlight">ARP</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item">MAC Address</div>
+          <div class="email-top">
+            <div class="email-dots" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <span class="email-caption">LOCAL NETWORK / ARP REQUEST</span>
+          </div>
+
+          <div class="email-body">
+            <div class="email-from">
+              <span class="email-caption">FROM: LAPTOP</span>
+              <span class="status-indicator" aria-hidden="true"></span>
+            </div>
+
+            <div class="email-subject">
+              Who has 192.168.1.20?
+            </div>
+
+            <div class="email-message">
+              I need the MAC address associated with this IPv4 address
+              so I can deliver data on the local network.
+            </div>
+
+            <div class="fake-button">
+              <span aria-hidden="true">↗</span>
+              ARP request broadcast
+            </div>
+          </div>
         </div>
+
+        <p class="visual-note">
+          An ARP request is broadcast on the local network. Devices receive
+          it, but the device that owns the requested IPv4 address is the one
+          expected to respond with its mapping.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">03 — The reply</span>
+
+        <h2>The right device answers</h2>
+
+        <p>
+          Suppose the phone owns the address 192.168.1.20. It recognizes the
+          address in the request and replies with its MAC address.
+        </p>
+
+        <div class="flow">
+          <div class="flow-row">
+            <div class="flow-item">Laptop</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item highlight">Who has 192.168.1.20?</div>
+          </div>
+
+          <div class="flow-row">
+            <div class="flow-item">Phone</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item highlight">Here is my MAC address</div>
+          </div>
+        </div>
+
+        <p>
+          The laptop can now associate the IPv4 address with the MAC address
+          returned in the reply. It uses that information to address frames
+          to the phone on the local network.
+        </p>
+
+        <p>
+          The example below uses a fictional MAC address to show what the
+          mapping might look like.
+        </p>
+
+        <div class="cache-visual">
+          <div class="cache-title">DISCOVERED ADDRESS MAPPING</div>
+
+          <div class="cache-row">
+            <div>IPv4 address</div>
+            <div>192.168.1.20</div>
+          </div>
+
+          <div class="cache-row">
+            <div>MAC address</div>
+            <div>3C:52:82:7A:91:4F</div>
+          </div>
+        </div>
+
+        <p class="visual-note">
+          ARP resolves an address on the local link. If the destination is
+          outside the local subnet, your computer typically resolves the
+          MAC address of its next-hop router instead of the remote host's MAC.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">04 — Remembering the answer</span>
+
+        <h2>It doesn't have to ask every time</h2>
+
+        <p>
+          If your laptop had to broadcast an ARP request for every packet,
+          it would create unnecessary network traffic.
+        </p>
+
+        <p>
+          Instead, devices keep recently learned address mappings in an
+          <strong>ARP cache</strong>. When the laptop needs to communicate
+          with the same local device again, it can often reuse the cached
+          mapping until it expires or is replaced.
+        </p>
+
+        <div class="cache-visual">
+          <div class="cache-title">ARP CACHE / EXAMPLE ENTRIES</div>
+
+          <div class="cache-row">
+            <div>192.168.1.20</div>
+            <div>3C:52:82:7A:91:4F</div>
+          </div>
+
+          <div class="cache-row">
+            <div>192.168.1.1</div>
+            <div>84:16:F9:2B:44:08</div>
+          </div>
+        </div>
+
+        <p>
+          In this example, the first entry represents another device on the
+          local network. The second could represent the local router.
+          Actual entries depend on the network and the devices communicating.
+        </p>
+
+        <p>
+          The important idea is simple: ARP discovers a mapping, and the
+          cache can remember it temporarily.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">05 — The security connection</span>
+
+        <h2>What if the answer is a lie?</h2>
+
+        <p>
+          ARP is a normal part of IPv4 networking. But classic ARP does not
+          provide strong authentication for its replies. In some network
+          environments, a malicious device can send forged ARP messages
+          that associate an IP address with the wrong MAC address.
+        </p>
+
+        <p>
+          This technique is known as <strong>ARP spoofing</strong> or
+          <strong>ARP poisoning</strong>. Depending on the network and the
+          attacker's position, it can redirect local traffic, interrupt
+          communication, or help an attacker attempt a man-in-the-middle attack.
+        </p>
+
+        <div class="security-note">
+          <p>
+            The security lesson: if a system trusts an address mapping,
+            manipulating that mapping can affect where traffic goes.
+            Defenders can reduce risk with appropriate network segmentation,
+            monitoring, and protections such as Dynamic ARP Inspection where
+            supported and correctly configured.
+          </p>
+        </div>
+
+        <p>
+          You don't need to study the attack in depth yet. Just remember that
+          ordinary network protocols can create security risks when their
+          assumptions are abused.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">06 — One useful distinction</span>
+
+        <h2>ARP is for IPv4</h2>
+
+        <p>
+          ARP is used to resolve IPv4 addresses to link-layer addresses on
+          local networks. IPv6 does not use ARP; it uses
+          <strong>Neighbor Discovery Protocol (NDP)</strong>, which is part
+          of IPv6's Internet Control Message Protocol (ICMPv6).
+        </p>
+
+        <p>
+          For now, keep this simple distinction in mind: ARP belongs to IPv4,
+          while IPv6 uses NDP for neighbor discovery.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">07 — Connect the clues</span>
+
+        <h2>From an IP address to local delivery</h2>
+
+        <div class="flow">
+          <div class="flow-row">
+            <div class="flow-item">Known IPv4 address</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item highlight">ARP request</div>
+          </div>
+
+          <div class="flow-row">
+            <div class="flow-item">ARP reply</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item highlight">MAC mapping</div>
+          </div>
+
+          <div class="flow-row">
+            <div class="flow-item">Local frame delivery</div>
+          </div>
+        </div>
+
+        <p>
+          ARP helps a device find the MAC address associated with a known
+          IPv4 address on the local network. The device can then use that
+          mapping to send frames to the appropriate local destination.
+        </p>
+
+        <p>
+          One detail matters: when you're communicating with a server beyond
+          your local subnet, your computer generally sends the frame to its
+          next-hop router. It doesn't use ARP to discover the remote server's
+          MAC address across the internet.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">08 — Check your understanding</span>
+
+        <div class="question">
+          <span class="question-label">PAUSE FOR A SECOND</span>
+          <p>
+            Your computer knows a device's IPv4 address but doesn't have its
+            MAC address cached. Which protocol can help it discover the
+            mapping on the local network?
+          </p>
+        </div>
+
+        <div class="takeaway">
+          <span class="takeaway-label">THE TAKEAWAY</span>
+          <p>
+            <strong>ARP connects IPv4 addresses to MAC addresses on a local
+            network.</strong> It uses requests and replies to discover
+            mappings, while the ARP cache helps devices reuse recently
+            learned information. Because forged ARP messages can mislead
+            devices, ARP is also worth understanding from a security
+            perspective.
+          </p>
+        </div>
+      </section>
+
+    </article>
+
+    <section class="next-article reveal">
+      <div class="next-inner">
+        <div>
+          <span class="next-label">Continue exploring</span>
+          <h2 class="next-title">How Does the Internet Work?</h2>
+          <p class="next-description">
+            Follow the journey of data between devices and discover how
+            networks connect to one another.
+          </p>
+        </div>
+
+        <a class="next-link" href="how-does-the-internet-work.html">
+          Read next <span aria-hidden="true">→</span>
+        </a>
       </div>
-
-      <p>
-        IP tells us where a device is logically located.
-        MAC identifies the local network interface.
-        ARP helps connect those two pieces of information for IPv4.
-      </p>
-
-      <p>
-        And once a device has an IP address, a MAC address, and a way to
-        communicate locally, another question appears:
-        <strong>how did it get that IP address in the first place?</strong>
-      </p>
     </section>
-
-    <section class="takeaway reveal">
-      <div class="takeaway-label">TAKEAWAY · 019</div>
-
-      <p>
-        <strong>ARP helps an IPv4 device discover the MAC address associated
-        with a known IP address on the local network.</strong>
-        It works through ARP requests and replies, and learned mappings
-        can be kept temporarily in an ARP cache.
-      </p>
-    </section>
-
-    <div class="article-next reveal">
-      <div class="article-next-label">NEXT CLUE · 020</div>
-
-      <a href="dhcp.html">
-        DHCP — How Devices Get an IP
-        <span class="next-arrow">→</span>
-      </a>
-    </div>
 
   </main>
 
-  <footer>
-    <div class="container">
-      KSCybSec · Cybersecurity knowledge, one clue at a time.
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a class="footer-brand" href="../index.html">Veil &amp; Vector</a>
+      <p>Cybersecurity, one clue at a time.</p>
+      <a href="../index.html#articles">Explore all articles ↗</a>
     </div>
   </footer>
 
-  <script>
-    const menuButton = document.querySelector(".menu-btn");
-    const mobileMenu = document.querySelector(".mobile-menu");
-
-    if (menuButton && mobileMenu) {
-      menuButton.addEventListener("click", () => {
-        const isOpen = mobileMenu.classList.toggle("open");
-        menuButton.setAttribute("aria-expanded", String(isOpen));
-      });
-    }
-
-    const revealElements = document.querySelectorAll(".reveal");
-
-    if ("IntersectionObserver" in window) {
-      const observer = new IntersectionObserver(
-        entries => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("visible");
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.12 }
-      );
-
-      revealElements.forEach(element => observer.observe(element));
-    } else {
-      revealElements.forEach(element => {
-        element.classList.add("visible");
-      });
-    }
-  </script>
+  <script src="../article.js" defer></script>
 
 </body>
 </html>
