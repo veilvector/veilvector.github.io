@@ -1,4 +1,4 @@
-```css
+
 /* =========================================================
    VEIL & VECTOR — Editorial stylesheet
    Spacious retro-future / digital field journal
@@ -1201,4 +1201,266 @@ svg {
     transition-duration: 0.01ms !important;
   }
 }
-```
+
+
+:root {
+  --page-width: 1440px;
+  --page-gutter: clamp(32px, 6vw, 100px);
+  --section-space: clamp(100px, 11vw, 150px);
+}
+
+/* Give the page more presence */
+body {
+  font-size: 17px;
+  line-height: 1.9;
+}
+
+/* More substantial header */
+.nav-wrap {
+  min-height: 104px;
+}
+
+.wordmark {
+  font-size: 1.3rem;
+}
+
+.desktop-nav {
+  gap: clamp(28px, 4vw, 60px);
+}
+
+.desktop-nav a {
+  font-size: 0.9rem;
+}
+
+/* Larger hero headline and more readable copy */
+.hero {
+  padding-top: clamp(100px, 11vw, 150px);
+}
+
+.hero-grid {
+  gap: clamp(60px, 8vw, 125px);
+}
+
+.hero h1 {
+  max-width: 720px;
+  font-size: clamp(4rem, 6.2vw, 6.4rem);
+  line-height: 1.1;
+}
+
+.hero-description {
+  max-width: 540px;
+  font-size: 1.08rem;
+  line-height: 2;
+}
+
+.hero-art {
+  max-width: 590px;
+  width: 100%;
+  justify-self: end;
+}
+
+.hero-meta {
+  font-size: 0.68rem;
+}
+
+/* More visible section headings */
+.section-heading h2 {
+  font-size: clamp(3rem, 4.8vw, 4.6rem);
+}
+
+.section-intro {
+  font-size: 1.02rem;
+  line-height: 2;
+}
+
+/* Archive: larger titles, better spacing, less congestion */
+.archive-row {
+  grid-template-columns: 60px minmax(0, 1fr) 34px;
+  gap: clamp(25px, 4vw, 55px);
+  padding: 43px 20px 45px 10px;
+}
+
+.article-number {
+  font-size: 0.82rem;
+}
+
+.article-copy {
+  gap: 15px;
+}
+
+.article-category {
+  font-size: 0.7rem;
+  letter-spacing: 0.11em;
+}
+
+.article-copy strong {
+  font-size: clamp(1.8rem, 2.5vw, 2.25rem);
+  line-height: 1.4;
+}
+
+.article-description {
+  max-width: 760px;
+  font-size: 1rem;
+  line-height: 2;
+}
+
+.archive-tools {
+  font-size: 0.68rem;
+  padding-block: 19px;
+}
+
+.archive-note {
+  font-size: 0.7rem;
+}
+
+/* More substantial learning-path rows */
+.path-row {
+  grid-template-columns: 125px minmax(0, 1fr) 110px;
+  gap: 34px;
+  padding: 36px 12px;
+}
+
+.path-index {
+  font-size: 0.7rem;
+}
+
+.path-main {
+  gap: 10px;
+}
+
+.path-main strong {
+  font-size: clamp(1.6rem, 2.2vw, 2rem);
+}
+
+.path-main > span {
+  font-size: 0.98rem;
+  line-height: 1.95;
+}
+
+.path-cta {
+  font-size: 0.9rem;
+}
+
+/* About section */
+.manifesto-copy h2 {
+  font-size: clamp(2.7rem, 4.4vw, 4rem);
+}
+
+.manifesto-copy p:not(.eyebrow) {
+  font-size: 1.02rem;
+  line-height: 2.05;
+}
+
+/* Tablet */
+@media (max-width: 1000px) {
+  body {
+    font-size: 16px;
+  }
+
+  .hero h1 {
+    font-size: clamp(3.5rem, 6.5vw, 5rem);
+  }
+
+  .archive-row {
+    gap: 25px;
+    padding-block: 35px;
+  }
+
+  .article-copy strong {
+    font-size: clamp(1.6rem, 3vw, 2rem);
+  }
+}
+
+/* Mobile: readable without making the page feel miniature */
+@media (max-width: 700px) {
+  :root {
+    --page-gutter: 24px;
+    --section-space: 90px;
+  }
+
+  body {
+    font-size: 16px;
+    line-height: 1.85;
+  }
+
+  .nav-wrap {
+    min-height: 78px;
+  }
+
+  .wordmark {
+    font-size: 1rem;
+  }
+
+  .hero {
+    padding-top: 78px;
+  }
+
+  .hero h1 {
+    font-size: clamp(3.3rem, 10.5vw, 4.5rem);
+    line-height: 1.1;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+    line-height: 1.95;
+  }
+
+  .section-heading h2 {
+    font-size: clamp(2.8rem, 9vw, 3.6rem);
+  }
+
+  .section-intro {
+    font-size: 0.98rem;
+  }
+
+  .archive-row {
+    grid-template-columns: 28px minmax(0, 1fr) 18px;
+    gap: 13px;
+    padding: 30px 2px 32px 0;
+  }
+
+  .archive-row:hover {
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  .article-copy {
+    gap: 11px;
+  }
+
+  .article-category {
+    font-size: 0.61rem;
+    letter-spacing: 0.06em;
+    line-height: 1.8;
+  }
+
+  .article-copy strong {
+    font-size: clamp(1.5rem, 5.8vw, 1.9rem);
+    line-height: 1.42;
+  }
+
+  .article-description {
+    font-size: 0.93rem;
+    line-height: 1.95;
+  }
+
+  .path-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px 16px;
+    padding: 27px 3px;
+  }
+
+  .path-main strong {
+    font-size: 1.5rem;
+  }
+
+  .path-main > span {
+    font-size: 0.92rem;
+    line-height: 1.9;
+  }
+
+  .manifesto-copy p:not(.eyebrow) {
+    font-size: 0.98rem;
+  }
+}
+
