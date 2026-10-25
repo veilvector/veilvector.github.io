@@ -1,687 +1,354 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>The CIA Triad — KSCybSec</title>
-  <meta name="description" content="Understand confidentiality, integrity, and availability through a simple cybersecurity investigation." />
+  <title>The CIA Triad — Veil &amp; Vector</title>
+  <meta name="description" content="Understand confidentiality, integrity, and availability through a simple cybersecurity investigation.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://kscybsec.github.io/articles/cia-triad.html">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --bg:#070B14;
-      --surface:#0B1120;
-      --surface-2:#101827;
-      --text:#E8EDF5;
-      --muted:#8995AA;
-      --cyan:#4DE8FF;
-      --purple:#8B7CFF;
-      --border:rgba(137,149,170,.18);
-    }
-
-    * { box-sizing:border-box; margin:0; padding:0; }
-
-    html { scroll-behavior:smooth; }
-
-    body {
-      background:
-        radial-gradient(circle at 15% 10%,rgba(77,232,255,.06),transparent 28%),
-        radial-gradient(circle at 85% 25%,rgba(139,124,255,.06),transparent 30%),
-        var(--bg);
-      color:var(--text);
-      font-family:"Inter",sans-serif;
-      line-height:1.7;
-    }
-
-    nav {
-      position:sticky;
-      top:0;
-      z-index:100;
-      padding:18px 6%;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      background:rgba(7,11,20,.88);
-      backdrop-filter:blur(12px);
-      border-bottom:1px solid var(--border);
-    }
-
-    .brand {
-      color:var(--text);
-      text-decoration:none;
-      font-family:"Space Grotesk",sans-serif;
-      font-weight:700;
-      font-size:1.15rem;
-    }
-
-    .brand span { color:var(--cyan); }
-
-    .nav-link {
-      color:var(--muted);
-      text-decoration:none;
-      font-size:.9rem;
-    }
-
-    .nav-link:hover { color:var(--cyan); }
-
-    main {
-      max-width:900px;
-      margin:auto;
-      padding:70px 24px 100px;
-    }
-
-    .meta {
-      font-family:"DM Mono",monospace;
-      font-size:.78rem;
-      color:var(--cyan);
-      letter-spacing:.08em;
-      margin-bottom:22px;
-    }
-
-    h1 {
-      font-family:"Space Grotesk",sans-serif;
-      font-size:clamp(2.6rem,7vw,5rem);
-      line-height:1.02;
-      letter-spacing:-.04em;
-      max-width:850px;
-      margin-bottom:28px;
-    }
-
-    .hero-subtitle {
-      color:var(--muted);
-      font-size:1.15rem;
-      max-width:700px;
-      margin-bottom:55px;
-    }
-
-    .question {
-      font-family:"Space Grotesk",sans-serif;
-      font-size:clamp(1.8rem,4vw,3rem);
-      line-height:1.15;
-      margin:70px 0 25px;
-    }
-
-    p {
-      color:#b8c1d0;
-      margin-bottom:22px;
-      font-size:1.03rem;
-    }
-
-    .visual {
-      margin:45px 0;
-      padding:32px;
-      background:linear-gradient(145deg,var(--surface),var(--surface-2));
-      border:1px solid var(--border);
-      border-radius:20px;
-    }
-
-    .visual-title {
-      font-family:"DM Mono",monospace;
-      color:var(--muted);
-      font-size:.75rem;
-      margin-bottom:24px;
-      letter-spacing:.08em;
-    }
-
-    .system {
-      max-width:650px;
-      margin:auto;
-      padding:30px;
-      text-align:center;
-      border:1px solid var(--border);
-      border-radius:14px;
-      background:rgba(7,11,20,.5);
-    }
-
-    .system-title {
-      font-family:"Space Grotesk",sans-serif;
-      font-size:1.35rem;
-      margin-bottom:8px;
-    }
-
-    .system-subtitle {
-      color:var(--muted);
-      font-size:.85rem;
-    }
-
-    .flow {
-      display:grid;
-      grid-template-columns:1fr auto 1fr;
-      gap:16px;
-      align-items:center;
-      text-align:center;
-    }
-
-    .flow-item {
-      padding:24px 15px;
-      border:1px solid var(--border);
-      border-radius:14px;
-      background:rgba(7,11,20,.5);
-    }
-
-    .flow-item strong {
-      display:block;
-      font-family:"Space Grotesk",sans-serif;
-      margin-bottom:7px;
-    }
-
-    .flow-item span {
-      color:var(--muted);
-      font-size:.82rem;
-    }
-
-    .arrow {
-      color:var(--cyan);
-      font-size:1.4rem;
-    }
-
-    .investigation {
-      margin:45px 0;
-      padding:30px;
-      border-left:2px solid var(--cyan);
-      background:rgba(77,232,255,.035);
-    }
-
-    .example-list {
-      margin:25px 0;
-      border-left:1px solid var(--border);
-      padding-left:24px;
-    }
-
-    .example-list div {
-      margin:14px 0;
-      color:#b8c1d0;
-    }
-
-    .example-list strong { color:var(--text); }
-
-    .warning {
-      margin:35px 0;
-      padding:22px 25px;
-      border:1px solid rgba(139,124,255,.3);
-      border-radius:14px;
-      background:rgba(139,124,255,.045);
-    }
-
-    .warning strong { color:var(--purple); }
-
-    .takeaway {
-      margin-top:70px;
-      padding:35px;
-      border:1px solid rgba(139,124,255,.3);
-      border-radius:18px;
-      background:rgba(139,124,255,.045);
-    }
-
-    .takeaway-label {
-      font-family:"DM Mono",monospace;
-      font-size:.75rem;
-      color:var(--purple);
-      letter-spacing:.08em;
-      margin-bottom:12px;
-    }
-
-    .takeaway h2 {
-      font-family:"Space Grotesk",sans-serif;
-      margin-bottom:14px;
-    }
-
-    .article-next {
-      margin-top:80px;
-      padding-top:32px;
-      border-top:1px solid var(--border);
-    }
-
-    .article-next-label {
-      font-family:"DM Mono",monospace;
-      font-size:.72rem;
-      letter-spacing:.08em;
-      color:var(--muted);
-      margin-bottom:12px;
-    }
-
-    .article-next a {
-      display:inline-flex;
-      align-items:center;
-      gap:10px;
-      color:var(--text);
-      text-decoration:none;
-      font-family:"Space Grotesk",sans-serif;
-      font-size:1.15rem;
-      transition:color .2s ease;
-    }
-
-    .article-next a:hover { color:var(--cyan); }
-
-    .article-next .next-arrow {
-      color:var(--cyan);
-      font-size:1rem;
-    }
-
-    footer {
-      text-align:center;
-      padding:35px 20px;
-      color:var(--muted);
-      border-top:1px solid var(--border);
-      font-size:.8rem;
-    }
-
-    @media(max-width:700px) {
-      main { padding-top:45px; }
-
-      .flow {
-        grid-template-columns:1fr;
-      }
-
-      .flow .arrow {
-        transform:rotate(90deg);
-      }
-
-      .visual { padding:22px; }
-
-      h1 { font-size:2.7rem; }
-    }
-  </style>
+  <link rel="stylesheet" href="../article.css">
+  <script src="../article.js" defer></script>
 </head>
 
 <body>
-
-<nav>
-  <a href="../index.html" class="brand">KS<span>CybSec</span></a>
-  <a href="../index.html" class="nav-link">← Back to KSCybSec</a>
-</nav>
-
-<main>
-
-  <div class="meta">BEGINNER PATH · 014</div>
-
-  <h1>The CIA Triad</h1>
-
-  <p class="hero-subtitle">
-    Three simple questions sit underneath many cybersecurity decisions:
-    Who should see the information? Has it been changed? Can we still access it?
-  </p>
-
-  <div class="visual">
-
-    <div class="visual-title">A SYSTEM HOLDS SOMETHING IMPORTANT</div>
-
-    <div class="system">
-
-      <div class="system-title">
-        Hospital Patient Database
-      </div>
-
-      <div class="system-subtitle">
-        Medical records · prescriptions · personal information
-      </div>
-
+  <header class="site-header">
+    <div class="nav-inner">
+      <a href="../index.html" class="brand" aria-label="Veil & Vector home">
+        <span class="brand-mark">V.</span>
+        <span>Veil &amp; Vector</span>
+      </a>
+      <a href="../index.html" class="back-link">← Back to publication</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle light and dark theme">Light / Dark</button>
     </div>
+  </header>
 
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress" id="progress"></div>
   </div>
 
-  <h2 class="question">What could go wrong?</h2>
-
-  <p>
-    Imagine you're responsible for protecting the database.
-    A security incident occurs.
-  </p>
-
-  <div class="visual">
-
-    <div class="visual-title">THREE DIFFERENT PROBLEMS</div>
-
-    <div class="flow">
-
-      <div class="flow-item">
-        <strong>CONFIDENTIALITY</strong>
-        <span>The wrong person sees the data</span>
+  <main class="article-main">
+    <header class="article-header reveal">
+      <div class="article-meta">
+        <span class="category">BEGINNER PATH</span>
+        <span>014</span>
       </div>
 
-      <div class="arrow">?</div>
+      <h1>The CIA Triad</h1>
 
-      <div class="flow-item">
-        <strong>INTEGRITY</strong>
-        <span>The data has been changed</span>
+      <p class="article-intro">
+        Three simple questions sit underneath many cybersecurity decisions:
+        Who should see the information? Has it been changed? Can we still access it?
+      </p>
+    </header>
+
+    <div class="article-rule"></div>
+
+    <section class="story-section reveal">
+      <div class="section-index">THE SCENE</div>
+      <h2>A system holds something important.</h2>
+
+      <p>
+        Imagine you're responsible for protecting a hospital's patient database.
+        It contains medical records, prescriptions, and personal information.
+        Doctors need it to treat patients, and the hospital needs it to run safely.
+      </p>
+
+      <div class="cache-visual">
+        <div class="cache-title">SYSTEM UNDER PROTECTION</div>
+        <div class="cache-row">
+          <span>System</span>
+          <strong>Hospital patient database</strong>
+        </div>
+        <div class="cache-row">
+          <span>Contains</span>
+          <strong>Records, prescriptions, personal data</strong>
+        </div>
+        <div class="cache-row">
+          <span>Needed by</span>
+          <strong>Authorized hospital staff</strong>
+        </div>
       </div>
 
-    </div>
+      <p>
+        One day, something goes wrong. The details aren't clear yet.
+        Before deciding what happened, you need a way to classify the damage.
+      </p>
+    </section>
 
-    <div style="height:20px;"></div>
+    <section class="story-section reveal">
+      <div class="section-index">CLUE 01</div>
+      <h2>Confidentiality: who saw the data?</h2>
 
-    <div class="flow">
+      <p>
+        Confidentiality means preventing information from being disclosed
+        to people who aren't authorized to see it.
+      </p>
 
-      <div class="flow-item">
-        <strong>AVAILABILITY</strong>
-        <span>The system cannot be accessed</span>
+      <div class="email-visual">
+        <div class="email-top">
+          <div class="email-dots"><span></span><span></span><span></span></div>
+          <span>ACCESS RECORD</span>
+        </div>
+        <div class="email-body">
+          <div class="email-from">Resource: Patient medical record</div>
+          <div class="email-subject">Access by an unauthorized account</div>
+          <div class="email-message">
+            The record may still be accurate, and the system may still be working.
+            But someone without permission has viewed private information.
+          </div>
+        </div>
+        <div class="email-caption">The information was exposed, even if nothing was changed.</div>
       </div>
 
-    </div>
+      <p>
+        In this situation, confidentiality has been compromised.
+        The problem isn't necessarily that the data is wrong or unavailable.
+        The problem is that the wrong person was able to see it.
+      </p>
 
-  </div>
+      <p>Controls that help protect confidentiality include:</p>
 
-  <h2 class="question">First clue: Confidentiality</h2>
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-item">
+            <strong>Encryption</strong>
+            <span>Helps protect data from unauthorized reading.</span>
+          </div>
+          <div class="flow-item">
+            <strong>Authentication</strong>
+            <span>Verifies the identity of a user or system.</span>
+          </div>
+          <div class="flow-item">
+            <strong>Authorization</strong>
+            <span>Determines what an authenticated user may access.</span>
+          </div>
+        </div>
+      </div>
+    </section>
 
-  <p>
-    Confidentiality means preventing information from being
-    disclosed to people who are not authorized to see it.
-  </p>
+    <section class="story-section reveal">
+      <div class="section-index">CLUE 02</div>
+      <h2>Integrity: was the data changed?</h2>
 
-  <div class="investigation">
+      <p>
+        Integrity means keeping information accurate and complete, and
+        protecting it from unauthorized or improper modification.
+      </p>
 
-    <p>
-      Suppose a patient's medical records are accessed by
-      someone who has no permission to view them.
-    </p>
+      <p>
+        Imagine a medication record originally says <strong>10 mg</strong>.
+        Someone changes it to <strong>100 mg</strong> without authorization.
+        That small-looking change could have serious consequences.
+      </p>
 
-    <p>
-      The information may still be accurate.
-      The system may still be working.
-      But confidentiality has been compromised.
-    </p>
-
-  </div>
-
-  <p>
-    Security controls that can help protect confidentiality include:
-  </p>
-
-  <div class="example-list">
-
-    <div>
-      <strong>Encryption</strong> — protects data from unauthorized reading.
-    </div>
-
-    <div>
-      <strong>Authentication</strong> — verifies identity.
-    </div>
-
-    <div>
-      <strong>Authorization</strong> — controls access.
-    </div>
-
-    <div>
-      <strong>Access controls</strong> — limit who can reach resources.
-    </div>
-
-  </div>
-
-  <h2 class="question">Second clue: Integrity</h2>
-
-  <p>
-    Integrity means keeping information accurate, complete,
-    and protected from unauthorized modification.
-  </p>
-
-  <div class="visual">
-
-    <div class="visual-title">A SMALL CHANGE CAN MATTER</div>
-
-    <div class="flow">
-
-      <div class="flow-item">
-        <strong>10 mg</strong>
-        <span>Original medication dosage</span>
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-item">
+            <strong>10 mg</strong>
+            <span>Original recorded dosage</span>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item">
+            <strong>100 mg</strong>
+            <span>Unexpected modification</span>
+          </div>
+        </div>
       </div>
 
-      <div class="arrow">→</div>
+      <p>
+        The database may still be online, and staff may still be able to open it.
+        But if its information has been altered improperly, integrity has been affected.
+      </p>
 
-      <div class="flow-item">
-        <strong>100 mg</strong>
-        <span>Unauthorized modification</span>
+      <p>Controls that help protect integrity include:</p>
+
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-item">
+            <strong>Hashes</strong>
+            <span>Help detect whether data differs from a known version.</span>
+          </div>
+          <div class="flow-item">
+            <strong>Digital signatures</strong>
+            <span>Help verify authenticity and detect changes.</span>
+          </div>
+          <div class="flow-item">
+            <strong>Audit logs</strong>
+            <span>Record activity so investigators can trace changes.</span>
+          </div>
+        </div>
       </div>
 
-    </div>
+      <p>
+        Change monitoring and appropriate permissions also help prevent
+        unauthorized modifications or bring them to an analyst's attention.
+      </p>
+    </section>
 
-  </div>
+    <section class="story-section reveal">
+      <div class="section-index">CLUE 03</div>
+      <h2>Availability: can people still use the system?</h2>
 
-  <p>
-    The database may still be online.
-    The information may still be accessible.
-    But if important data has been altered without authorization,
-    its integrity has been affected.
-  </p>
+      <p>
+        Availability means authorized users can access systems and information
+        when they need them.
+      </p>
 
-  <p>
-    Controls that help protect integrity include:
-  </p>
+      <p>
+        Imagine the patient database contains correct information, but a server
+        failure makes it unreachable. Doctors can't retrieve the records they
+        need. The data might still exist, but the service isn't available.
+      </p>
 
-  <div class="example-list">
-
-    <div>
-      <strong>Hashes</strong> — help detect changes to data.
-    </div>
-
-    <div>
-      <strong>Digital signatures</strong> — help verify authenticity and integrity.
-    </div>
-
-    <div>
-      <strong>Audit logs</strong> — record important activity.
-    </div>
-
-    <div>
-      <strong>Change monitoring</strong> — helps detect unexpected modifications.
-    </div>
-
-  </div>
-
-  <h2 class="question">Third clue: Availability</h2>
-
-  <p>
-    Availability means authorized users can access systems
-    and information when they need them.
-  </p>
-
-  <div class="visual">
-
-    <div class="visual-title">THE SYSTEM GOES DOWN</div>
-
-    <div class="flow">
-
-      <div class="flow-item">
-        <strong>DATABASE</strong>
-        <span>Contains the correct information</span>
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-item">
+            <strong>Database</strong>
+            <span>The information still exists.</span>
+          </div>
+          <div class="flow-arrow">→</div>
+          <div class="flow-item">
+            <strong>No access</strong>
+            <span>Authorized staff can't reach it.</span>
+          </div>
+        </div>
       </div>
 
-      <div class="arrow">×</div>
+      <p>
+        Availability can be affected by hardware failures, network outages,
+        software problems, or denial-of-service attacks.
+      </p>
 
-      <div class="flow-item">
-        <strong>NO ACCESS</strong>
-        <span>Users cannot reach the system</span>
+      <p>Common measures that support availability include:</p>
+
+      <div class="flow">
+        <div class="flow-row">
+          <div class="flow-item">
+            <strong>Backups</strong>
+            <span>Provide a way to recover data after loss or damage.</span>
+          </div>
+          <div class="flow-item">
+            <strong>Redundancy</strong>
+            <span>Provides alternative systems or components.</span>
+          </div>
+          <div class="flow-item">
+            <strong>Monitoring and failover</strong>
+            <span>Help detect failures and keep services running where possible.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-section reveal">
+      <div class="section-index">CONNECT THE CLUES</div>
+      <h2>One incident can affect all three.</h2>
+
+      <p>
+        Now imagine an attacker compromises a hospital server. The impact
+        depends on what the attacker does and what the hospital loses.
+      </p>
+
+      <div class="cache-visual">
+        <div class="cache-title">THE CIA TRIAD</div>
+        <div class="cache-row">
+          <span>Confidentiality</span>
+          <strong>Patient records may be exposed.</strong>
+        </div>
+        <div class="cache-row">
+          <span>Integrity</span>
+          <strong>Records could be altered.</strong>
+        </div>
+        <div class="cache-row">
+          <span>Availability</span>
+          <strong>The hospital may lose access to its systems.</strong>
+        </div>
       </div>
 
+      <p>
+        Not every incident affects all three principles. An unauthorized
+        disclosure might affect confidentiality without changing the records.
+        A service outage might primarily affect availability. Investigators
+        need evidence to determine which impacts actually occurred.
+      </p>
+
+      <p>
+        This is why cybersecurity isn't simply about keeping attackers out.
+        It is also about protecting information, preserving its trustworthiness,
+        and keeping essential systems usable.
+      </p>
+    </section>
+
+    <section class="story-section reveal">
+      <div class="section-index">THINK LIKE AN INVESTIGATOR</div>
+      <h2>Three questions to ask when something goes wrong.</h2>
+
+      <div class="question">
+        <div class="question-label">QUESTION 01</div>
+        Did someone see information they weren't allowed to see?
+        <p>That points to <strong>confidentiality</strong>.</p>
+      </div>
+
+      <div class="question">
+        <div class="question-label">QUESTION 02</div>
+        Was information changed, corrupted, or made unreliable?
+        <p>That points to <strong>integrity</strong>.</p>
+      </div>
+
+      <div class="question">
+        <div class="question-label">QUESTION 03</div>
+        Can authorized users still access the system when they need it?
+        <p>That points to <strong>availability</strong>.</p>
+      </div>
+
+      <div class="security-note">
+        <strong>One important detail:</strong> The CIA Triad isn't a rigid checklist
+        where one principle always matters more than the others. Real systems
+        balance confidentiality, integrity, and availability according to their
+        purpose and risks.
+      </div>
+    </section>
+
+    <section class="takeaway reveal">
+      <div class="takeaway-label">TAKEAWAY</div>
+      <h2>Protect the data. Protect its accuracy. Keep it available.</h2>
+      <p>
+        <strong>Confidentiality</strong> protects information from unauthorized disclosure.
+      </p>
+      <p>
+        <strong>Integrity</strong> protects information from unauthorized or improper modification.
+      </p>
+      <p>
+        <strong>Availability</strong> helps ensure authorized users can access systems and information when needed.
+      </p>
+      <p>
+        Together, these three principles form a foundation for thinking about
+        cybersecurity incidents, security controls, and risk.
+      </p>
+    </section>
+
+    <nav class="next-article reveal" aria-label="Next article">
+      <div class="next-inner">
+        <div class="next-label">NEXT CLUE · 015</div>
+        <h2 class="next-title">How Cyber Attacks Actually Happen</h2>
+        <p class="next-description">
+          Follow the next clue to understand how an attack can unfold.
+        </p>
+        <a class="next-link" href="how-cyber-attacks-work.html">
+          Read the next article <span aria-hidden="true">→</span>
+        </a>
+      </div>
+    </nav>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a href="../index.html" class="footer-brand">Veil &amp; Vector</a>
+      <p>Cybersecurity, followed one clue at a time.</p>
     </div>
-
-  </div>
-
-  <p>
-    A server outage, hardware failure, network problem,
-    or denial-of-service attack can affect availability.
-  </p>
-
-  <p>
-    Common measures that support availability include:
-  </p>
-
-  <div class="example-list">
-
-    <div>
-      <strong>Backups</strong> — provide recovery options.
-    </div>
-
-    <div>
-      <strong>Redundancy</strong> — provides alternative resources.
-    </div>
-
-    <div>
-      <strong>Monitoring</strong> — helps detect failures.
-    </div>
-
-    <div>
-      <strong>Failover</strong> — can keep services running when one component fails.
-    </div>
-
-  </div>
-
-  <h2 class="question">Now look at the whole picture.</h2>
-
-  <div class="visual">
-
-    <div class="visual-title">THE CIA TRIAD</div>
-
-    <div class="flow">
-
-      <div class="flow-item">
-        <strong>CONFIDENTIALITY</strong>
-        <span>Keep information from unauthorized people</span>
-      </div>
-
-      <div class="arrow">+</div>
-
-      <div class="flow-item">
-        <strong>INTEGRITY</strong>
-        <span>Keep information accurate and trustworthy</span>
-      </div>
-
-    </div>
-
-    <div style="height:20px;"></div>
-
-    <div class="flow">
-
-      <div class="flow-item">
-        <strong>AVAILABILITY</strong>
-        <span>Keep systems and information accessible when needed</span>
-      </div>
-
-    </div>
-
-  </div>
-
-  <h2 class="question">One incident can affect all three.</h2>
-
-  <p>
-    Imagine an attacker compromises a hospital server.
-  </p>
-
-  <div class="investigation">
-
-    <div class="example-list">
-
-      <div>
-        <strong>Confidentiality:</strong>
-        patient records may be exposed.
-      </div>
-
-      <div>
-        <strong>Integrity:</strong>
-        records could be modified.
-      </div>
-
-      <div>
-        <strong>Availability:</strong>
-        the hospital may lose access to the system.
-      </div>
-
-    </div>
-
-  </div>
-
-  <p>
-    This is why cybersecurity is not simply about keeping attackers
-    out. Security decisions must consider what information needs
-    protection, whether it can be trusted, and whether systems
-    remain usable.
-  </p>
-
-  <h2 class="question">Think like an investigator.</h2>
-
-  <p>
-    When something goes wrong, the CIA Triad gives you
-    three useful questions to ask.
-  </p>
-
-  <div class="visual">
-
-    <div class="visual-title">INVESTIGATION QUESTIONS</div>
-
-    <div class="example-list">
-
-      <div>
-        <strong>1. Did the wrong person see it?</strong><br>
-        → Confidentiality
-      </div>
-
-      <div>
-        <strong>2. Was the information changed?</strong><br>
-        → Integrity
-      </div>
-
-      <div>
-        <strong>3. Can authorized users still access it?</strong><br>
-        → Availability
-      </div>
-
-    </div>
-
-  </div>
-
-  <div class="warning">
-    <strong>Important:</strong>
-    The CIA Triad is not a rigid checklist where one goal always
-    matters more than the others. Real systems balance security
-    requirements with operational needs.
-  </div>
-
-  <div class="takeaway">
-
-    <div class="takeaway-label">TAKEAWAY</div>
-
-    <h2>Protect the data. Protect its accuracy. Keep it available.</h2>
-
-    <p>
-      <strong>Confidentiality</strong> protects information from
-      unauthorized disclosure.
-    </p>
-
-    <p>
-      <strong>Integrity</strong> protects information from
-      unauthorized or improper modification.
-    </p>
-
-    <p>
-      <strong>Availability</strong> ensures authorized users can
-      access systems and information when needed.
-    </p>
-
-    <p>
-      Together, these three principles form one of the basic
-      foundations for thinking about cybersecurity.
-    </p>
-
-  </div>
-
-  <div class="article-next">
-
-    <div class="article-next-label">NEXT CLUE · 015</div>
-
-    <a href="how-cyber-attacks-work.html">
-      How Cyber Attacks Actually Happen
-      <span class="next-arrow">→</span>
-    </a>
-
-  </div>
-
-</main>
-
-<footer>
-  KSCybSec — Cybersecurity knowledge, one clue at a time.
-</footer>
-
+  </footer>
 </body>
 </html>
