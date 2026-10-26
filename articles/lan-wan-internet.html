@@ -1,1320 +1,793 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>LAN, WAN & the Internet — Guide 017 · Networking · Beginner | KSCybSec</title>
-
+  <title>LAN, WAN & the Internet — Guide 017 | Veil & Vector</title>
   <meta name="description" content="Understand LAN, WAN and the Internet through a simple story about how networks connect and grow.">
+  <link rel="canonical" href="https://veilvector.github.io/articles/lan-wan-internet.html">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+  <link rel="stylesheet" href="../article.css">
+
   <style>
-    :root {
-      --bg: #070B14;
-      --surface: #0B1120;
-      --surface-2: #101827;
-      --text: #E8EDF5;
-      --muted: #8995AA;
-      --cyan: #4DE8FF;
-      --purple: #8B7CFF;
-      --border: rgba(137,149,170,0.18);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: "Space Grotesk", sans-serif;
-      line-height: 1.75;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    .container {
-      width: min(900px, calc(100% - 40px));
-      margin: auto;
-    }
-
-    /* NAV */
-
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(7, 11, 20, 0.88);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-inner {
-      width: min(1180px, calc(100% - 40px));
-      margin: auto;
-      min-height: 70px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .brand {
-      text-decoration: none;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    .brand span {
-      color: var(--cyan);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 28px;
-      align-items: center;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: var(--muted);
-      font-size: 0.9rem;
-      transition: color 0.2s ease;
-    }
-
-    .nav-links a:hover {
-      color: var(--text);
-    }
-
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: 0;
-      color: var(--text);
-      font-size: 1.4rem;
-      cursor: pointer;
-    }
-
-    /* HERO */
-
-    .article-hero {
-      padding: 100px 0 75px;
-    }
-
-    .eyebrow {
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      color: var(--cyan);
-      text-transform: uppercase;
-      margin-bottom: 24px;
-    }
-
-    h1 {
-      font-size: clamp(2.8rem, 7vw, 5rem);
-      line-height: 1.02;
-      letter-spacing: -0.045em;
-      max-width: 850px;
-    }
-
-    h1 span {
-      color: var(--cyan);
-    }
-
-    .hero-subtitle {
-      max-width: 680px;
-      margin-top: 26px;
-      color: var(--muted);
-      font-size: 1.15rem;
-      line-height: 1.8;
-    }
-
-    .article-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 18px;
-      margin-top: 30px;
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
-
-    /* ARTICLE */
-
-    article {
-      padding-bottom: 80px;
-    }
-
-    .article-content {
-      font-size: 1.04rem;
-    }
-
-    .article-content p {
-      margin: 0 0 25px;
-      color: #cdd5e2;
-    }
-
-    .article-content strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .article-content h2 {
-      margin: 75px 0 25px;
-      font-size: 2rem;
-      line-height: 1.2;
-      letter-spacing: -0.025em;
-    }
-
-    .article-content h2::before {
-      content: "·";
-      color: var(--cyan);
-      margin-right: 12px;
-    }
-
-    /* STORY */
-
-    .story {
-      border-left: 2px solid var(--cyan);
-      padding: 5px 0 5px 26px;
-      margin: 45px 0;
-    }
-
-    .story p {
-      font-size: 1.12rem;
-      color: var(--text);
-    }
-
-    /* VISUAL */
-
-    .visual-wrap {
-      margin: 50px 0 55px;
-      padding: 34px;
+    .editorial-visual {
+      margin: 42px 0 48px;
+      padding: 24px 0;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
-      background:
-        radial-gradient(circle at 50% 50%, rgba(77,232,255,0.06), transparent 55%);
     }
 
     .visual-label {
+      margin-bottom: 26px;
       font-family: "DM Mono", monospace;
-      color: var(--muted);
-      font-size: 0.68rem;
-      letter-spacing: 0.12em;
+      font-size: .7rem;
+      letter-spacing: .1em;
       text-transform: uppercase;
-      margin-bottom: 28px;
-    }
-
-    /* NETWORK SCALE VISUAL */
-
-    .network-scale {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      min-height: 260px;
-    }
-
-    .network-zone {
-      border: 1px solid var(--border);
-      background: rgba(11,17,32,0.8);
-      padding: 22px;
-      text-align: center;
-      position: relative;
-    }
-
-    .network-zone.small {
-      width: 155px;
-    }
-
-    .network-zone.medium {
-      width: 190px;
-      border-color: rgba(77,232,255,0.3);
-    }
-
-    .network-zone.large {
-      width: 220px;
-      border-color: rgba(139,124,255,0.4);
-    }
-
-    .zone-title {
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      color: var(--cyan);
-      margin-bottom: 8px;
-      letter-spacing: 0.08em;
-    }
-
-    .large .zone-title {
-      color: var(--purple);
-    }
-
-    .zone-name {
-      font-size: 1.25rem;
-      margin-bottom: 8px;
-    }
-
-    .zone-description {
       color: var(--muted);
-      font-size: 0.76rem;
-      line-height: 1.5;
     }
 
-    .zone-dots {
-      display: flex;
-      justify-content: center;
-      gap: 7px;
-      margin-top: 18px;
+    .scale-flow {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: stretch;
+      gap: 16px;
     }
 
-    .zone-dots span {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--cyan);
-      opacity: 0.7;
+    .scale-step {
+      padding: 12px 0;
+      border-top: 2px solid var(--border);
     }
 
-    .large .zone-dots span {
-      background: var(--purple);
+    .scale-step:nth-of-type(1) {
+      border-color: var(--text);
+    }
+
+    .scale-step:nth-of-type(2) {
+      border-color: var(--muted);
+    }
+
+    .scale-step:nth-of-type(3) {
+      border-color: var(--text);
+    }
+
+    .step-code,
+    .visual-kicker {
+      font-family: "DM Mono", monospace;
+      font-size: .68rem;
+      letter-spacing: .06em;
+      color: var(--muted);
+    }
+
+    .scale-step h3 {
+      margin: 10px 0 8px;
+      font-size: 1.35rem;
+      font-weight: 500;
+    }
+
+    .scale-step p {
+      margin: 0;
+      font-size: .9rem;
+      line-height: 1.65;
     }
 
     .scale-arrow {
+      align-self: center;
       color: var(--muted);
-      font-size: 1.2rem;
+      font-size: 1.1rem;
     }
 
-    /* HOME STORY */
-
-    .home-network {
-      position: relative;
-      min-height: 270px;
-    }
-
-    .home-router {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      padding: 15px 24px;
-      border: 1px solid var(--cyan);
-      background: var(--surface);
-      text-align: center;
-      z-index: 2;
-    }
-
-    .home-router small {
-      display: block;
-      color: var(--muted);
-      font-family: "DM Mono", monospace;
-      font-size: 0.6rem;
-      margin-top: 3px;
-    }
-
-    .home-device {
-      position: absolute;
-      padding: 12px 15px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      font-size: 0.8rem;
-      text-align: center;
-      min-width: 105px;
-    }
-
-    .home-device small {
-      display: block;
-      color: var(--muted);
-      font-family: "DM Mono", monospace;
-      font-size: 0.55rem;
-    }
-
-    .device-laptop {
-      top: 10px;
-      left: 8%;
-    }
-
-    .device-phone {
-      top: 10px;
-      right: 8%;
-    }
-
-    .device-tv {
-      bottom: 10px;
-      left: 12%;
-    }
-
-    .device-printer {
-      bottom: 10px;
-      right: 12%;
-    }
-
-    .home-line {
-      position: absolute;
-      background: rgba(77,232,255,0.28);
-      height: 1px;
-      transform-origin: left center;
-      width: 30%;
-      left: 21%;
-      top: 43%;
-    }
-
-    .home-line.two {
-      left: 50%;
-      top: 43%;
-      transform: rotate(0deg);
-      width: 29%;
-    }
-
-    .home-line.three {
-      left: 22%;
-      top: 57%;
-      transform: rotate(0deg);
-      width: 29%;
-    }
-
-    .home-line.four {
-      left: 50%;
-      top: 57%;
-      width: 29%;
-    }
-
-    /* INTERNET VISUAL */
-
-    .internet-map {
-      display: flex;
+    .device-network {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(130px, .8fr) minmax(0, 1fr);
+      grid-template-rows: auto auto;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
-      min-height: 230px;
+      gap: 22px 16px;
+      max-width: 620px;
+      margin: 0 auto;
     }
 
-    .internet-node {
-      padding: 14px 18px;
-      border: 1px solid var(--border);
-      background: var(--surface);
+    .device {
+      padding: 10px 0;
       text-align: center;
-      min-width: 120px;
+      border-bottom: 1px solid var(--border);
     }
 
-    .internet-node.core {
-      border-color: var(--cyan);
-      min-width: 155px;
+    .device-name {
+      display: block;
+      font-size: .95rem;
+      color: var(--text);
     }
 
-    .internet-node.server {
-      border-color: rgba(139,124,255,0.45);
-    }
-
-    .internet-node small {
+    .device-type {
       display: block;
       margin-top: 4px;
+      font-family: "DM Mono", monospace;
+      font-size: .63rem;
+      color: var(--muted);
+    }
+
+    .router-node {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      align-self: center;
+      padding: 18px 12px;
+      text-align: center;
+      border: 1px solid var(--text);
+    }
+
+    .router-node strong {
+      display: block;
+      font-weight: 500;
+    }
+
+    .router-node small {
+      display: block;
+      margin-top: 6px;
       color: var(--muted);
       font-family: "DM Mono", monospace;
-      font-size: 0.58rem;
+      font-size: .62rem;
     }
 
-    .internet-connection {
-      height: 1px;
-      width: 45px;
-      background: linear-gradient(
-        to right,
-        rgba(77,232,255,0.2),
-        rgba(77,232,255,0.7)
-      );
+    .network-caption {
+      margin-top: 24px;
+      font-size: .84rem;
+      color: var(--muted);
     }
 
-    /* COMPARISON */
+    .wide-network {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr) minmax(0, 1fr);
+      align-items: center;
+      gap: 18px;
+    }
 
-    .comparison {
-      margin: 45px 0;
+    .city-node,
+    .wan-node {
+      padding: 18px 0;
+      text-align: center;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
+    }
+
+    .city-node strong,
+    .wan-node strong {
+      display: block;
+      font-weight: 500;
+    }
+
+    .city-node small,
+    .wan-node small {
+      display: block;
+      margin-top: 6px;
+      font-family: "DM Mono", monospace;
+      font-size: .65rem;
+      color: var(--muted);
+    }
+
+    .wan-node {
+      border-color: var(--text);
+    }
+
+    .network-link {
+      height: 1px;
+      background: var(--muted);
+      opacity: .65;
+    }
+
+    .internet-route {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      gap: 12px;
+    }
+
+    .route-node {
+      min-width: 0;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .route-node:nth-of-type(3) {
+      border-color: var(--text);
+    }
+
+    .route-node strong {
+      display: block;
+      font-size: .95rem;
+      font-weight: 500;
+      overflow-wrap: anywhere;
+    }
+
+    .route-node small {
+      display: block;
+      margin-top: 6px;
+      font-family: "DM Mono", monospace;
+      font-size: .62rem;
+      color: var(--muted);
+    }
+
+    .route-arrow {
+      color: var(--muted);
+      font-size: .95rem;
+    }
+
+    .comparison-list {
+      margin: 40px 0;
+      border-top: 1px solid var(--border);
     }
 
     .comparison-row {
       display: grid;
-      grid-template-columns: 130px 1fr;
+      grid-template-columns: 125px minmax(0, 1fr);
+      gap: 20px;
+      padding: 19px 0;
       border-bottom: 1px solid var(--border);
     }
 
-    .comparison-row:last-child {
-      border-bottom: 0;
-    }
-
-    .comparison-row > div {
-      padding: 18px;
-    }
-
-    .comparison-label {
+    .comparison-term {
       font-family: "DM Mono", monospace;
-      color: var(--cyan);
-      font-size: 0.7rem;
+      font-size: .75rem;
+      color: var(--text);
     }
 
-    .comparison-text {
-      color: #cdd5e2;
-      font-size: 0.9rem;
+    .comparison-detail {
+      margin: 0;
+      font-size: .94rem;
     }
 
-    /* QUESTION */
-
-    .question {
-      margin: 55px 0;
-      padding: 30px 0;
+    .question-prompt {
+      margin: 48px 0;
+      padding: 24px 0;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
 
-    .question-label {
-      font-family: "DM Mono", monospace;
-      font-size: 0.68rem;
-      color: var(--cyan);
-      letter-spacing: 0.1em;
+    .question-prompt .visual-kicker {
       margin-bottom: 12px;
     }
 
-    .question p {
-      font-size: 1.25rem;
+    .question-prompt p {
+      margin: 0;
+      font-size: 1.2rem;
       color: var(--text);
+    }
+
+    .investigation-list {
+      margin: 28px 0 36px;
+      border-top: 1px solid var(--border);
+    }
+
+    .investigation-row {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .investigation-number {
+      font-family: "DM Mono", monospace;
+      font-size: .72rem;
+      color: var(--muted);
+      padding-top: 3px;
+    }
+
+    .investigation-row p {
       margin: 0;
     }
 
-    /* TAKEAWAY */
-
     .takeaway {
-      margin-top: 70px;
-      padding: 32px 0;
+      margin-top: 64px;
+      padding: 25px 0;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
 
     .takeaway-label {
+      margin-bottom: 14px;
       font-family: "DM Mono", monospace;
-      color: var(--cyan);
-      font-size: 0.68rem;
-      letter-spacing: 0.1em;
-      margin-bottom: 18px;
+      font-size: .7rem;
+      letter-spacing: .1em;
+      color: var(--muted);
     }
 
     .takeaway-main {
-      font-size: 1.35rem;
-      color: var(--text);
+      font-size: 1.2rem;
+      line-height: 1.7;
     }
 
-    /* NEXT */
-
-    .article-next {
-      margin-top: 80px;
-      padding-top: 32px;
-      border-top: 1px solid var(--border);
-    }
-
-    .article-next-label {
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-
-    .article-next a {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text);
-      text-decoration: none;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.15rem;
-      transition: color 0.2s ease;
-    }
-
-    .article-next a:hover {
-      color: var(--cyan);
-    }
-
-    .article-next .next-arrow {
-      color: var(--cyan);
-      font-size: 1rem;
-    }
-
-    /* FOOTER */
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 35px 0;
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
-
-    .footer-inner {
-      width: min(1180px, calc(100% - 40px));
-      margin: auto;
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    /* REVEAL */
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(18px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* MOBILE */
-
-    @media (max-width: 760px) {
-
-      .nav-links {
-        display: none;
-        position: absolute;
-        top: 70px;
-        left: 0;
-        right: 0;
-        padding: 20px;
-        flex-direction: column;
-        align-items: flex-start;
-        background: var(--surface);
-        border-bottom: 1px solid var(--border);
-      }
-
-      .nav-links.open {
-        display: flex;
-      }
-
-      .menu-toggle {
-        display: block;
-      }
-
-      .article-hero {
-        padding: 70px 0 55px;
-      }
-
-      .visual-wrap {
-        padding: 25px 15px;
-      }
-
-      .network-scale {
-        flex-direction: column;
+    @media (max-width: 680px) {
+      .scale-flow {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
       }
 
       .scale-arrow {
+        justify-self: start;
         transform: rotate(90deg);
+        margin: 0 0 2px 12px;
       }
 
-      .internet-map {
-        flex-wrap: wrap;
+      .scale-step {
+        padding: 12px 0 18px;
       }
 
-      .home-network {
-        min-height: 340px;
+      .device-network {
+        grid-template-columns: minmax(0, 1fr) minmax(100px, .85fr);
+        gap: 16px;
       }
 
-      .home-device {
-        min-width: 90px;
+      .router-node {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+      }
+
+      .wide-network {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
+      }
+
+      .network-link {
+        width: 1px;
+        height: 20px;
+        justify-self: center;
+      }
+
+      .internet-route {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 4px;
+      }
+
+      .route-node {
+        padding: 12px 0;
+      }
+
+      .route-arrow {
+        justify-self: start;
+        transform: rotate(90deg);
+        margin-left: 12px;
       }
 
       .comparison-row {
-        grid-template-columns: 95px 1fr;
-      }
-
-      .footer-inner {
-        flex-direction: column;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 6px;
       }
     }
 
-    @media (max-width: 430px) {
-
-      .container {
-        width: min(100% - 28px, 900px);
+    @media (prefers-reduced-motion: reduce) {
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
       }
 
-      h1 {
-        font-size: 2.7rem;
-      }
-
-      .home-network {
-        transform: scale(0.88);
-        transform-origin: center;
-      }
-
-      .comparison-row {
-        grid-template-columns: 1fr;
-      }
-
-      .comparison-label {
-        padding-bottom: 4px !important;
-      }
-
-      .comparison-text {
-        padding-top: 4px !important;
+      html {
+        scroll-behavior: auto;
       }
     }
   </style>
 </head>
 
 <body>
-
-  <!-- NAVIGATION -->
-
-  <nav>
+  <nav class="site-header">
     <div class="nav-inner">
-
-      <a href="../index.html" class="brand">
-        KS<span>CybSec</span>
-      </a>
-
-      <div class="nav-links" id="navLinks">
-        <a href="../index.html">Start Here</a>
-        <a href="../index.html#latest">Articles</a>
-        <a href="../index.html#topics">Topics</a>
-        <a href="../index.html#explore">Explore</a>
-        <a href="../index.html#about">About</a>
-      </div>
-
-      <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
-        ☰
-      </button>
-
+      <a href="../index.html" class="brand">Veil <span>&</span> Vector</a>
+      <a href="../index.html#articles" class="back-link">← All articles</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme">☼</button>
     </div>
   </nav>
 
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress" id="progress"></div>
+  </div>
 
-  <!-- HERO -->
-
-  <header class="article-hero">
-    <div class="container">
-
-      <div class="eyebrow reveal">
-        Guide 017 · Networking · Beginner
-      </div>
-
-      <h1 class="reveal">
-        LAN, WAN <span>& the Internet</span>
-      </h1>
-
-      <p class="hero-subtitle reveal">
-        A network can be a few devices in one room.
-        It can also connect systems across a city, a country,
-        or the entire world. So where does one network end
-        and another begin?
-      </p>
-
-      <div class="article-meta reveal">
-        <span>NETWORKING</span>
-        <span>·</span>
-        <span>~5 MIN READ</span>
-        <span>·</span>
-        <span>CLUE 017</span>
-      </div>
-
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="category">NETWORKING</span>
+      <span>GUIDE 017</span>
+      <span>5 MIN READ</span>
     </div>
+
+    <h1>LAN, WAN <span>& the Internet</span></h1>
+
+    <p class="article-intro">
+      A network can connect a few devices in one room or link systems
+      across the world. Let's follow the connections and see how those
+      different scales fit together.
+    </p>
   </header>
 
+  <main class="article-body">
+    <section class="story-section reveal">
+      <p class="section-index">01 / THE STARTING POINT</p>
 
-  <!-- ARTICLE -->
+      <p>You're sitting at home.</p>
 
-  <article>
-    <div class="container article-content">
+      <p>
+        Your laptop is connected to Wi-Fi. Your phone is connected too.
+        Maybe your TV and printer are online as well.
+      </p>
 
+      <p>
+        They can communicate across your local network. Then you open a
+        website hosted on a server somewhere on the other side of the world.
+      </p>
 
-      <!-- OPENING STORY -->
+      <p>
+        Your small home network is now exchanging data with a much wider
+        collection of networks. <strong>How does that happen?</strong>
+      </p>
+    </section>
 
-      <div class="story reveal">
+    <section class="story-section reveal">
+      <p class="section-index">02 / THREE SCALES</p>
 
-        <p>
-          You're sitting at home.
-        </p>
+      <h2>Networks can connect at different scales</h2>
 
-        <p>
-          Your laptop is connected to Wi-Fi. Your phone is connected too.
-          Maybe your TV and printer are online as well.
-        </p>
+      <div class="editorial-visual">
+        <div class="visual-label">A simple way to compare them</div>
 
-        <p>
-          They can communicate without leaving your house.
-        </p>
+        <div class="scale-flow">
+          <div class="scale-step">
+            <span class="step-code">01 — LOCAL</span>
+            <h3>LAN</h3>
+            <p>A network in a home, classroom, office or building.</p>
+          </div>
 
-        <p>
-          Now you open a website hosted on a server somewhere on the other
-          side of the world.
-        </p>
+          <div class="scale-arrow" aria-hidden="true">→</div>
 
-        <p>
-          Suddenly, your little home network is talking to something
-          much, much bigger.
-        </p>
+          <div class="scale-step">
+            <span class="step-code">02 — WIDE AREA</span>
+            <h3>WAN</h3>
+            <p>A network connecting systems or networks across larger distances.</p>
+          </div>
 
-        <p>
-          <strong>So how does that happen?</strong>
-        </p>
+          <div class="scale-arrow" aria-hidden="true">→</div>
 
+          <div class="scale-step">
+            <span class="step-code">03 — GLOBAL</span>
+            <h3>The Internet</h3>
+            <p>A vast collection of interconnected networks around the world.</p>
+          </div>
+        </div>
       </div>
 
+      <p>
+        These aren't three completely separate worlds. A LAN can connect
+        to a WAN, and networks operated by many different organisations
+        can connect to form part of the Internet.
+      </p>
 
-      <!-- VISUAL 1 -->
+      <p>
+        The useful distinction is the role each term describes: a local
+        network, a wide-area network, or the global system of interconnected
+        networks.
+      </p>
+    </section>
 
-      <div class="visual-wrap reveal">
+    <section class="story-section reveal">
+      <p class="section-index">03 / LAN</p>
 
-        <div class="visual-label">
-          Networks can exist at different scales
+      <h2>Start with the network around you</h2>
+
+      <p>
+        Think about your home Wi-Fi. Your phone, laptop, smart TV and
+        printer may all connect through your router or wireless access point.
+      </p>
+
+      <p>
+        Together, these devices can form a <strong>LAN — Local Area Network.</strong>
+        A LAN covers a relatively limited area, such as a home, classroom,
+        laboratory, office or building.
+      </p>
+
+      <div class="editorial-visual">
+        <div class="visual-label">Example · a home LAN</div>
+
+        <div class="device-network">
+          <div class="device">
+            <span class="device-name">Laptop</span>
+            <span class="device-type">DEVICE</span>
+          </div>
+
+          <div class="router-node">
+            <strong>Router</strong>
+            <small>LOCAL NETWORK</small>
+          </div>
+
+          <div class="device">
+            <span class="device-name">Phone</span>
+            <span class="device-type">DEVICE</span>
+          </div>
+
+          <div class="device">
+            <span class="device-name">Printer</span>
+            <span class="device-type">DEVICE</span>
+          </div>
+
+          <div class="device">
+            <span class="device-name">Smart TV</span>
+            <span class="device-type">DEVICE</span>
+          </div>
         </div>
 
-        <div class="network-scale">
-
-          <div class="network-zone small">
-            <div class="zone-title">LAN</div>
-            <div class="zone-name">Local</div>
-            <div class="zone-description">
-              A smaller network covering a home, room, office or building.
-            </div>
-
-            <div class="zone-dots">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </div>
-
-          <div class="scale-arrow">→</div>
-
-          <div class="network-zone medium">
-            <div class="zone-title">WAN</div>
-            <div class="zone-name">Wide</div>
-            <div class="zone-description">
-              Networks that connect devices and smaller networks across larger distances.
-            </div>
-
-            <div class="zone-dots">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </div>
-
-          <div class="scale-arrow">→</div>
-
-          <div class="network-zone large">
-            <div class="zone-title">THE INTERNET</div>
-            <div class="zone-name">Global</div>
-            <div class="zone-description">
-              A huge collection of interconnected networks around the world.
-            </div>
-
-            <div class="zone-dots">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </div>
-
-        </div>
-
+        <p class="network-caption">
+          Simplified illustration. Devices may connect by Wi-Fi or cable,
+          and the router is not necessarily the only networking device.
+        </p>
       </div>
 
-
-      <p class="reveal">
-        The important thing to understand is that
-        <strong>LAN, WAN and the Internet are not three completely separate worlds.</strong>
+      <p>
+        Devices on the same LAN can often communicate directly over that
+        local network, depending on their configuration and security rules.
       </p>
 
-      <p class="reveal">
-        They're different ways of describing networks and how widely
-        those networks are connected.
+      <p>
+        For example, your laptop can send a print job to a local network
+        printer without sending that print job across the global Internet.
       </p>
+    </section>
 
+    <section class="story-section reveal">
+      <p class="section-index">04 / WAN</p>
 
-      <!-- LAN -->
+      <h2>Now make the distance bigger</h2>
 
-      <h2 class="reveal">
-        Start with the network around you
-      </h2>
-
-      <p class="reveal">
-        Think about your home Wi-Fi.
-      </p>
-
-      <p class="reveal">
-        Your phone, laptop, smart TV and other devices may all connect
-        through the same router.
-      </p>
-
-      <p class="reveal">
-        They form a <strong>LAN — Local Area Network</strong>.
-      </p>
-
-      <p class="reveal">
-        "Local" is the important word.
-      </p>
-
-      <p class="reveal">
-        A LAN covers a relatively small area such as a home, classroom,
-        office, laboratory or building.
-      </p>
-
-
-      <!-- HOME VISUAL -->
-
-      <div class="visual-wrap reveal">
-
-        <div class="visual-label">
-          A simple home LAN
-        </div>
-
-        <div class="home-network">
-
-          <div class="home-line"></div>
-          <div class="home-line two"></div>
-          <div class="home-line three"></div>
-          <div class="home-line four"></div>
-
-          <div class="home-router">
-            Router
-            <small>local network</small>
-          </div>
-
-          <div class="home-device device-laptop">
-            💻 Laptop
-            <small>DEVICE</small>
-          </div>
-
-          <div class="home-device device-phone">
-            📱 Phone
-            <small>DEVICE</small>
-          </div>
-
-          <div class="home-device device-tv">
-            📺 TV
-            <small>DEVICE</small>
-          </div>
-
-          <div class="home-device device-printer">
-            🖨 Printer
-            <small>DEVICE</small>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <p class="reveal">
-        Inside this LAN, the devices can communicate with each other
-        without every conversation needing to travel across the entire
-        Internet.
-      </p>
-
-      <p class="reveal">
-        That's useful.
-      </p>
-
-      <p class="reveal">
-        Your laptop doesn't need to send a print job halfway around the
-        world just because the printer is connected to a network.
-      </p>
-
-
-      <!-- WAN -->
-
-      <h2 class="reveal">
-        Now make the distance bigger
-      </h2>
-
-      <p class="reveal">
+      <p>
         Imagine a company with offices in Chennai, Mumbai and Delhi.
+        Each office may have its own LAN, with computers, printers and
+        other devices.
       </p>
 
-      <p class="reveal">
-        Each office might have its own local network.
+      <p>
+        The company also needs those offices to share information and
+        access internal systems. A <strong>WAN — Wide Area Network</strong>
+        can connect networks over a larger geographical area.
       </p>
 
-      <p class="reveal">
-        But the company may also need those offices to communicate
-        with each other.
-      </p>
+      <div class="editorial-visual">
+        <div class="visual-label">Example · connecting office networks</div>
 
-      <p class="reveal">
-        That's where a <strong>WAN — Wide Area Network</strong>
-        becomes useful.
-      </p>
+        <div class="wide-network">
+          <div class="city-node">
+            <strong>Chennai</strong>
+            <small>OFFICE LAN</small>
+          </div>
 
-      <p class="reveal">
-        A WAN connects networks across a larger geographical area.
-      </p>
+          <div class="network-link" aria-hidden="true"></div>
 
-      <p class="reveal">
-        The distance could span different buildings, cities,
-        regions or even countries.
-      </p>
+          <div class="wan-node">
+            <strong>Company WAN</strong>
+            <small>CONNECTS NETWORKS</small>
+          </div>
 
+          <div class="network-link" aria-hidden="true"></div>
 
-      <!-- WAN VISUAL -->
-
-      <div class="visual-wrap reveal">
-
-        <div class="visual-label">
-          Several LANs can be connected
+          <div class="city-node">
+            <strong>Mumbai</strong>
+            <small>OFFICE LAN</small>
+          </div>
         </div>
 
-        <div class="internet-map">
-
-          <div class="internet-node">
-            Chennai
-            <small>LAN</small>
-          </div>
-
-          <div class="internet-connection"></div>
-
-          <div class="internet-node core">
-            Wide Area Network
-            <small>CONNECTING NETWORKS</small>
-          </div>
-
-          <div class="internet-connection"></div>
-
-          <div class="internet-node">
-            Mumbai
-            <small>LAN</small>
-          </div>
-
-        </div>
-
+        <p class="network-caption">
+          Conceptual example: a real WAN may connect many sites using
+          different links and network providers.
+        </p>
       </div>
 
-
-      <p class="reveal">
-        Notice something interesting?
+      <p>
+        Notice that the WAN doesn't have to replace the office LANs.
+        It connects them. The offices can keep their local networks while
+        communicating over the wider network.
       </p>
 
-      <p class="reveal">
-        The WAN doesn't replace the local networks.
-        It <strong>connects them</strong>.
+      <p>
+        A WAN may be privately operated by an organisation or provided
+        through network services. The term describes the wider network,
+        not one specific technology.
+      </p>
+    </section>
+
+    <section class="story-section reveal">
+      <p class="section-index">05 / THE INTERNET</p>
+
+      <h2>And then there's the Internet</h2>
+
+      <p>
+        The Internet isn't one giant computer in a secret building.
+        It's a huge collection of interconnected networks that can
+        exchange data using shared protocols.
       </p>
 
-
-      <!-- INTERNET -->
-
-      <h2 class="reveal">
-        And then there's the Internet
-      </h2>
-
-      <p class="reveal">
-        Here's where the name can become confusing.
+      <p>
+        Your home network connects to an Internet Service Provider (ISP).
+        The ISP connects with other networks, and those connections can
+        carry traffic toward a server hosting the website you want.
       </p>
 
-      <p class="reveal">
-        The Internet isn't one giant computer sitting somewhere in a
-        secret building.
-      </p>
+      <div class="editorial-visual">
+        <div class="visual-label">A simplified route to a website</div>
 
-      <p class="reveal">
-        It's a massive collection of interconnected networks.
-      </p>
-
-      <p class="reveal">
-        In fact, that's where the name comes from:
-        <strong>inter-network</strong> — networks connected to other networks.
-      </p>
-
-
-      <!-- INTERNET VISUAL -->
-
-      <div class="visual-wrap reveal">
-
-        <div class="visual-label">
-          Many networks, one Internet
-        </div>
-
-        <div class="internet-map">
-
-          <div class="internet-node">
-            Home
-            <small>NETWORK</small>
+        <div class="internet-route">
+          <div class="route-node">
+            <strong>Home LAN</strong>
+            <small>YOUR DEVICES</small>
           </div>
 
-          <div class="internet-connection"></div>
+          <div class="route-arrow" aria-hidden="true">→</div>
 
-          <div class="internet-node">
-            ISP
-            <small>NETWORK</small>
+          <div class="route-node">
+            <strong>ISP</strong>
+            <small>YOUR PROVIDER</small>
           </div>
 
-          <div class="internet-connection"></div>
+          <div class="route-arrow" aria-hidden="true">→</div>
 
-          <div class="internet-node core">
-            INTERNET
+          <div class="route-node">
+            <strong>Internet</strong>
             <small>INTERCONNECTED NETWORKS</small>
           </div>
 
-          <div class="internet-connection"></div>
+          <div class="route-arrow" aria-hidden="true">→</div>
 
-          <div class="internet-node server">
-            Website
-            <small>SERVER</small>
+          <div class="route-node">
+            <strong>Web server</strong>
+            <small>DESTINATION</small>
           </div>
-
         </div>
 
-      </div>
-
-
-      <p class="reveal">
-        Your home network connects to your Internet Service Provider.
-        That network connects to other networks, which connect to still
-        more networks.
-      </p>
-
-      <p class="reveal">
-        Eventually, your request can reach a server somewhere else in
-        the world.
-      </p>
-
-      <p class="reveal">
-        There isn't necessarily one single path that every packet must take.
-        Networking equipment helps move traffic toward its destination.
-      </p>
-
-
-      <!-- QUESTION -->
-
-      <div class="question reveal">
-
-        <div class="question-label">
-          STOP & THINK
-        </div>
-
-        <p>
-          Your laptop is in a small home LAN.
-          The website is on another network thousands of kilometres away.
-          <strong>What connects the two?</strong>
+        <p class="network-caption">
+          This is a conceptual path, not a fixed route. Actual traffic may
+          pass through multiple networks and routers.
         </p>
-
       </div>
 
-
-      <!-- ROUTERS -->
-
-      <h2 class="reveal">
-        Routers are part of the answer
-      </h2>
-
-      <p class="reveal">
-        You've already seen a router in the previous article.
+      <p>
+        Routers use destination information to forward packets toward
+        their next hop. There isn't necessarily one single path that every
+        packet must follow, and the route can change.
       </p>
 
-      <p class="reveal">
-        A router helps move traffic between networks.
+      <div class="question-prompt">
+        <div class="visual-kicker">STOP & THINK</div>
+        <p>
+          Your laptop is on a home LAN, while the website is hosted thousands
+          of kilometres away. <strong>What allows data to travel between them?</strong>
+        </p>
+      </div>
+
+      <p>
+        The short answer is a chain of interconnected networks and
+        networking equipment. Your home router helps connect your LAN
+        to your provider, while routers across other networks forward
+        traffic onward.
       </p>
 
-      <p class="reveal">
-        Your home router can connect your local network to your ISP's
-        network.
+      <p>
+        Each part has a role, but no single router needs to understand
+        the entire Internet. Routers use routing information to choose
+        where to send packets next.
       </p>
+    </section>
 
-      <p class="reveal">
-        Other routers help move traffic further through the wider network.
-      </p>
+    <section class="story-section reveal">
+      <p class="section-index">06 / THE DISTINCTION</p>
 
-      <p class="reveal">
-        So when your laptop sends data to a remote server,
-        the journey can involve several networks and several pieces
-        of networking equipment.
-      </p>
+      <h2>Keep the three ideas separate</h2>
 
-
-      <!-- COMPARISON -->
-
-      <div class="comparison reveal">
-
+      <div class="comparison-list">
         <div class="comparison-row">
-          <div class="comparison-label">LAN</div>
-          <div class="comparison-text">
-            A relatively small local network such as a home, office or lab.
-          </div>
+          <div class="comparison-term">LAN</div>
+          <p class="comparison-detail">
+            A relatively small local network, such as a home, office or lab.
+          </p>
         </div>
 
         <div class="comparison-row">
-          <div class="comparison-label">WAN</div>
-          <div class="comparison-text">
-            A network that connects systems or smaller networks across larger distances.
-          </div>
+          <div class="comparison-term">WAN</div>
+          <p class="comparison-detail">
+            A network connecting systems or smaller networks over a wider
+            geographical area.
+          </p>
         </div>
 
         <div class="comparison-row">
-          <div class="comparison-label">INTERNET</div>
-          <div class="comparison-text">
-            A global system of interconnected networks.
-          </div>
+          <div class="comparison-term">INTERNET</div>
+          <p class="comparison-detail">
+            The global system of interconnected networks that communicate
+            using shared protocols.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="story-section reveal">
+      <p class="section-index">07 / THE SECURITY CONNECTION</p>
+
+      <h2>Why does this matter in cybersecurity?</h2>
+
+      <p>
+        An attacker doesn't interact with the Internet as one giant,
+        featureless thing. Network activity involves real devices,
+        addresses, routes, services and connections.
+      </p>
+
+      <p>
+        Defenders need to understand that same landscape. When an unusual
+        connection appears in a company's logs, an investigator may ask:
+      </p>
+
+      <div class="investigation-list">
+        <div class="investigation-row">
+          <span class="investigation-number">01</span>
+          <p>Which device or internal network did the connection come from?</p>
         </div>
 
-      </div>
-
-
-      <!-- SECURITY CONNECTION -->
-
-      <h2 class="reveal">
-        Why does this matter in cybersecurity?
-      </h2>
-
-      <p class="reveal">
-        Because an attacker doesn't interact with "the Internet"
-        as one giant thing.
-      </p>
-
-      <p class="reveal">
-        They interact with actual networks, devices, addresses,
-        routes and services.
-      </p>
-
-      <p class="reveal">
-        A defender needs to understand the same landscape.
-      </p>
-
-      <p class="reveal">
-        If an unusual connection appears in a company's logs,
-        someone might need to ask:
-      </p>
-
-      <p class="reveal">
-        <strong>
-          Where did it come from?
-          Which network was involved?
-          Which device sent it?
-          Where was it going?
-        </strong>
-      </p>
-
-      <p class="reveal">
-        The more clearly you understand the network,
-        the easier those questions become.
-      </p>
-
-
-      <!-- FINAL STORY -->
-
-      <div class="story reveal">
-
-        <p>
-          Go back to that simple moment from the beginning.
-        </p>
-
-        <p>
-          You're sitting at home.
-          Your laptop is on your Wi-Fi.
-          You open a website.
-        </p>
-
-        <p>
-          What looked like one click is actually a conversation
-          crossing several networks.
-        </p>
-
-        <p>
-          <strong>
-            Your small network has just reached the rest of the world.
-          </strong>
-        </p>
-
-      </div>
-
-
-      <!-- TAKEAWAY -->
-
-      <div class="takeaway reveal">
-
-        <div class="takeaway-label">
-          TAKEAWAY
+        <div class="investigation-row">
+          <span class="investigation-number">02</span>
+          <p>What destination did it contact, and which service was involved?</p>
         </div>
 
-        <div class="takeaway-main">
-          LAN describes a local network, WAN connects networks across
-          larger distances, and the Internet is a massive collection
-          of interconnected networks.
+        <div class="investigation-row">
+          <span class="investigation-number">03</span>
+          <p>Was the communication expected, authorised and consistent with normal activity?</p>
         </div>
-
       </div>
 
+      <p>
+        Network boundaries, device addresses and traffic logs help analysts
+        build a clearer picture of what happened. Understanding how networks
+        connect gives those clues useful context.
+      </p>
+    </section>
 
-      <!-- NEXT -->
+    <section class="story-section reveal">
+      <p class="section-index">08 / CONNECT THE DOTS</p>
 
-      <div class="article-next reveal">
+      <p>
+        Go back to that simple moment from the beginning. You're at home,
+        your laptop is connected to Wi-Fi, and you open a website.
+      </p>
 
-        <div class="article-next-label">
-          NEXT CLUE · 018
-        </div>
+      <p>
+        What looked like one click may involve your local network, your
+        Internet provider, other networks and a remote server.
+      </p>
 
-        <a href="mac-addresses.html">
-          MAC Addresses
-          <span class="next-arrow">→</span>
-        </a>
+      <p>
+        <strong>Your small network can reach the rest of the world because
+        networks are connected to networks.</strong>
+      </p>
 
+      <div class="takeaway">
+        <div class="takeaway-label">TAKEAWAY</div>
+        <p class="takeaway-main">
+          LAN describes a local network. WAN connects systems or networks
+          across larger distances. The Internet is a global collection of
+          interconnected networks.
+        </p>
       </div>
 
-    </div>
-  </article>
+      <div class="next-article">
+        <p class="section-index">NEXT CLUE · 018</p>
+        <a href="mac-addresses.html">MAC Addresses <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+  </main>
 
-
-  <!-- FOOTER -->
-
-  <footer>
+  <footer class="site-footer">
     <div class="footer-inner">
-      <span>© KSCybSec</span>
-      <span>Cybersecurity knowledge, one clue at a time.</span>
+      <a href="../index.html" class="footer-brand">Veil & Vector</a>
+      <span>Look beyond the surface.</span>
     </div>
   </footer>
 
-
-  <script>
-
-    const menuToggle = document.getElementById("menuToggle");
-    const navLinks = document.getElementById("navLinks");
-
-    menuToggle.addEventListener("click", () => {
-      navLinks.classList.toggle("open");
-    });
-
-
-    const revealElements = document.querySelectorAll(".reveal");
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      {
-        threshold: 0.12
-      }
-    );
-
-    revealElements.forEach((element) => {
-      observer.observe(element);
-    });
-
-  </script>
-
+  <script src="../article.js"></script>
 </body>
 </html>
