@@ -1,1158 +1,481 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Common Network Protocols · KSCybSec</title>
-  <meta name="description" content="Understand common network protocols and how they help devices communicate across networks.">
+  <title>Common Network Protocols: A Beginner's Guide | Veil &amp; Vector</title>
+  <meta name="description" content="Learn how common network protocols work, from DNS and DHCP to ARP, TCP, UDP, HTTP and HTTPS, through simple examples.">
+  <meta name="author" content="Veil &amp; Vector">
+  <meta name="theme-color" content="#11100f">
+  <meta name="robots" content="index, follow">
+
+  <link rel="canonical" href="https://kscybsec.github.io/articles/common-network-protocols.html">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <style>
-    :root {
-      --bg: #070B14;
-      --surface: #0B1120;
-      --surface-2: #101827;
-      --text: #E8EDF5;
-      --muted: #8995AA;
-      --cyan: #4DE8FF;
-      --purple: #8B7CFF;
-      --border: rgba(232, 237, 245, 0.10);
-      --soft-border: rgba(77, 232, 255, 0.18);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: "Space Grotesk", sans-serif;
-      line-height: 1.7;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    .container {
-      width: min(1080px, calc(100% - 40px));
-      margin: 0 auto;
-    }
-
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(7, 11, 20, 0.88);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-inner {
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-    }
-
-    .brand {
-      text-decoration: none;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    .brand span {
-      color: var(--cyan);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-    }
-
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.92rem;
-      transition: color 0.2s ease;
-    }
-
-    .nav-links a:hover {
-      color: var(--text);
-    }
-
-    .menu-btn {
-      display: none;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text);
-      padding: 9px 11px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    .mobile-menu {
-      display: none;
-      padding-bottom: 18px;
-    }
-
-    .mobile-menu a {
-      display: block;
-      padding: 11px 0;
-      color: var(--muted);
-      text-decoration: none;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .mobile-menu.open {
-      display: block;
-    }
-
-    .article-hero {
-      padding: 105px 0 65px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .eyebrow {
-      font-family: "DM Mono", monospace;
-      color: var(--cyan);
-      font-size: 0.74rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 22px;
-    }
-
-    h1 {
-      max-width: 900px;
-      margin: 0;
-      font-size: clamp(2.7rem, 7vw, 5.3rem);
-      line-height: 1.02;
-      letter-spacing: -0.055em;
-      font-weight: 600;
-    }
-
-    .hero-description {
-      max-width: 700px;
-      margin: 27px 0 0;
-      color: var(--muted);
-      font-size: 1.12rem;
-    }
-
-    .article-meta {
-      margin-top: 30px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px 26px;
-      color: var(--muted);
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-    }
-
-    .article {
-      width: min(760px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 78px 0 100px;
-    }
-
-    .article p {
-      margin: 0 0 25px;
-      color: #C5CEDD;
-      font-size: 1.03rem;
-    }
-
-    .story {
-      border-left: 2px solid var(--cyan);
-      padding: 4px 0 4px 25px;
-      margin: 0 0 65px;
-    }
-
-    .story p {
-      color: var(--text);
-      font-size: 1.13rem;
-      margin-bottom: 0;
-    }
-
-    .visual {
-      position: relative;
-      margin: 55px 0 65px;
-      min-height: 400px;
-      border: 1px solid var(--border);
-      background:
-        linear-gradient(rgba(77, 232, 255, 0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(77, 232, 255, 0.035) 1px, transparent 1px),
-        var(--surface);
-      background-size: 34px 34px;
-      overflow: hidden;
-    }
-
-    .visual-label {
-      position: absolute;
-      top: 20px;
-      left: 22px;
-      font-family: "DM Mono", monospace;
-      color: var(--muted);
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-    }
-
-    .protocol-node {
-      position: absolute;
-      width: 112px;
-      height: 62px;
-      border: 1px solid var(--border);
-      background: var(--surface-2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      font-family: "DM Mono", monospace;
-      font-size: 0.65rem;
-    }
-
-    .protocol-node.center {
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 125px;
-      border-color: var(--soft-border);
-      color: var(--cyan);
-    }
-
-    .protocol-node.top {
-      left: 50%;
-      top: 19%;
-      transform: translateX(-50%);
-    }
-
-    .protocol-node.left {
-      left: 9%;
-      top: 56%;
-    }
-
-    .protocol-node.right {
-      right: 9%;
-      top: 56%;
-    }
-
-    .protocol-node.bottom {
-      left: 50%;
-      bottom: 10%;
-      transform: translateX(-50%);
-    }
-
-    .protocol-line {
-      position: absolute;
-      height: 1px;
-      background: rgba(77, 232, 255, 0.24);
-      transform-origin: left center;
-    }
-
-    .line-top {
-      width: 105px;
-      left: calc(50% + 4px);
-      top: 35%;
-      transform: rotate(90deg);
-    }
-
-    .line-left {
-      width: 145px;
-      left: 24%;
-      top: 58%;
-      transform: rotate(-13deg);
-    }
-
-    .line-right {
-      width: 145px;
-      left: 57%;
-      top: 58%;
-      transform: rotate(13deg);
-    }
-
-    .line-bottom {
-      width: 80px;
-      left: calc(50% + 4px);
-      top: 67%;
-      transform: rotate(90deg);
-    }
-
-    .flow {
-      margin: 45px 0;
-      padding: 27px 20px;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .flow-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 11px;
-      flex-wrap: wrap;
-      font-family: "DM Mono", monospace;
-      font-size: 0.71rem;
-    }
-
-    .flow-item {
-      padding: 11px 14px;
-      border: 1px solid var(--border);
-      background: var(--surface-2);
-      color: #C5CEDD;
-    }
-
-    .flow-item.highlight {
-      color: var(--cyan);
-      border-color: var(--soft-border);
-    }
-
-    .flow-arrow {
-      color: var(--muted);
-    }
-
-    .protocol-list {
-      margin: 50px 0;
-      border-top: 1px solid var(--border);
-    }
-
-    .protocol-row {
-      display: grid;
-      grid-template-columns: 115px 1fr;
-      gap: 20px;
-      padding: 22px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .protocol-name {
-      color: var(--cyan);
-      font-family: "DM Mono", monospace;
-      font-size: 0.76rem;
-    }
-
-    .protocol-purpose {
-      color: #C5CEDD;
-      font-size: 0.98rem;
-    }
-
-    .security-note {
-      margin: 45px 0;
-      padding: 22px 24px;
-      border-left: 2px solid var(--purple);
-      background: rgba(139, 124, 255, 0.045);
-    }
-
-    .security-note p {
-      margin: 0;
-    }
-
-    .section {
-      margin: 70px 0;
-    }
-
-    h2 {
-      margin: 0 0 24px;
-      font-size: clamp(1.65rem, 4vw, 2.25rem);
-      line-height: 1.15;
-      letter-spacing: -0.035em;
-    }
-
-    h2::before {
-      content: "";
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      margin: 0 12px 5px 0;
-      border-radius: 50%;
-      background: var(--cyan);
-    }
-
-    .question {
-      margin: 70px 0;
-      padding: 30px 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .question-label {
-      margin-bottom: 12px;
-      color: var(--cyan);
-      font-family: "DM Mono", monospace;
-      font-size: 0.70rem;
-      letter-spacing: 0.08em;
-    }
-
-    .question p {
-      color: var(--text);
-      font-size: 1.2rem;
-      margin: 0;
-    }
-
-    .takeaway {
-      margin-top: 80px;
-      padding: 30px 0;
-      border-top: 1px solid var(--border);
-    }
-
-    .takeaway-label {
-      margin-bottom: 15px;
-      color: var(--cyan);
-      font-family: "DM Mono", monospace;
-      font-size: 0.70rem;
-      letter-spacing: 0.08em;
-    }
-
-    .takeaway p {
-      color: var(--text);
-      font-size: 1.08rem;
-      margin: 0;
-    }
-
-    .article-next {
-      margin-top: 80px;
-      padding-top: 32px;
-      border-top: 1px solid var(--border);
-    }
-
-    .article-next-label {
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-
-    .article-next a {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text);
-      text-decoration: none;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.15rem;
-      transition: color 0.2s ease;
-    }
-
-    .article-next a:hover {
-      color: var(--cyan);
-    }
-
-    .article-next .next-arrow {
-      color: var(--cyan);
-      font-size: 1rem;
-    }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(14px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 35px 0;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-
-    @media (max-width: 700px) {
-
-      .container {
-        width: min(100% - 28px, 1080px);
-      }
-
-      .nav-links {
-        display: none;
-      }
-
-      .menu-btn {
-        display: block;
-      }
-
-      .article-hero {
-        padding: 78px 0 50px;
-      }
-
-      .article {
-        width: min(100% - 28px, 760px);
-        padding-top: 58px;
-      }
-
-      .visual {
-        min-height: 430px;
-      }
-
-      .protocol-row {
-        grid-template-columns: 1fr;
-        gap: 7px;
-      }
-    }
-
-    @media (max-width: 500px) {
-
-      .article-meta {
-        flex-direction: column;
-        gap: 7px;
-      }
-
-      .visual {
-        min-height: 470px;
-      }
-
-      .protocol-node {
-        width: 94px;
-        height: 58px;
-        font-size: 0.58rem;
-      }
-
-      .protocol-node.left {
-        left: 4%;
-      }
-
-      .protocol-node.right {
-        right: 4%;
-      }
-
-      .line-left,
-      .line-right {
-        width: 105px;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-
-      html {
-        scroll-behavior: auto;
-      }
-
-      .reveal {
-        opacity: 1;
-        transform: none;
-        transition: none;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="../article.css">
 </head>
 
 <body>
 
-  <nav>
-    <div class="container">
+  <header class="site-header">
+    <div class="nav-inner">
+      <a class="brand" href="../index.html" aria-label="Veil & Vector homepage">
+        <span>Veil &amp; Vector</span>
+      </a>
 
-      <div class="nav-inner">
+      <a class="back-link" href="../index.html#articles">
+        <span aria-hidden="true">←</span> All articles
+      </a>
 
-        <a href="../index.html" class="brand">
-          KSCyb<span>Sec</span>
-        </a>
-
-        <div class="nav-links">
-          <a href="../index.html#start">Start Here</a>
-          <a href="../index.html#latest">Articles</a>
-          <a href="../index.html#topics">Topics</a>
-          <a href="../index.html#explore">Explore</a>
-          <a href="../index.html#about">About</a>
-        </div>
-
-        <button
-          class="menu-btn"
-          type="button"
-          aria-label="Open menu"
-          aria-expanded="false"
-        >
-          ☰
-        </button>
-
-      </div>
-
-      <div class="mobile-menu">
-        <a href="../index.html#start">Start Here</a>
-        <a href="../index.html#latest">Articles</a>
-        <a href="../index.html#topics">Topics</a>
-        <a href="../index.html#explore">Explore</a>
-        <a href="../index.html#about">About</a>
-      </div>
-
+      <button
+        class="theme-toggle"
+        id="theme-toggle"
+        type="button"
+        aria-label="Switch to light theme"
+        title="Toggle light and dark themes"
+      >
+        <span class="theme-icon" aria-hidden="true">☼</span>
+        <span class="theme-text">Light</span>
+      </button>
     </div>
-  </nav>
+  </header>
 
-  <header class="article-hero">
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress" id="progress"></div>
+  </div>
 
-    <div class="container">
+  <main>
 
-      <div class="eyebrow">
-        Guide 024 · Networking · Beginner
+    <header class="article-header">
+      <div class="article-meta">
+        <span class="category">Networking · Beginner</span>
+        <span aria-hidden="true">·</span>
+        <span>5 min read</span>
       </div>
 
-      <h1>
-        Common Network Protocols
-      </h1>
+      <h1>Common Network Protocols</h1>
 
-      <p class="hero-description">
+      <p class="article-intro">
         Devices don't just send data randomly. They follow agreed rules
-        that tell them how communication should happen.
+        that tell them how communication should happen. Let's explore the
+        protocols working behind the scenes whenever you use a network.
       </p>
 
       <div class="article-meta">
+        <span>GUIDE 024</span>
+        <span aria-hidden="true">·</span>
         <span>NETWORKING</span>
-        <span>BEGINNER</span>
-        <span>~5 MIN READ</span>
       </div>
+    </header>
 
-    </div>
+    <article>
 
-  </header>
+      <section class="story-section reveal">
+        <div class="section-index">01 / THE QUESTION</div>
 
-  <main class="article">
+        <h2>How do computers understand each other?</h2>
 
-    <section class="story reveal">
-
-      <p>
-        You open a website.
-      </p>
-
-      <p style="margin-top:18px;">
-        Your device finds the destination, sends traffic through the network,
-        and eventually receives a response.
-      </p>
-
-      <p style="margin-top:18px;">
-        But there is an important question hiding underneath all of this:
-      </p>
-
-      <p style="margin-top:18px;">
-        <strong>How do two completely different systems agree on what
-        that communication means?</strong>
-      </p>
-
-      <p style="margin-top:18px;">
-        They use protocols.
-      </p>
-
-    </section>
-
-    <div class="visual reveal">
-
-      <div class="visual-label">
-        DIFFERENT RULES · ONE NETWORK
-      </div>
-
-      <div class="protocol-node top">
-        DNS
-      </div>
-
-      <div class="protocol-node left">
-        DHCP
-      </div>
-
-      <div class="protocol-node center">
-        NETWORK<br>COMMUNICATION
-      </div>
-
-      <div class="protocol-node right">
-        HTTP / HTTPS
-      </div>
-
-      <div class="protocol-node bottom">
-        TCP / UDP
-      </div>
-
-      <div class="protocol-line line-top"></div>
-      <div class="protocol-line line-left"></div>
-      <div class="protocol-line line-right"></div>
-      <div class="protocol-line line-bottom"></div>
-
-    </div>
-
-    <section class="section reveal">
-
-      <h2>What is a protocol?</h2>
-
-      <p>
-        A <strong>network protocol</strong> is a set of agreed rules
-        that defines how devices communicate.
-      </p>
-
-      <p>
-        Think about two people having a conversation.
-        They need a shared language and some understanding of how
-        the conversation works.
-      </p>
-
-      <p>
-        Computers need something similar.
-      </p>
-
-      <p>
-        A protocol can define things such as how a message is structured,
-        how it is sent, how it is received, and what the receiver should
-        do with it.
-      </p>
-
-    </section>
-
-    <section class="section reveal">
-
-      <h2>One request, many protocols</h2>
-
-      <p>
-        Let's go back to something familiar:
-        visiting a website.
-      </p>
-
-      <p>
-        It looks like one simple action to you.
-        Underneath, several protocols can be involved.
-      </p>
-
-      <div class="flow">
-
-        <div class="flow-row">
-
-          <div class="flow-item">
-            DNS
-          </div>
-
-          <div class="flow-arrow">
-            →
-          </div>
-
-          <div class="flow-item">
-            TCP
-          </div>
-
-          <div class="flow-arrow">
-            →
-          </div>
-
-          <div class="flow-item highlight">
-            HTTPS
-          </div>
-
-          <div class="flow-arrow">
-            →
-          </div>
-
-          <div class="flow-item">
-            Response
-          </div>
-
-        </div>
-
-      </div>
-
-      <p>
-        Each protocol has a different job.
-        They are not competing with each other.
-        They work at different parts of the communication process.
-      </p>
-
-    </section>
-
-    <section class="section reveal">
-
-      <h2>Protocols you'll meet everywhere</h2>
-
-      <div class="protocol-list">
-
-        <div class="protocol-row">
-          <div class="protocol-name">DNS</div>
-          <div class="protocol-purpose">
-            Helps translate domain names such as example.com into IP addresses.
-          </div>
-        </div>
-
-        <div class="protocol-row">
-          <div class="protocol-name">DHCP</div>
-          <div class="protocol-purpose">
-            Automatically provides devices with network configuration such as
-            an IP address, subnet mask, gateway, and DNS server.
-          </div>
-        </div>
-
-        <div class="protocol-row">
-          <div class="protocol-name">ARP</div>
-          <div class="protocol-purpose">
-            Helps IPv4 devices discover the MAC address associated with a
-            local IPv4 address.
-          </div>
-        </div>
-
-        <div class="protocol-row">
-          <div class="protocol-name">TCP</div>
-          <div class="protocol-purpose">
-            Provides reliable, ordered delivery of data between endpoints.
-          </div>
-        </div>
-
-        <div class="protocol-row">
-          <div class="protocol-name">UDP</div>
-          <div class="protocol-purpose">
-            Provides a lightweight transport method without TCP's connection
-            and delivery guarantees.
-          </div>
-        </div>
-
-        <div class="protocol-row">
-          <div class="protocol-name">HTTP</div>
-          <div class="protocol-purpose">
-            Defines how web clients and servers exchange web resources.
-          </div>
-        </div>
-
-        <div class="protocol-row">
-          <div class="protocol-name">HTTPS</div>
-          <div class="protocol-purpose">
-            HTTP communication protected using TLS.
-          </div>
-        </div>
-
-        <div class="protocol-row">
-          <div class="protocol-name">SSH</div>
-          <div class="protocol-purpose">
-            Provides secure remote access and other secure communication
-            functions over a network.
-          </div>
-        </div>
-
-      </div>
-
-    </section>
-
-    <section class="section reveal">
-
-      <h2>Protocols have different jobs</h2>
-
-      <p>
-        It helps to stop thinking of protocols as one giant list.
-      </p>
-
-      <p>
-        Instead, think about where they fit into a conversation.
-      </p>
-
-      <div class="flow">
-
-        <div class="flow-row">
-
-          <div class="flow-item">
-            DNS
-          </div>
-
-          <div class="flow-arrow">
-            finds the destination
-          </div>
-
-          <div class="flow-item">
-            TCP / UDP
-          </div>
-
-          <div class="flow-arrow">
-            carries data
-          </div>
-
-          <div class="flow-item highlight">
-            HTTP / HTTPS
-          </div>
-
-        </div>
-
-      </div>
-
-      <p>
-        For example, DNS can help answer
-        <em>“Where is this website?”</em>
-      </p>
-
-      <p>
-        TCP can help provide
-        <em>“How should this data be delivered reliably?”</em>
-      </p>
-
-      <p>
-        HTTPS helps define
-        <em>“How should this web communication be protected?”</em>
-      </p>
-
-      <p>
-        Different questions.
-        Different protocols.
-        One communication process.
-      </p>
-
-    </section>
-
-    <section class="section reveal">
-
-      <h2>Where does security enter?</h2>
-
-      <p>
-        Protocols are important to cybersecurity because security problems
-        can appear when communication rules are weak, misconfigured,
-        outdated, or used incorrectly.
-      </p>
-
-      <p>
-        That's why security professionals spend so much time looking at
-        network traffic.
-      </p>
-
-      <div class="security-note">
+        <p>You open a website.</p>
 
         <p>
-          A network packet is not just “data moving around.”
-          It can contain clues about who is communicating, where the
-          communication is going, which protocol is being used, and what
-          kind of service is involved.
+          Your device finds the destination, sends traffic through the
+          network, and eventually receives a response.
         </p>
 
-      </div>
+        <p>
+          It feels like one simple action. But underneath it, several
+          processes are working together.
+        </p>
 
-      <p>
-        This is one reason tools such as Wireshark are useful in defensive
-        security and network investigations.
-      </p>
+        <p>
+          Here's the question hiding underneath all of this:
+          <strong>How do two completely different systems agree on what
+          their communication means?</strong>
+        </p>
 
-      <p>
-        If you understand the protocol, unusual traffic becomes much easier
-        to recognize.
-      </p>
+        <p>They use protocols.</p>
 
-    </section>
+        <div class="email-visual">
+          <div class="visual-label">DIFFERENT RULES · ONE NETWORK</div>
 
-    <section class="question reveal">
+          <div class="flow">
+            <div class="flow-row">
+              <div class="flow-item">DNS</div>
+              <div class="flow-arrow">↔</div>
+              <div class="flow-item">DHCP</div>
+            </div>
 
-      <div class="question-label">
-        PAUSE FOR A SECOND
-      </div>
+            <div class="flow-row">
+              <div class="flow-item">TCP / UDP</div>
+              <div class="flow-arrow">↔</div>
+              <div class="flow-item highlight">Communication</div>
+            </div>
 
-      <p>
-        If you saw a packet using DNS, what kind of activity would you
-        expect it to be related to?
-      </p>
-
-    </section>
-
-    <section class="section reveal">
-
-      <h2>The important part isn't memorizing them</h2>
-
-      <p>
-        You don't need to memorize a huge protocol table before continuing.
-      </p>
-
-      <p>
-        The more useful skill is recognizing what a protocol is trying to do.
-      </p>
-
-      <p>
-        When you see <strong>DNS</strong>, think name resolution.
-      </p>
-
-      <p>
-        When you see <strong>DHCP</strong>, think network configuration.
-      </p>
-
-      <p>
-        When you see <strong>ARP</strong>, think local IPv4-to-MAC resolution.
-      </p>
-
-      <p>
-        When you see <strong>TCP</strong>, think reliable transport.
-      </p>
-
-      <p>
-        When you see <strong>UDP</strong>, think lightweight transport without
-        TCP's reliability mechanisms.
-      </p>
-
-      <p>
-        When you see <strong>HTTP or HTTPS</strong>, think web communication.
-      </p>
-
-    </section>
-
-    <section class="section reveal">
-
-      <h2>And now the network gets interesting</h2>
-
-      <p>
-        We've followed the path from a single device to a much larger picture.
-      </p>
-
-      <div class="flow">
-
-        <div class="flow-row">
-
-          <div class="flow-item">
-            Device
+            <div class="flow-row">
+              <div class="flow-item">ARP</div>
+              <div class="flow-arrow">↔</div>
+              <div class="flow-item">HTTP / HTTPS</div>
+            </div>
           </div>
 
-          <div class="flow-arrow">
-            →
+          <p class="visual-note">
+            Each protocol has its own responsibility, but they work
+            together to make network communication possible.
+          </p>
+        </div>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">02 / THE BASICS</div>
+
+        <h2>What is a protocol?</h2>
+
+        <p>
+          A <strong>network protocol</strong> is a set of agreed rules
+          that defines how devices communicate.
+        </p>
+
+        <p>
+          Think about two people having a conversation. They need a shared
+          language and some understanding of how the conversation works.
+          Without that shared understanding, messages can be misunderstood.
+        </p>
+
+        <p>Computers need something similar.</p>
+
+        <p>
+          A protocol can define how a message is structured, how it is
+          sent, how it is received, and what the receiver should do with it.
+        </p>
+
+        <div class="highlight">
+          A protocol is not a device or an application. It is a set of
+          rules that helps systems communicate in an agreed way.
+        </div>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">03 / FOLLOW THE REQUEST</div>
+
+        <h2>One request, many protocols</h2>
+
+        <p>
+          Let's go back to something familiar: visiting a website.
+        </p>
+
+        <p>
+          You enter a domain name into your browser. Before the page appears,
+          different protocols may help your device locate the server,
+          establish communication, and request the page.
+        </p>
+
+        <div class="email-visual">
+          <div class="visual-label">A SIMPLIFIED WEB REQUEST</div>
+
+          <div class="flow">
+            <div class="flow-row">
+              <div class="flow-item">Domain name</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-item highlight">DNS</div>
+            </div>
+
+            <div class="flow-row">
+              <div class="flow-item">IP address</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-item">TCP</div>
+            </div>
+
+            <div class="flow-row">
+              <div class="flow-item highlight">HTTPS</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-item">Web response</div>
+            </div>
           </div>
 
-          <div class="flow-item">
-            IP
-          </div>
-
-          <div class="flow-arrow">
-            →
-          </div>
-
-          <div class="flow-item">
-            Subnet
-          </div>
-
-          <div class="flow-arrow">
-            →
-          </div>
-
-          <div class="flow-item">
-            Router
-          </div>
-
-          <div class="flow-arrow">
-            →
-          </div>
-
-          <div class="flow-item">
-            NAT
-          </div>
-
-          <div class="flow-arrow">
-            →
-          </div>
-
-          <div class="flow-item highlight">
-            Protocols
-          </div>
-
+          <p class="visual-note">
+            This is a simplified example of a common HTTPS connection.
+            The exact sequence depends on the network, protocol versions,
+            and connection setup.
+          </p>
         </div>
 
+        <p>
+          Each protocol has a different job. They aren't competing with
+          each other; they work together at different parts of the
+          communication process.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">04 / MEET THE PROTOCOLS</div>
+
+        <h2>Protocols you'll meet everywhere</h2>
+
+        <p>
+          You don't need to memorize a huge protocol table before continuing.
+          The more useful skill is recognizing what a protocol is trying to do.
+        </p>
+
+        <div class="email-visual">
+          <div class="visual-label">THE JOB BEHIND THE NAME</div>
+
+          <div class="flow">
+            <div class="flow-row">
+              <div class="flow-item highlight">DNS</div>
+              <div class="flow-item">Name resolution</div>
+            </div>
+
+            <p class="visual-note">
+              Helps translate domain names, such as example.com, into
+              IP addresses.
+            </p>
+
+            <div class="flow-row">
+              <div class="flow-item highlight">DHCP</div>
+              <div class="flow-item">Network configuration</div>
+            </div>
+
+            <p class="visual-note">
+              Automatically provides devices with network settings such
+              as an IP address, subnet mask, gateway, and DNS server.
+            </p>
+
+            <div class="flow-row">
+              <div class="flow-item highlight">ARP</div>
+              <div class="flow-item">Local address resolution</div>
+            </div>
+
+            <p class="visual-note">
+              Helps IPv4 devices discover the MAC address associated
+              with a local IPv4 address.
+            </p>
+
+            <div class="flow-row">
+              <div class="flow-item highlight">TCP</div>
+              <div class="flow-item">Reliable transport</div>
+            </div>
+
+            <p class="visual-note">
+              Establishes a connection and provides mechanisms for
+              reliable, ordered delivery of data.
+            </p>
+
+            <div class="flow-row">
+              <div class="flow-item highlight">UDP</div>
+              <div class="flow-item">Lightweight transport</div>
+            </div>
+
+            <p class="visual-note">
+              Sends data without TCP's connection and reliability
+              mechanisms. It can be useful when low overhead matters.
+            </p>
+
+            <div class="flow-row">
+              <div class="flow-item highlight">HTTP</div>
+              <div class="flow-item">Web communication</div>
+            </div>
+
+            <p class="visual-note">
+              Defines how web clients and servers exchange requests
+              and responses.
+            </p>
+
+            <div class="flow-row">
+              <div class="flow-item highlight">HTTPS</div>
+              <div class="flow-item">Protected web communication</div>
+            </div>
+
+            <p class="visual-note">
+              Uses HTTP over a protected connection, typically with TLS,
+              to provide encryption and server authentication.
+            </p>
+          </div>
+        </div>
+
+        <div class="security-note">
+          <p>
+            <strong>Why this matters in cybersecurity</strong>
+          </p>
+
+          <p>
+            Understanding protocol roles helps you interpret network
+            traffic. For example, DNS activity relates to name resolution,
+            while HTTP requests can reveal which web paths a client tried
+            to access. Context matters: unusual traffic is worth
+            investigating, but one protocol or request alone does not
+            automatically prove an attack.
+          </p>
+        </div>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">05 / THINK LIKE AN INVESTIGATOR</div>
+
+        <h2>What would you look for?</h2>
+
+        <p>
+          Imagine you're reviewing network activity for a college website.
+          You notice a device making repeated DNS queries, followed by
+          requests to several web paths.
+        </p>
+
+        <p>
+          Instead of treating every event as a separate mystery, you can
+          start by asking what each part of the activity means.
+        </p>
+
+        <div class="email-visual">
+          <div class="visual-label">CONNECT THE CLUES</div>
+
+          <div class="flow">
+            <div class="flow-row">
+              <div class="flow-item">DNS queries</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-item">Which names?</div>
+            </div>
+
+            <div class="flow-row">
+              <div class="flow-item">Web requests</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-item">Which paths?</div>
+            </div>
+
+            <div class="flow-row">
+              <div class="flow-item">Event timeline</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-item highlight">What connects?</div>
+            </div>
+          </div>
+
+          <p class="visual-note">
+            Protocol knowledge gives you a starting point for investigation.
+            You still need to examine the destination, timing, frequency,
+            and surrounding evidence before drawing a conclusion.
+          </p>
+        </div>
+
+        <p>
+          That is the useful habit: identify the protocol, understand its
+          role, and then investigate whether the activity makes sense
+          in context.
+        </p>
+
+        <div class="question">
+          If you saw repeated requests to an unusual web path, what other
+          details would you want to check before deciding whether the
+          activity was suspicious?
+        </div>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">06 / THE BIGGER PICTURE</div>
+
+        <h2>And now the network gets interesting</h2>
+
+        <p>
+          We've followed the path from a single device to a much larger
+          picture. You have seen how addressing, routing, and protocols
+          help data move between systems.
+        </p>
+
+        <div class="email-visual">
+          <div class="visual-label">FROM A DEVICE TO COMMUNICATION</div>
+
+          <div class="flow">
+            <div class="flow-row">
+              <div class="flow-item">Device</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-item">IP</div>
+            </div>
+
+            <div class="flow-row">
+              <div class="flow-item">Subnet</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-item">Router</div>
+            </div>
+
+            <div class="flow-row">
+              <div class="flow-item">NAT</div>
+              <div class="flow-arrow">→</div>
+              <div class="flow-item highlight">Protocols</div>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          But protocols don't just describe communication. They also
+          support the services that systems provide.
+        </p>
+
+        <p>
+          A server might be listening for web traffic. Another might
+          provide remote access. Another might handle DNS or email.
+        </p>
+
+        <p>
+          Once you know that services exist, the next question naturally
+          becomes:
+        </p>
+
+        <p>
+          <strong>
+            What exactly is a network service, and how can we discover it?
+          </strong>
+        </p>
+      </section>
+
+      <section class="takeaway reveal">
+        <div class="takeaway-label">TAKEAWAY · 024</div>
+
+        <p>
+          <strong>
+            Network protocols are agreed rules that allow systems to communicate.
+          </strong>
+          DNS helps with name resolution, DHCP provides network configuration,
+          ARP helps resolve local IPv4 addresses to MAC addresses, TCP and UDP
+          handle transport, and HTTP/HTTPS support web communication.
+          Understanding these roles is a useful first step toward reading
+          and investigating network traffic.
+        </p>
+      </section>
+
+    </article>
+
+    <section class="next-article reveal">
+      <div class="next-inner">
+        <div class="next-label">NEXT CLUE · 025</div>
+
+        <h2 class="next-title">Network Services</h2>
+
+        <p class="next-description">
+          Protocols help systems communicate. Next, discover the services
+          running on systems and how to start identifying them.
+        </p>
+
+        <a class="next-link" href="network-services.html">
+          Continue to Network Services <span aria-hidden="true">→</span>
+        </a>
       </div>
-
-      <p>
-        But protocols don't just describe communication.
-        They also expose services.
-      </p>
-
-      <p>
-        A server might be listening for web traffic.
-        Another might provide remote access.
-        Another might handle DNS or email.
-      </p>
-
-      <p>
-        And once you know that services exist,
-        the next question naturally becomes:
-      </p>
-
-      <p>
-        <strong>
-          What exactly is a network service, and how can we discover it?
-        </strong>
-      </p>
-
     </section>
-
-    <section class="takeaway reveal">
-
-      <div class="takeaway-label">
-        TAKEAWAY · 024
-      </div>
-
-      <p>
-        <strong>
-          Network protocols are agreed rules that allow systems to communicate.
-        </strong>
-        Different protocols perform different jobs: DNS helps with name
-        resolution, DHCP provides network configuration, ARP resolves local
-        IPv4 addresses to MAC addresses, TCP and UDP handle transport, and
-        HTTP/HTTPS support web communication. Understanding these roles is
-        important when reading and investigating network traffic.
-      </p>
-
-    </section>
-
-    <div class="article-next reveal">
-
-      <div class="article-next-label">
-        NEXT CLUE · 025
-      </div>
-
-      <a href="network-services.html">
-        Network Services
-        <span class="next-arrow">→</span>
-      </a>
-
-    </div>
 
   </main>
 
-  <footer>
-    <div class="container">
-      KSCybSec · Cybersecurity knowledge, one clue at a time.
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a class="footer-brand" href="../index.html">Veil &amp; Vector</a>
+
+      <div class="footer-links">
+        <a href="../index.html#articles">All articles</a>
+        <a href="../index.html#learning-paths">Learning paths</a>
+      </div>
     </div>
   </footer>
 
-  <script>
-    const menuButton = document.querySelector(".menu-btn");
-    const mobileMenu = document.querySelector(".mobile-menu");
-
-    if (menuButton && mobileMenu) {
-      menuButton.addEventListener("click", () => {
-        const isOpen = mobileMenu.classList.toggle("open");
-        menuButton.setAttribute("aria-expanded", String(isOpen));
-      });
-    }
-
-    const revealElements = document.querySelectorAll(".reveal");
-
-    if ("IntersectionObserver" in window) {
-
-      const observer = new IntersectionObserver(
-        entries => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("visible");
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        {
-          threshold: 0.12
-        }
-      );
-
-      revealElements.forEach(element => {
-        observer.observe(element);
-      });
-
-    } else {
-
-      revealElements.forEach(element => {
-        element.classList.add("visible");
-      });
-
-    }
-  </script>
-
+  <script src="../article.js" defer></script>
 </body>
 </html>
