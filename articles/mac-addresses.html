@@ -1,1206 +1,696 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>MAC Addresses — Guide 018 · Networking · Beginner | KSCybSec</title>
-
-  <meta name="description" content="What is a MAC address? Follow a simple story to understand how devices identify network interfaces on a local network.">
+  <title>MAC Addresses — Guide 018 | Veil & Vector</title>
+  <meta name="description" content="What is a MAC address? Follow a simple story to understand how network interfaces are identified and how MAC addresses help devices communicate locally.">
+  <link rel="canonical" href="https://veilvector.github.io/articles/mac-addresses.html">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+  <link rel="stylesheet" href="../article.css">
+
   <style>
-    :root {
-      --bg: #070B14;
-      --surface: #0B1120;
-      --surface-2: #101827;
-      --text: #E8EDF5;
-      --muted: #8995AA;
-      --cyan: #4DE8FF;
-      --purple: #8B7CFF;
-      --border: rgba(137,149,170,0.18);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: "Space Grotesk", sans-serif;
-      line-height: 1.75;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    .container {
-      width: min(900px, calc(100% - 40px));
-      margin: auto;
-    }
-
-    /* NAV */
-
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(7, 11, 20, 0.88);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-inner {
-      width: min(1180px, calc(100% - 40px));
-      margin: auto;
-      min-height: 70px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .brand {
-      text-decoration: none;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    .brand span {
-      color: var(--cyan);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 28px;
-      align-items: center;
-    }
-
-    .nav-links a {
-      text-decoration: none;
-      color: var(--muted);
-      font-size: 0.9rem;
-      transition: color 0.2s ease;
-    }
-
-    .nav-links a:hover {
-      color: var(--text);
-    }
-
-    .menu-toggle {
-      display: none;
-      background: none;
-      border: 0;
-      color: var(--text);
-      font-size: 1.4rem;
-      cursor: pointer;
-    }
-
-    /* HERO */
-
-    .article-hero {
-      padding: 100px 0 75px;
-    }
-
-    .eyebrow {
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      color: var(--cyan);
-      text-transform: uppercase;
-      margin-bottom: 24px;
-    }
-
-    h1 {
-      font-size: clamp(2.8rem, 7vw, 5rem);
-      line-height: 1.02;
-      letter-spacing: -0.045em;
-      max-width: 850px;
-    }
-
-    h1 span {
-      color: var(--cyan);
-    }
-
-    .hero-subtitle {
-      max-width: 680px;
-      margin-top: 26px;
-      color: var(--muted);
-      font-size: 1.15rem;
-      line-height: 1.8;
-    }
-
-    .article-meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 18px;
-      margin-top: 30px;
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
-
-    /* ARTICLE */
-
-    article {
-      padding-bottom: 80px;
-    }
-
-    .article-content {
-      font-size: 1.04rem;
-    }
-
-    .article-content p {
-      margin: 0 0 25px;
-      color: #cdd5e2;
-    }
-
-    .article-content strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .article-content h2 {
-      margin: 75px 0 25px;
-      font-size: 2rem;
-      line-height: 1.2;
-      letter-spacing: -0.025em;
-    }
-
-    .article-content h2::before {
-      content: "·";
-      color: var(--cyan);
-      margin-right: 12px;
-    }
-
-    /* STORY */
-
-    .story {
-      border-left: 2px solid var(--cyan);
-      padding: 5px 0 5px 26px;
-      margin: 45px 0;
-    }
-
-    .story p {
-      font-size: 1.12rem;
-      color: var(--text);
-    }
-
-    /* VISUAL */
-
-    .visual-wrap {
-      margin: 50px 0 55px;
-      padding: 34px;
+    .editorial-visual {
+      margin: 42px 0 48px;
+      padding: 24px 0;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
-      background:
-        radial-gradient(circle at 50% 50%, rgba(77,232,255,0.06), transparent 55%);
     }
 
     .visual-label {
+      margin-bottom: 26px;
       font-family: "DM Mono", monospace;
-      color: var(--muted);
-      font-size: 0.68rem;
-      letter-spacing: 0.12em;
+      font-size: .7rem;
+      letter-spacing: .1em;
       text-transform: uppercase;
-      margin-bottom: 28px;
+      color: var(--muted);
     }
 
-    /* ADDRESS VISUAL */
-
-    .address-visual {
+    .address-flow {
       display: grid;
-      grid-template-columns: 1fr auto 1fr;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       align-items: center;
       gap: 20px;
-      min-height: 190px;
     }
 
-    .device-box {
-      border: 1px solid var(--border);
-      background: var(--surface);
-      padding: 22px;
+    .address-item {
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      min-width: 0;
     }
 
-    .device-box.highlight {
-      border-color: rgba(77,232,255,0.45);
+    .address-item:last-child {
+      border-color: var(--text);
     }
 
-    .device-label {
+    .item-kicker {
+      display: block;
+      font-family: "DM Mono", monospace;
+      font-size: .65rem;
+      letter-spacing: .05em;
       color: var(--muted);
-      font-family: "DM Mono", monospace;
-      font-size: 0.62rem;
-      margin-bottom: 8px;
     }
 
-    .device-name {
-      font-size: 1.05rem;
+    .item-title {
+      display: block;
+      margin: 9px 0;
+      font-size: 1.15rem;
+      font-weight: 500;
     }
 
-    .address {
-      margin-top: 12px;
-      color: var(--cyan);
+    .item-address {
+      display: block;
       font-family: "DM Mono", monospace;
-      font-size: 0.75rem;
+      font-size: .78rem;
+      color: var(--text);
       overflow-wrap: anywhere;
     }
 
-    .visual-arrow {
-      color: var(--cyan);
-      font-size: 1.4rem;
+    .flow-arrow {
+      color: var(--muted);
+      font-size: 1.1rem;
     }
 
-    /* MAC FORMAT */
-
-    .mac-display {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 180px;
-    }
-
-    .mac-address {
+    .mac-example {
+      margin: 0;
+      padding: 22px 0;
       font-family: "DM Mono", monospace;
-      font-size: clamp(1rem, 4vw, 1.6rem);
-      letter-spacing: 0.08em;
-      color: var(--cyan);
-      padding: 24px 28px;
-      border: 1px solid rgba(77,232,255,0.3);
-      background: var(--surface);
+      font-size: clamp(1.05rem, 4vw, 1.65rem);
+      letter-spacing: .07em;
       text-align: center;
+      overflow-wrap: anywhere;
+      color: var(--text);
     }
 
-    .mac-caption {
+    .mac-example small {
       display: block;
       margin-top: 12px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: .82rem;
+      letter-spacing: 0;
       color: var(--muted);
-      font-size: 0.65rem;
-      letter-spacing: 0.04em;
     }
 
-    /* LOCAL NETWORK */
-
-    .local-network {
-      position: relative;
-      min-height: 310px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .switch {
-      padding: 18px 24px;
-      border: 1px solid var(--cyan);
-      background: var(--surface);
-      text-align: center;
-      z-index: 2;
-    }
-
-    .switch small {
-      display: block;
-      margin-top: 4px;
-      color: var(--muted);
-      font-family: "DM Mono", monospace;
-      font-size: 0.6rem;
-    }
-
-    .local-device {
-      position: absolute;
-      padding: 13px 17px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      text-align: center;
-      font-size: 0.8rem;
-      min-width: 120px;
-    }
-
-    .local-device small {
-      display: block;
-      color: var(--muted);
-      font-family: "DM Mono", monospace;
-      font-size: 0.55rem;
-      margin-top: 3px;
-    }
-
-    .local-device.one {
-      top: 10px;
-      left: 7%;
-    }
-
-    .local-device.two {
-      top: 10px;
-      right: 7%;
-    }
-
-    .local-device.three {
-      bottom: 10px;
-      left: 18%;
-    }
-
-    .local-device.four {
-      bottom: 10px;
-      right: 18%;
-    }
-
-    .local-connection {
-      position: absolute;
-      height: 1px;
-      background: rgba(77,232,255,0.28);
-      width: 30%;
-      left: 20%;
-      top: 35%;
-    }
-
-    .local-connection.two {
-      left: 50%;
-    }
-
-    .local-connection.three {
-      left: 25%;
-      top: 65%;
-    }
-
-    .local-connection.four {
-      left: 50%;
-      top: 65%;
-    }
-
-    /* COMPARISON */
-
-    .comparison {
-      margin: 45px 0;
+    .interface-list {
+      margin: 25px 0;
       border-top: 1px solid var(--border);
+    }
+
+    .interface-row {
+      display: grid;
+      grid-template-columns: 125px minmax(0, 1fr);
+      gap: 18px;
+      padding: 16px 0;
       border-bottom: 1px solid var(--border);
+    }
+
+    .interface-name {
+      font-weight: 500;
+    }
+
+    .interface-description {
+      margin: 0;
+      font-size: .93rem;
+    }
+
+    .network-map {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(125px, .8fr) minmax(0, 1fr);
+      gap: 18px;
+      align-items: center;
+    }
+
+    .device-column {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .network-device {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .network-device strong {
+      display: block;
+      font-weight: 500;
+    }
+
+    .network-device small {
+      display: block;
+      margin-top: 5px;
+      font-family: "DM Mono", monospace;
+      font-size: .66rem;
+      color: var(--muted);
+    }
+
+    .network-switch {
+      padding: 18px 12px;
+      text-align: center;
+      border-top: 1px solid var(--text);
+      border-bottom: 1px solid var(--text);
+    }
+
+    .network-switch strong {
+      display: block;
+      font-weight: 500;
+    }
+
+    .network-switch small {
+      display: block;
+      margin-top: 7px;
+      font-family: "DM Mono", monospace;
+      font-size: .64rem;
+      color: var(--muted);
+    }
+
+    .network-caption {
+      margin: 24px 0 0;
+      font-size: .84rem;
+      color: var(--muted);
+    }
+
+    .comparison-list {
+      margin: 38px 0;
+      border-top: 1px solid var(--border);
     }
 
     .comparison-row {
       display: grid;
-      grid-template-columns: 145px 1fr;
+      grid-template-columns: 130px minmax(0, 1fr);
+      gap: 20px;
+      padding: 19px 0;
       border-bottom: 1px solid var(--border);
     }
 
-    .comparison-row:last-child {
-      border-bottom: 0;
-    }
-
-    .comparison-row > div {
-      padding: 18px;
-    }
-
-    .comparison-label {
+    .comparison-term {
       font-family: "DM Mono", monospace;
-      color: var(--cyan);
-      font-size: 0.7rem;
+      font-size: .74rem;
+      color: var(--text);
     }
 
-    .comparison-text {
-      color: #cdd5e2;
-      font-size: 0.9rem;
+    .comparison-detail {
+      margin: 0;
+      font-size: .94rem;
     }
 
-    /* QUESTION */
-
-    .question {
-      margin: 55px 0;
-      padding: 30px 0;
+    .question-prompt {
+      margin: 48px 0;
+      padding: 24px 0;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
 
-    .question-label {
-      font-family: "DM Mono", monospace;
-      font-size: 0.68rem;
-      color: var(--cyan);
-      letter-spacing: 0.1em;
+    .question-prompt .visual-label {
       margin-bottom: 12px;
     }
 
-    .question p {
-      font-size: 1.25rem;
+    .question-prompt p {
+      margin: 0;
+      font-size: 1.2rem;
       color: var(--text);
+    }
+
+    .investigation-list {
+      margin: 26px 0 34px;
+      border-top: 1px solid var(--border);
+    }
+
+    .investigation-row {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr);
+      gap: 14px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .investigation-number {
+      font-family: "DM Mono", monospace;
+      font-size: .72rem;
+      color: var(--muted);
+    }
+
+    .investigation-row p {
       margin: 0;
     }
 
-    /* TAKEAWAY */
-
     .takeaway {
-      margin-top: 70px;
-      padding: 32px 0;
+      margin-top: 60px;
+      padding: 25px 0;
       border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
 
     .takeaway-label {
+      margin-bottom: 14px;
       font-family: "DM Mono", monospace;
-      color: var(--cyan);
-      font-size: 0.68rem;
-      letter-spacing: 0.1em;
-      margin-bottom: 18px;
+      font-size: .7rem;
+      letter-spacing: .1em;
+      color: var(--muted);
     }
 
     .takeaway-main {
-      font-size: 1.35rem;
-      color: var(--text);
+      font-size: 1.2rem;
+      line-height: 1.7;
     }
 
-    /* NEXT */
-
-    .article-next {
-      margin-top: 80px;
-      padding-top: 32px;
-      border-top: 1px solid var(--border);
-    }
-
-    .article-next-label {
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-
-    .article-next a {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text);
-      text-decoration: none;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.15rem;
-      transition: color 0.2s ease;
-    }
-
-    .article-next a:hover {
-      color: var(--cyan);
-    }
-
-    .article-next .next-arrow {
-      color: var(--cyan);
-      font-size: 1rem;
-    }
-
-    /* FOOTER */
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 35px 0;
-      color: var(--muted);
-      font-size: 0.8rem;
-    }
-
-    .footer-inner {
-      width: min(1180px, calc(100% - 40px));
-      margin: auto;
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    /* REVEAL */
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(18px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* MOBILE */
-
-    @media (max-width: 700px) {
-
-      .nav-links {
-        display: none;
-        position: absolute;
-        top: 70px;
-        left: 0;
-        right: 0;
-        padding: 20px;
-        flex-direction: column;
-        align-items: flex-start;
-        background: var(--surface);
-        border-bottom: 1px solid var(--border);
+    @media (max-width: 640px) {
+      .address-flow {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 10px;
       }
 
-      .nav-links.open {
-        display: flex;
-      }
-
-      .menu-toggle {
-        display: block;
-      }
-
-      .article-hero {
-        padding: 70px 0 55px;
-      }
-
-      .visual-wrap {
-        padding: 25px 15px;
-      }
-
-      .address-visual {
-        grid-template-columns: 1fr;
-      }
-
-      .visual-arrow {
-        justify-self: center;
+      .flow-arrow {
+        justify-self: start;
+        margin-left: 12px;
         transform: rotate(90deg);
       }
 
-      .local-network {
-        min-height: 360px;
+      .network-map {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
       }
 
-      .local-device {
-        min-width: 95px;
+      .device-column {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
       }
 
-      .local-device.one {
-        left: 0;
+      .network-switch {
+        order: -1;
       }
 
-      .local-device.two {
-        right: 0;
-      }
-
-      .local-device.three {
-        left: 5%;
-      }
-
-      .local-device.four {
-        right: 5%;
-      }
-
-      .comparison-row {
-        grid-template-columns: 105px 1fr;
-      }
-
-      .footer-inner {
-        flex-direction: column;
+      .comparison-row,
+      .interface-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 6px;
       }
     }
 
-    @media (max-width: 430px) {
-
-      .container {
-        width: min(100% - 28px, 900px);
+    @media (prefers-reduced-motion: reduce) {
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
       }
 
-      h1 {
-        font-size: 2.7rem;
-      }
-
-      .mac-address {
-        padding: 20px 14px;
-        letter-spacing: 0.04em;
-      }
-
-      .local-network {
-        transform: scale(0.9);
-        transform-origin: center;
-      }
-
-      .comparison-row {
-        grid-template-columns: 1fr;
-      }
-
-      .comparison-label {
-        padding-bottom: 4px !important;
-      }
-
-      .comparison-text {
-        padding-top: 4px !important;
+      html {
+        scroll-behavior: auto;
       }
     }
   </style>
 </head>
 
 <body>
-
-  <!-- NAVIGATION -->
-
-  <nav>
+  <nav class="site-header">
     <div class="nav-inner">
-
-      <a href="../index.html" class="brand">
-        KS<span>CybSec</span>
-      </a>
-
-      <div class="nav-links" id="navLinks">
-        <a href="../index.html">Start Here</a>
-        <a href="../index.html#latest">Articles</a>
-        <a href="../index.html#topics">Topics</a>
-        <a href="../index.html#explore">Explore</a>
-        <a href="../index.html#about">About</a>
-      </div>
-
-      <button class="menu-toggle" id="menuToggle" aria-label="Open menu">
-        ☰
-      </button>
-
+      <a href="../index.html" class="brand">Veil <span>&</span> Vector</a>
+      <a href="../index.html#articles" class="back-link">← All articles</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch theme">☼</button>
     </div>
   </nav>
 
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress" id="progress"></div>
+  </div>
 
-  <!-- HERO -->
-
-  <header class="article-hero">
-    <div class="container">
-
-      <div class="eyebrow reveal">
-        Guide 018 · Networking · Beginner
-      </div>
-
-      <h1 class="reveal">
-        MAC <span>Addresses</span>
-      </h1>
-
-      <p class="hero-subtitle reveal">
-        Your device has an IP address. But inside a local network,
-        there's another address hiding underneath the communication.
-        Let's find it.
-      </p>
-
-      <div class="article-meta reveal">
-        <span>NETWORKING</span>
-        <span>·</span>
-        <span>~5 MIN READ</span>
-        <span>·</span>
-        <span>CLUE 018</span>
-      </div>
-
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="category">NETWORKING</span>
+      <span>GUIDE 018</span>
+      <span>5 MIN READ</span>
     </div>
+
+    <h1>MAC Addresses</h1>
+
+    <p class="article-intro">
+      Your device has an IP address. But when data travels across a local
+      network, another kind of address helps deliver it over the local link.
+      Let's find out what a MAC address does.
+    </p>
   </header>
 
+  <main class="article-body">
+    <section class="story-section reveal">
+      <p class="section-index">01 / THE QUESTION</p>
 
-  <!-- ARTICLE -->
+      <p>Your laptop is connected to Wi-Fi. Your phone is connected too.</p>
 
-  <article>
-    <div class="container article-content">
+      <p>
+        Both devices have IP addresses. Imagine your laptop wants to send
+        data to your phone and knows the phone's IP address.
+      </p>
 
+      <p>
+        There's another question underneath: <strong>what address is used
+        to deliver the data across the local network link?</strong>
+      </p>
 
-      <!-- OPENING STORY -->
+      <p>
+        That's where a MAC address enters the story.
+      </p>
+    </section>
 
-      <div class="story reveal">
+    <section class="story-section reveal">
+      <p class="section-index">02 / MEET THE MAC ADDRESS</p>
 
-        <p>
-          Your laptop is connected to Wi-Fi.
-        </p>
+      <h2>An address for a network interface</h2>
 
-        <p>
-          Your phone is connected too.
-        </p>
+      <p>
+        MAC stands for <strong>Media Access Control</strong>. A MAC address
+        is a link-layer address used by network technologies such as Ethernet
+        and Wi-Fi.
+      </p>
 
-        <p>
-          Both devices have IP addresses.
-        </p>
+      <p>
+        In many familiar networks, it helps identify the source and
+        destination interfaces for local delivery. Network switches can
+        use Ethernet source MAC addresses to learn which interfaces are
+        reachable through their ports.
+      </p>
 
-        <p>
-          Now imagine your laptop wants to send something to your phone.
-        </p>
+      <div class="editorial-visual">
+        <div class="visual-label">One device, different address types</div>
 
-        <p>
-          It knows the phone's IP address.
-        </p>
+        <div class="address-flow">
+          <div class="address-item">
+            <span class="item-kicker">DEVICE</span>
+            <span class="item-title">Laptop</span>
+            <span class="item-address">IP · 192.168.1.10</span>
+          </div>
 
-        <p>
-          But there's another question hiding underneath:
-        </p>
+          <div class="flow-arrow" aria-hidden="true">→</div>
 
-        <p>
-          <strong>
-            Which network interface should actually receive this data?
-          </strong>
-        </p>
-
-      </div>
-
-
-      <!-- VISUAL 1 -->
-
-      <div class="visual-wrap reveal">
-
-        <div class="visual-label">
-          One device, more than one identity
+          <div class="address-item">
+            <span class="item-kicker">NETWORK INTERFACE</span>
+            <span class="item-title">Wi-Fi adapter</span>
+            <span class="item-address">MAC · 3C:52:82:7A:91:4F</span>
+          </div>
         </div>
 
-        <div class="address-visual">
+        <p class="network-caption">
+          Illustrative example only. Actual addresses vary, and devices can
+          use multiple interfaces or configured MAC addresses.
+        </p>
+      </div>
 
-          <div class="device-box">
-            <div class="device-label">DEVICE</div>
-            <div class="device-name">Laptop</div>
-            <div class="address">
-              IP · 192.168.1.10
+      <p>
+        The important word is <strong>interface</strong>. A computer may
+        have a Wi-Fi interface and a separate Ethernet interface. Each can
+        have a different MAC address.
+      </p>
+    </section>
+
+    <section class="story-section reveal">
+      <p class="section-index">03 / READING THE FORMAT</p>
+
+      <h2>What does a MAC address look like?</h2>
+
+      <p>
+        A common 48-bit MAC address is written as six pairs of hexadecimal
+        digits. Hexadecimal uses the numbers 0–9 and letters A–F.
+      </p>
+
+      <div class="editorial-visual">
+        <div class="visual-label">Example · 48-bit MAC address</div>
+
+        <p class="mac-example">
+          3C:52:82:7A:91:4F
+          <small>Six hexadecimal pairs · 48 bits in total</small>
+        </p>
+      </div>
+
+      <p>
+        Depending on the operating system or tool, the same address may
+        appear with hyphens or another accepted notation instead of colons.
+      </p>
+
+      <p>
+        You don't need to memorize the example. Recognize the format and
+        understand what it represents: a link-layer address associated
+        with a network interface.
+      </p>
+
+      <p>
+        Also, don't assume every MAC address is a permanent hardware
+        identity. Devices can use locally administered or randomized
+        addresses, especially for Wi-Fi privacy.
+      </p>
+    </section>
+
+    <section class="story-section reveal">
+      <p class="section-index">04 / THE INTERFACE MATTERS</p>
+
+      <h2>Why specify the network interface?</h2>
+
+      <p>
+        Your laptop doesn't connect to a network by magic. It uses a
+        network interface, such as a Wi-Fi adapter or Ethernet controller.
+      </p>
+
+      <div class="interface-list">
+        <div class="interface-row">
+          <div class="interface-name">Wi-Fi</div>
+          <p class="interface-description">
+            Connects to a wireless network through a wireless access point
+            or router.
+          </p>
+        </div>
+
+        <div class="interface-row">
+          <div class="interface-name">Ethernet</div>
+          <p class="interface-description">
+            Connects to a wired network through an Ethernet cable and
+            compatible network equipment.
+          </p>
+        </div>
+      </div>
+
+      <p>
+        A laptop can have both interfaces, and they can have different
+        addresses. The precise question is therefore:
+        <strong>“What is the MAC address of the interface I'm investigating?”</strong>
+      </p>
+    </section>
+
+    <section class="story-section reveal">
+      <p class="section-index">05 / LOCAL DELIVERY</p>
+
+      <h2>Put the addresses back on a network</h2>
+
+      <p>
+        Imagine a few devices connected to the same local network.
+        When Ethernet frames travel across a LAN, the destination MAC
+        address helps determine which interface should receive a frame
+        on that local link.
+      </p>
+
+      <div class="editorial-visual">
+        <div class="visual-label">A simplified local network</div>
+
+        <div class="network-map">
+          <div class="device-column">
+            <div class="network-device">
+              <strong>Laptop</strong>
+              <small>MAC A · EXAMPLE</small>
+            </div>
+
+            <div class="network-device">
+              <strong>Printer</strong>
+              <small>MAC C · EXAMPLE</small>
             </div>
           </div>
 
-          <div class="visual-arrow">
-            →
+          <div class="network-switch">
+            <strong>Network switch</strong>
+            <small>FORWARDS ETHERNET FRAMES</small>
           </div>
 
-          <div class="device-box highlight">
-            <div class="device-label">NETWORK INTERFACE</div>
-            <div class="device-name">Wi-Fi Adapter</div>
-            <div class="address">
-              MAC · 3C:52:82:7A:91:4F
+          <div class="device-column">
+            <div class="network-device">
+              <strong>Phone / access point</strong>
+              <small>MAC B · EXAMPLE</small>
+            </div>
+
+            <div class="network-device">
+              <strong>Desktop</strong>
+              <small>MAC D · EXAMPLE</small>
             </div>
           </div>
-
         </div>
 
-      </div>
-
-
-      <p class="reveal">
-        This is where the <strong>MAC address</strong> enters the story.
-      </p>
-
-      <p class="reveal">
-        MAC stands for <strong>Media Access Control</strong>.
-      </p>
-
-      <p class="reveal">
-        A MAC address identifies a network interface at the
-        <strong>data-link layer</strong> of networking.
-      </p>
-
-      <p class="reveal">
-        In simpler words:
-        it helps devices communicate with each other on the same
-        local network.
-      </p>
-
-
-      <!-- MAC FORMAT -->
-
-      <h2 class="reveal">
-        What does a MAC address look like?
-      </h2>
-
-      <p class="reveal">
-        Unlike an IP address such as
-        <strong>192.168.1.10</strong>, a MAC address usually looks
-        like a sequence of hexadecimal values.
-      </p>
-
-
-      <div class="visual-wrap reveal">
-
-        <div class="visual-label">
-          Example MAC address
-        </div>
-
-        <div class="mac-display">
-
-          <div class="mac-address">
-            3C:52:82:7A:91:4F
-
-            <span class="mac-caption">
-              six hexadecimal pairs
-            </span>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <p class="reveal">
-        You might see MAC addresses written with colons,
-        hyphens, or sometimes without separators depending on
-        the operating system or tool displaying them.
-      </p>
-
-      <p class="reveal">
-        The exact address is not something you need to memorize.
-      </p>
-
-      <p class="reveal">
-        What matters is recognizing what it represents:
-        <strong>a network interface.</strong>
-      </p>
-
-
-      <!-- NETWORK INTERFACE -->
-
-      <h2 class="reveal">
-        Wait — why "network interface"?
-      </h2>
-
-      <p class="reveal">
-        Because your laptop doesn't magically connect to a network.
-      </p>
-
-      <p class="reveal">
-        It uses a network interface.
-      </p>
-
-      <p class="reveal">
-        For example, your laptop might have a Wi-Fi adapter.
-        It might also have an Ethernet port.
-      </p>
-
-      <p class="reveal">
-        Each interface can have its own MAC address.
-      </p>
-
-      <p class="reveal">
-        So when someone says,
-        <strong>"What's the MAC address of this computer?"</strong>,
-        the more precise question is really:
-      </p>
-
-      <div class="question reveal">
-
-        <div class="question-label">
-          A BETTER QUESTION
-        </div>
-
-        <p>
-          "What's the MAC address of the network interface
-          I'm talking about?"
+        <p class="network-caption">
+          Conceptual illustration, not a literal wiring diagram. Wi-Fi
+          communication also uses link-layer addressing, but the details
+          differ from a simple wired Ethernet example.
         </p>
-
       </div>
 
-
-      <!-- LOCAL NETWORK -->
-
-      <h2 class="reveal">
-        Now let's put it back on the network
-      </h2>
-
-      <p class="reveal">
-        Imagine four devices connected to the same local network.
+      <p>
+        A switch can learn which MAC addresses appear on which ports and
+        use that information to forward frames. Wireless networks have
+        their own link-layer details, but the same broad idea of local
+        delivery remains useful.
       </p>
 
-      <p class="reveal">
-        When devices communicate locally, network equipment needs
-        to know where the data should be delivered.
+      <p>
+        MAC addresses are not used to route packets across the entire
+        Internet. As traffic crosses routers, the link-layer frame is
+        generally replaced for the next network link, while the IP packet
+        is forwarded toward its destination.
       </p>
+    </section>
 
+    <section class="story-section reveal">
+      <p class="section-index">06 / IP VS MAC</p>
 
-      <div class="visual-wrap reveal">
+      <h2>So, is a MAC address the same as an IP address?</h2>
 
-        <div class="visual-label">
-          Devices on one local network
-        </div>
+      <p>No. They serve different purposes.</p>
 
-        <div class="local-network">
-
-          <div class="local-connection"></div>
-          <div class="local-connection two"></div>
-          <div class="local-connection three"></div>
-          <div class="local-connection four"></div>
-
-          <div class="switch">
-            Local Network
-            <small>FORWARDING TRAFFIC</small>
-          </div>
-
-          <div class="local-device one">
-            💻 Laptop
-            <small>MAC A</small>
-          </div>
-
-          <div class="local-device two">
-            📱 Phone
-            <small>MAC B</small>
-          </div>
-
-          <div class="local-device three">
-            🖨 Printer
-            <small>MAC C</small>
-          </div>
-
-          <div class="local-device four">
-            💻 Desktop
-            <small>MAC D</small>
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <p class="reveal">
-        Each interface has its own MAC address.
-      </p>
-
-      <p class="reveal">
-        That gives local networking equipment something concrete to
-        work with when delivering Ethernet frames.
-      </p>
-
-
-      <!-- IP VS MAC -->
-
-      <h2 class="reveal">
-        So is MAC the same as IP?
-      </h2>
-
-      <p class="reveal">
-        No.
-      </p>
-
-      <p class="reveal">
-        They are both addresses, but they serve different purposes
-        and operate at different layers of networking.
-      </p>
-
-
-      <div class="comparison reveal">
-
+      <div class="comparison-list">
         <div class="comparison-row">
-
-          <div class="comparison-label">
-            MAC ADDRESS
-          </div>
-
-          <div class="comparison-text">
-            Identifies a network interface at the data-link layer
-            and is used for local network communication.
-          </div>
-
+          <div class="comparison-term">MAC ADDRESS</div>
+          <p class="comparison-detail">
+            A link-layer address used to identify interfaces for local
+            network delivery.
+          </p>
         </div>
 
         <div class="comparison-row">
-
-          <div class="comparison-label">
-            IP ADDRESS
-          </div>
-
-          <div class="comparison-text">
-            Provides a logical address used by the network layer
-            to identify and route traffic between networks.
-          </div>
-
+          <div class="comparison-term">IP ADDRESS</div>
+          <p class="comparison-detail">
+            A logical network-layer address used to identify destinations
+            and route packets between networks.
+          </p>
         </div>
-
       </div>
 
-
-      <p class="reveal">
-        Here's an easy way to think about it.
+      <p>
+        A simple way to remember the distinction: IP helps get a packet
+        toward the destination network, while link-layer addressing helps
+        deliver the frame across the current local link.
       </p>
 
-      <p class="reveal">
-        An <strong>IP address</strong> helps describe where a device
-        is on a network.
+      <p>
+        That's a simplified model, but it's a solid starting point for
+        understanding how devices communicate.
       </p>
 
-      <p class="reveal">
-        A <strong>MAC address</strong> identifies the network interface
-        involved in local communication.
+      <div class="question-prompt">
+        <div class="visual-label">STOP & THINK</div>
+        <p>
+          If a laptop knows another device's IP address, how can it discover
+          the MAC address needed for local IPv4 delivery?
+        </p>
+      </div>
+    </section>
+
+    <section class="story-section reveal">
+      <p class="section-index">07 / THE NEXT CLUE</p>
+
+      <h2>How does a device find the MAC address?</h2>
+
+      <p>
+        We've reached a small networking mystery. A device knows an IP
+        address, but it may still need a link-layer address to deliver
+        data locally.
       </p>
 
-      <p class="reveal">
-        That's simplified, but it's enough for where we are right now.
+      <p>
+        On a typical IPv4 LAN, <strong>ARP — Address Resolution Protocol</strong>
+        helps resolve an IPv4 address to a MAC address.
       </p>
 
+      <p>
+        IPv6 uses a different mechanism called Neighbor Discovery rather
+        than ARP. We'll begin with ARP in the next article.
+      </p>
+    </section>
 
-      <!-- QUESTION -->
+    <section class="story-section reveal">
+      <p class="section-index">08 / THE SECURITY CONNECTION</p>
 
-      <div class="question reveal">
+      <h2>Why should cybersecurity analysts care?</h2>
 
-        <div class="question-label">
-          STOP & THINK
+      <p>
+        MAC addresses can appear in DHCP records, switch tables, wireless
+        logs, packet captures and troubleshooting data. They can help an
+        analyst connect different pieces of network evidence.
+      </p>
+
+      <div class="investigation-list">
+        <div class="investigation-row">
+          <span class="investigation-number">01</span>
+          <p>Which interface or device was associated with this address at that time?</p>
         </div>
 
-        <p>
-          If a laptop knows another device's IP address,
-          <strong>how can it discover the MAC address it needs
-          for local delivery?</strong>
-        </p>
-
-      </div>
-
-
-      <!-- ARP BRIDGE -->
-
-      <h2 class="reveal">
-        That's our next clue
-      </h2>
-
-      <p class="reveal">
-        We now have a small mystery.
-      </p>
-
-      <p class="reveal">
-        A device knows an IP address.
-      </p>
-
-      <p class="reveal">
-        But local communication also needs a MAC address.
-      </p>
-
-      <p class="reveal">
-        Something has to connect those two pieces of information.
-      </p>
-
-      <p class="reveal">
-        On an IPv4 local network, that job is handled by
-        <strong>ARP — Address Resolution Protocol</strong>.
-      </p>
-
-      <p class="reveal">
-        We'll follow that conversation in the next article.
-      </p>
-
-
-      <!-- SECURITY CONNECTION -->
-
-      <h2 class="reveal">
-        Why should you care about MAC addresses?
-      </h2>
-
-      <p class="reveal">
-        Because network investigations often start with small details.
-      </p>
-
-      <p class="reveal">
-        An analyst might see a MAC address in network information,
-        DHCP records, switch data, wireless logs, or other
-        troubleshooting and monitoring information.
-      </p>
-
-      <p class="reveal">
-        By itself, a MAC address doesn't tell you everything about
-        a device.
-      </p>
-
-      <p class="reveal">
-        But when combined with other clues, it can help connect
-        network activity to a particular interface or device.
-      </p>
-
-
-      <!-- FINAL STORY -->
-
-      <div class="story reveal">
-
-        <p>
-          Go back to the laptop and phone from the beginning.
-        </p>
-
-        <p>
-          The laptop wants to talk to the phone.
-        </p>
-
-        <p>
-          It knows where the phone is logically.
-          But local delivery needs another piece of information.
-        </p>
-
-        <p>
-          Somewhere inside that simple Wi-Fi conversation,
-          the network needs to answer a very ordinary question:
-        </p>
-
-        <p>
-          <strong>
-            "Which interface belongs to that address?"
-          </strong>
-        </p>
-
-        <p>
-          And that's where our next clue begins.
-        </p>
-
-      </div>
-
-
-      <!-- TAKEAWAY -->
-
-      <div class="takeaway reveal">
-
-        <div class="takeaway-label">
-          TAKEAWAY
+        <div class="investigation-row">
+          <span class="investigation-number">02</span>
+          <p>Do DHCP, switch or wireless records support that association?</p>
         </div>
 
-        <div class="takeaway-main">
-          A MAC address identifies a network interface and plays
-          an important role in communication on a local network.
-          IP and MAC addresses are different pieces of the networking puzzle.
+        <div class="investigation-row">
+          <span class="investigation-number">03</span>
+          <p>Could address randomization, spoofing or a changed network configuration affect the conclusion?</p>
         </div>
-
       </div>
 
+      <p>
+        A MAC address alone does not prove who owns a device or who used it.
+        It is one clue, and its meaning depends on the surrounding evidence.
+      </p>
+    </section>
 
-      <!-- NEXT -->
+    <section class="story-section reveal">
+      <p class="section-index">09 / CONNECT THE DOTS</p>
 
-      <div class="article-next reveal">
+      <p>
+        Return to the laptop and phone from the beginning. The laptop wants
+        to send data locally. IP addressing and link-layer addressing play
+        different roles in getting that data to the right place.
+      </p>
 
-        <div class="article-next-label">
-          NEXT CLUE · 019
-        </div>
+      <p>
+        The laptop may know the phone's IP address, but local delivery can
+        require resolving that IP address to a link-layer address first.
+      </p>
 
-        <a href="arp.html">
-          ARP — Finding Devices on a Local Network
-          <span class="next-arrow">→</span>
-        </a>
+      <p>
+        <strong>That missing connection is our next clue: ARP.</strong>
+      </p>
 
+      <div class="takeaway">
+        <div class="takeaway-label">TAKEAWAY</div>
+        <p class="takeaway-main">
+          A MAC address is a link-layer address used for local delivery.
+          It differs from an IP address, and it should be treated as one
+          piece of network evidence—not a guaranteed permanent identity
+          for a physical device.
+        </p>
       </div>
 
-    </div>
-  </article>
+      <div class="next-article">
+        <p class="section-index">NEXT CLUE · 019</p>
+        <a href="arp.html">ARP — Finding Devices on a Local Network <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+  </main>
 
-
-  <!-- FOOTER -->
-
-  <footer>
+  <footer class="site-footer">
     <div class="footer-inner">
-      <span>© KSCybSec</span>
-      <span>Cybersecurity knowledge, one clue at a time.</span>
+      <a href="../index.html" class="footer-brand">Veil & Vector</a>
+      <span>Look beyond the surface.</span>
     </div>
   </footer>
 
-
-  <script>
-
-    const menuToggle = document.getElementById("menuToggle");
-    const navLinks = document.getElementById("navLinks");
-
-    menuToggle.addEventListener("click", () => {
-      navLinks.classList.toggle("open");
-    });
-
-
-    const revealElements = document.querySelectorAll(".reveal");
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      {
-        threshold: 0.12
-      }
-    );
-
-    revealElements.forEach((element) => {
-      observer.observe(element);
-    });
-
-  </script>
-
+  <script src="../article.js"></script>
 </body>
 </html>
