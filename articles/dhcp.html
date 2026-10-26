@@ -1,1138 +1,541 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>DHCP — How Devices Get an IP · KSCybSec</title>
-  <meta name="description" content="Understand how DHCP gives devices the network information they need to communicate, one clue at a time.">
+  <title>DHCP: How Devices Get an IP | Veil &amp; Vector</title>
+  <meta name="description" content="Discover how DHCP automatically gives devices IP addresses and network settings, learn the four-step DORA process, and understand why DHCP matters in network security.">
+  <meta name="author" content="Veil &amp; Vector">
+  <meta name="theme-color" content="#11100f">
+  <meta name="robots" content="index, follow">
+
+  <link rel="canonical" href="https://veilvector.github.io/articles/dhcp.html">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --bg: #070B14;
-      --surface: #0B1120;
-      --surface-2: #101827;
-      --text: #E8EDF5;
-      --muted: #8995AA;
-      --cyan: #4DE8FF;
-      --purple: #8B7CFF;
-      --border: rgba(232, 237, 245, 0.10);
-      --soft-border: rgba(77, 232, 255, 0.18);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      margin: 0;
-      background: var(--bg);
-      color: var(--text);
-      font-family: "Space Grotesk", sans-serif;
-      line-height: 1.7;
-    }
-
-    a {
-      color: inherit;
-    }
-
-    .container {
-      width: min(1080px, calc(100% - 40px));
-      margin: 0 auto;
-    }
-
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 20;
-      background: rgba(7, 11, 20, 0.88);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-inner {
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-    }
-
-    .brand {
-      text-decoration: none;
-      font-weight: 600;
-      letter-spacing: -0.02em;
-    }
-
-    .brand span {
-      color: var(--cyan);
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 28px;
-    }
-
-    .nav-links a {
-      color: var(--muted);
-      text-decoration: none;
-      font-size: 0.92rem;
-      transition: color 0.2s ease;
-    }
-
-    .nav-links a:hover {
-      color: var(--text);
-    }
-
-    .menu-btn {
-      display: none;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text);
-      padding: 9px 11px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    .mobile-menu {
-      display: none;
-      padding-bottom: 18px;
-    }
-
-    .mobile-menu a {
-      display: block;
-      padding: 11px 0;
-      color: var(--muted);
-      text-decoration: none;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .mobile-menu.open {
-      display: block;
-    }
-
-    .article-hero {
-      padding: 105px 0 65px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .eyebrow {
-      font-family: "DM Mono", monospace;
-      color: var(--cyan);
-      font-size: 0.74rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      margin-bottom: 22px;
-    }
-
-    h1 {
-      max-width: 850px;
-      margin: 0;
-      font-size: clamp(2.7rem, 7vw, 5.3rem);
-      line-height: 1.02;
-      letter-spacing: -0.055em;
-      font-weight: 600;
-    }
-
-    .hero-description {
-      max-width: 650px;
-      margin: 27px 0 0;
-      color: var(--muted);
-      font-size: 1.12rem;
-    }
-
-    .article-meta {
-      margin-top: 30px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px 26px;
-      color: var(--muted);
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-    }
-
-    .article {
-      width: min(760px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 78px 0 100px;
-    }
-
-    .article p {
-      margin: 0 0 25px;
-      color: #C5CEDD;
-      font-size: 1.03rem;
-    }
-
-    .story {
-      border-left: 2px solid var(--cyan);
-      padding: 4px 0 4px 25px;
-      margin: 0 0 65px;
-    }
-
-    .story p {
-      color: var(--text);
-      font-size: 1.13rem;
-      margin-bottom: 0;
-    }
-
-    .visual {
-      position: relative;
-      margin: 55px 0 65px;
-      min-height: 360px;
-      border: 1px solid var(--border);
-      background:
-        linear-gradient(rgba(77, 232, 255, 0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(77, 232, 255, 0.035) 1px, transparent 1px),
-        var(--surface);
-      background-size: 34px 34px;
-      overflow: hidden;
-    }
-
-    .visual-label {
-      position: absolute;
-      top: 20px;
-      left: 22px;
-      font-family: "DM Mono", monospace;
-      color: var(--muted);
-      font-size: 0.68rem;
-      letter-spacing: 0.08em;
-    }
-
-    .device {
-      position: absolute;
-      width: 115px;
-      height: 72px;
-      border: 1px solid rgba(232, 237, 245, 0.18);
-      background: rgba(16, 24, 39, 0.94);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-    }
-
-    .device strong {
-      font-size: 0.82rem;
-      font-weight: 500;
-    }
-
-    .device span {
-      color: var(--muted);
-      font-family: "DM Mono", monospace;
-      font-size: 0.59rem;
-    }
-
-    .laptop {
-      left: 8%;
-      top: 43%;
-    }
-
-    .server {
-      right: 8%;
-      top: 43%;
-    }
-
-    .router {
-      left: 50%;
-      top: 43%;
-      transform: translateX(-50%);
-      border-color: var(--soft-border);
-    }
-
-    .router strong {
-      color: var(--cyan);
-    }
-
-    .network-line {
-      position: absolute;
-      height: 1px;
-      background: rgba(77, 232, 255, 0.26);
-      top: calc(43% + 36px);
-    }
-
-    .network-line.left {
-      left: 18%;
-      width: 32%;
-    }
-
-    .network-line.right {
-      left: 50%;
-      width: 32%;
-    }
-
-    .discover {
-      position: absolute;
-      left: 12%;
-      top: 24%;
-      font-family: "DM Mono", monospace;
-      font-size: 0.66rem;
-      color: var(--cyan);
-    }
-
-    .discover-line {
-      position: absolute;
-      left: 26%;
-      top: 28%;
-      width: 24%;
-      border-top: 1px dashed rgba(77, 232, 255, 0.45);
-    }
-
-    .offer {
-      position: absolute;
-      right: 13%;
-      top: 68%;
-      font-family: "DM Mono", monospace;
-      font-size: 0.66rem;
-      color: var(--purple);
-    }
-
-    .offer-line {
-      position: absolute;
-      right: 26%;
-      top: 64%;
-      width: 24%;
-      border-top: 1px dashed rgba(139, 124, 255, 0.45);
-    }
-
-    .flow {
-      margin: 45px 0;
-      padding: 28px 24px;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .flow-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-    }
-
-    .flow-item {
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      background: var(--surface-2);
-      color: #C5CEDD;
-    }
-
-    .flow-item.highlight {
-      color: var(--cyan);
-      border-color: var(--soft-border);
-    }
-
-    .flow-arrow {
-      color: var(--muted);
-    }
-
-    .packet-visual {
-      margin: 50px 0;
-      border: 1px solid var(--border);
-      background: var(--surface);
-    }
-
-    .packet-title {
-      padding: 17px 20px;
-      border-bottom: 1px solid var(--border);
-      font-family: "DM Mono", monospace;
-      color: var(--muted);
-      font-size: 0.7rem;
-      letter-spacing: 0.06em;
-    }
-
-    .packet-row {
-      display: grid;
-      grid-template-columns: 1fr 1.5fr;
-      border-bottom: 1px solid var(--border);
-      font-family: "DM Mono", monospace;
-      font-size: 0.74rem;
-    }
-
-    .packet-row:last-child {
-      border-bottom: 0;
-    }
-
-    .packet-row div {
-      padding: 14px 20px;
-    }
-
-    .packet-row div:first-child {
-      color: var(--cyan);
-      border-right: 1px solid var(--border);
-    }
-
-    .packet-row div:last-child {
-      color: var(--muted);
-    }
-
-    .security-note {
-      margin: 45px 0;
-      padding: 22px 24px;
-      border-left: 2px solid var(--purple);
-      background: rgba(139, 124, 255, 0.045);
-    }
-
-    .security-note p {
-      margin: 0;
-    }
-
-    .section {
-      margin: 70px 0;
-    }
-
-    h2 {
-      margin: 0 0 24px;
-      font-size: clamp(1.65rem, 4vw, 2.25rem);
-      line-height: 1.15;
-      letter-spacing: -0.035em;
-    }
-
-    h2::before {
-      content: "";
-      display: inline-block;
-      width: 7px;
-      height: 7px;
-      margin: 0 12px 5px 0;
-      border-radius: 50%;
-      background: var(--cyan);
-    }
-
-    .question {
-      margin: 70px 0;
-      padding: 30px 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .question-label {
-      margin-bottom: 12px;
-      color: var(--cyan);
-      font-family: "DM Mono", monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-    }
-
-    .question p {
-      color: var(--text);
-      font-size: 1.2rem;
-      margin: 0;
-    }
-
-    .takeaway {
-      margin-top: 80px;
-      padding: 30px 0;
-      border-top: 1px solid var(--border);
-    }
-
-    .takeaway-label {
-      margin-bottom: 15px;
-      color: var(--cyan);
-      font-family: "DM Mono", monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-    }
-
-    .takeaway p {
-      color: var(--text);
-      font-size: 1.08rem;
-      margin: 0;
-    }
-
-    .article-next {
-      margin-top: 80px;
-      padding-top: 32px;
-      border-top: 1px solid var(--border);
-    }
-
-    .article-next-label {
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-
-    .article-next a {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text);
-      text-decoration: none;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.15rem;
-      transition: color 0.2s ease;
-    }
-
-    .article-next a:hover {
-      color: var(--cyan);
-    }
-
-    .article-next .next-arrow {
-      color: var(--cyan);
-      font-size: 1rem;
-    }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(14px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 35px 0;
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-
-    @media (max-width: 700px) {
-      .container {
-        width: min(100% - 28px, 1080px);
-      }
-
-      .nav-links {
-        display: none;
-      }
-
-      .menu-btn {
-        display: block;
-      }
-
-      .article-hero {
-        padding: 78px 0 50px;
-      }
-
-      .article {
-        width: min(100% - 28px, 760px);
-        padding-top: 58px;
-      }
-
-      .device {
-        width: 92px;
-      }
-
-      .laptop {
-        left: 3%;
-      }
-
-      .server {
-        right: 3%;
-      }
-
-      .discover {
-        left: 5%;
-      }
-
-      .offer {
-        right: 5%;
-      }
-    }
-
-    @media (max-width: 500px) {
-      .article-meta {
-        flex-direction: column;
-        gap: 7px;
-      }
-
-      .visual {
-        min-height: 440px;
-      }
-
-      .device {
-        width: 86px;
-      }
-
-      .laptop,
-      .router,
-      .server {
-        top: 39%;
-      }
-
-      .network-line {
-        top: calc(39% + 36px);
-      }
-
-      .discover {
-        top: 24%;
-        left: 4%;
-      }
-
-      .discover-line {
-        left: 24%;
-        width: 26%;
-      }
-
-      .offer {
-        top: 69%;
-        right: 4%;
-      }
-
-      .offer-line {
-        right: 24%;
-        width: 26%;
-      }
-
-      .packet-row {
-        grid-template-columns: 1fr;
-      }
-
-      .packet-row div:first-child {
-        border-right: 0;
-        border-bottom: 1px solid var(--border);
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
-      }
-
-      .reveal {
-        opacity: 1;
-        transform: none;
-        transition: none;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="../article.css">
 </head>
 
 <body>
 
-  <nav>
-    <div class="container">
-      <div class="nav-inner">
-        <a href="../index.html" class="brand">KSCyb<span>Sec</span></a>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a class="brand" href="../index.html" aria-label="Veil & Vector homepage">
+        <span>Veil &amp; Vector</span>
+      </a>
 
-        <div class="nav-links">
-          <a href="../index.html#start">Start Here</a>
-          <a href="../index.html#latest">Articles</a>
-          <a href="../index.html#topics">Topics</a>
-          <a href="../index.html#explore">Explore</a>
-          <a href="../index.html#about">About</a>
-        </div>
+      <a class="back-link" href="../index.html#articles">
+        <span aria-hidden="true">←</span> All articles
+      </a>
 
-        <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false">
-          ☰
-        </button>
-      </div>
-
-      <div class="mobile-menu">
-        <a href="../index.html#start">Start Here</a>
-        <a href="../index.html#latest">Articles</a>
-        <a href="../index.html#topics">Topics</a>
-        <a href="../index.html#explore">Explore</a>
-        <a href="../index.html#about">About</a>
-      </div>
-    </div>
-  </nav>
-
-  <header class="article-hero">
-    <div class="container">
-
-      <div class="eyebrow">Guide 020 · Networking · Beginner</div>
-
-      <h1>DHCP: How Devices Get an IP</h1>
-
-      <p class="hero-description">
-        You join a Wi-Fi network, open a browser, and somehow your device already knows
-        where it belongs. Who gave it that information?
-      </p>
-
-      <div class="article-meta">
-        <span>NETWORKING</span>
-        <span>BEGINNER</span>
-        <span>~5 MIN READ</span>
-      </div>
-
+      <button
+        class="theme-toggle"
+        id="theme-toggle"
+        type="button"
+        aria-label="Switch to light theme"
+        title="Toggle light and dark themes"
+      >
+        <span class="theme-icon" aria-hidden="true">☼</span>
+        <span class="theme-text">Light</span>
+      </button>
     </div>
   </header>
 
-  <main class="article">
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress" id="progress"></div>
+  </div>
 
-    <section class="story reveal">
-      <p>
-        You connect your laptop to Wi-Fi.
-      </p>
+  <main>
 
-      <p style="margin-top:18px;">
-        You didn't manually type an IP address.
-        You didn't choose a subnet.
-        You didn't enter a gateway.
-      </p>
-
-      <p style="margin-top:18px;">
-        Yet, a few seconds later, the laptop is online.
-      </p>
-
-      <p style="margin-top:18px;">
-        Someone had to give it the information needed to join the network.
-      </p>
-    </section>
-
-    <div class="visual reveal">
-      <div class="visual-label">JOINING THE NETWORK · DHCP</div>
-
-      <div class="device laptop">
-        <strong>LAPTOP</strong>
-        <span>NO IP YET</span>
+    <header class="article-header">
+      <div class="article-meta">
+        <span class="category">Networking · Beginner</span>
+        <span aria-hidden="true">·</span>
+        <span>5 min read</span>
       </div>
 
-      <div class="device router">
-        <strong>DHCP</strong>
-        <span>NETWORK SERVER</span>
+      <h1>DHCP: How Devices Get an IP</h1>
+
+      <p class="article-intro">
+        You join a Wi-Fi network, open a browser, and somehow your
+        device already knows where it belongs. Who gave it that information?
+      </p>
+
+      <div class="article-meta">
+        <span>Guide 020</span>
+        <span aria-hidden="true">·</span>
+        <span>Network fundamentals</span>
       </div>
+    </header>
 
-      <div class="device server">
-        <strong>NETWORK</strong>
-        <span>READY</span>
-      </div>
+    <article>
 
-      <div class="network-line left"></div>
-      <div class="network-line right"></div>
+      <section class="story-section reveal">
+        <span class="section-index">01 — Joining the network</span>
 
-      <div class="discover">
-        “I NEED AN IP”
-      </div>
+        <h2>You connected. But who gave you an address?</h2>
 
-      <div class="discover-line"></div>
-
-      <div class="offer">
-        “USE 192.168.1.24”
-      </div>
-
-      <div class="offer-line"></div>
-    </div>
-
-    <section class="section reveal">
-      <h2>The network needs an address</h2>
-
-      <p>
-        Before your laptop can communicate properly on an IPv4 network,
-        it normally needs several pieces of information.
-      </p>
-
-      <p>
-        For example:
-      </p>
-
-      <div class="packet-visual">
-        <div class="packet-title">NETWORK CONFIGURATION · EXAMPLE</div>
-
-        <div class="packet-row">
-          <div>IP ADDRESS</div>
-          <div>192.168.1.24</div>
-        </div>
-
-        <div class="packet-row">
-          <div>SUBNET MASK</div>
-          <div>255.255.255.0</div>
-        </div>
-
-        <div class="packet-row">
-          <div>DEFAULT GATEWAY</div>
-          <div>192.168.1.1</div>
-        </div>
-
-        <div class="packet-row">
-          <div>DNS SERVER</div>
-          <div>192.168.1.1</div>
-        </div>
-      </div>
-
-      <p>
-        Entering all of this manually would be possible, but it would quickly
-        become inconvenient when many devices are joining the same network.
-      </p>
-
-      <p>
-        That is where <strong>DHCP</strong> comes in.
-      </p>
-    </section>
-
-    <section class="section reveal">
-      <h2>Meet DHCP</h2>
-
-      <p>
-        DHCP stands for <strong>Dynamic Host Configuration Protocol</strong>.
-      </p>
-
-      <p>
-        Its job is to automatically provide network configuration information
-        to devices that join a network.
-      </p>
-
-      <p>
-        A DHCP server can provide things such as:
-      </p>
-
-      <div class="flow">
-        <div class="flow-row">
-          <div class="flow-item highlight">IP Address</div>
-          <div class="flow-arrow">+</div>
-          <div class="flow-item">Subnet Mask</div>
-          <div class="flow-arrow">+</div>
-          <div class="flow-item">Gateway</div>
-          <div class="flow-arrow">+</div>
-          <div class="flow-item">DNS</div>
-        </div>
-      </div>
-
-      <p>
-        In many home networks, the router performs the DHCP server role.
-      </p>
-    </section>
-
-    <section class="section reveal">
-      <h2>The four-step conversation</h2>
-
-      <p>
-        When a device needs an address, DHCP usually follows a four-step exchange
-        commonly remembered as <strong>DORA</strong>.
-      </p>
-
-      <div class="flow">
-        <div class="flow-row">
-          <div class="flow-item highlight">DISCOVER</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item">OFFER</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item">REQUEST</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item highlight">ACK</div>
-        </div>
-      </div>
-
-      <h3>1. Discover</h3>
-
-      <p>
-        The device announces that it needs network configuration.
-        It does not yet have a usable IP address of its own.
-      </p>
-
-      <h3>2. Offer</h3>
-
-      <p>
-        A DHCP server responds with an offer.
-        The offer can include an available IP address and other network settings.
-      </p>
-
-      <h3>3. Request</h3>
-
-      <p>
-        The device indicates that it wants to use the offered configuration.
-      </p>
-
-      <h3>4. Acknowledgement</h3>
-
-      <p>
-        The DHCP server confirms the assignment.
-        The device can now configure its network interface with the information received.
-      </p>
-    </section>
-
-    <div class="visual reveal" style="min-height:390px;">
-      <div class="visual-label">DORA · FOLLOWING ONE DEVICE</div>
-
-      <div style="
-        position:absolute;
-        left:9%;
-        top:38%;
-        width:82%;
-        height:1px;
-        background:rgba(77,232,255,.18);
-      "></div>
-
-      <div style="
-        position:absolute;
-        left:8%;
-        top:26%;
-        color:#E8EDF5;
-        font-size:.82rem;
-      ">
-        LAPTOP
-      </div>
-
-      <div style="
-        position:absolute;
-        right:8%;
-        top:26%;
-        color:#E8EDF5;
-        font-size:.82rem;
-      ">
-        DHCP SERVER
-      </div>
-
-      <div style="
-        position:absolute;
-        left:10%;
-        top:46%;
-        color:#4DE8FF;
-        font-family:'DM Mono',monospace;
-        font-size:.67rem;
-      ">
-        01 · DISCOVER
-      </div>
-
-      <div style="
-        position:absolute;
-        right:10%;
-        top:54%;
-        color:#8B7CFF;
-        font-family:'DM Mono',monospace;
-        font-size:.67rem;
-      ">
-        02 · OFFER
-      </div>
-
-      <div style="
-        position:absolute;
-        left:10%;
-        top:64%;
-        color:#4DE8FF;
-        font-family:'DM Mono',monospace;
-        font-size:.67rem;
-      ">
-        03 · REQUEST
-      </div>
-
-      <div style="
-        position:absolute;
-        right:10%;
-        top:72%;
-        color:#8B7CFF;
-        font-family:'DM Mono',monospace;
-        font-size:.67rem;
-      ">
-        04 · ACK
-      </div>
-
-      <div style="
-        position:absolute;
-        left:50%;
-        top:49%;
-        transform:translateX(-50%);
-        color:#8995AA;
-        font-family:'DM Mono',monospace;
-        font-size:.64rem;
-        text-align:center;
-      ">
-        ADDRESS<br>
-        192.168.1.24
-      </div>
-    </div>
-
-    <section class="section reveal">
-      <h2>It is not forever</h2>
-
-      <p>
-        DHCP addresses are commonly given as <strong>leases</strong>.
-      </p>
-
-      <p>
-        A lease means the device is allowed to use the assigned configuration
-        for a particular period of time.
-      </p>
-
-      <p>
-        Before the lease expires, the device can communicate with the DHCP server
-        to renew it.
-      </p>
-
-      <p>
-        This makes address management much easier when devices regularly join,
-        leave, or move around a network.
-      </p>
-    </section>
-
-    <section class="section reveal">
-      <h2>What if there are many devices?</h2>
-
-      <p>
-        Imagine a college network with hundreds of laptops and phones.
-      </p>
-
-      <p>
-        If someone had to manually assign every IP address, keep track of them,
-        and make sure two devices never received the same address,
-        managing the network would become painful very quickly.
-      </p>
-
-      <p>
-        DHCP automates much of that work.
-      </p>
-
-      <div class="flow">
-        <div class="flow-row">
-          <div class="flow-item">Device joins</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item highlight">DHCP</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item">Configuration</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item">Network access</div>
-        </div>
-      </div>
-
-      <p>
-        The result is a network where devices can receive configuration
-        without an administrator manually assigning every address.
-      </p>
-    </section>
-
-    <section class="section reveal">
-      <h2>Why does DHCP matter in security?</h2>
-
-      <p>
-        DHCP is not just a convenience mechanism.
-        It also creates useful information about how devices enter a network.
-      </p>
-
-      <p>
-        Network defenders may examine DHCP-related logs to understand
-        which device received an address and when.
-      </p>
-
-      <div class="security-note">
         <p>
-          A network address can change.
-          A device can reconnect later and receive a different address.
-          That is why investigations often need more than just an IP address
-          to identify what happened.
+          You connect your laptop to Wi-Fi.
         </p>
-      </div>
 
-      <p>
-        This connects directly to the clues we've already seen:
-        IP addresses, MAC addresses, and now DHCP assignments can all help
-        explain what was happening on a network at a particular time.
-      </p>
-    </section>
+        <p>
+          You didn't manually type an IP address. You didn't choose
+          a subnet or enter the address of a gateway. You simply
+          selected the network, connected, and started browsing.
+        </p>
 
-    <section class="question reveal">
-      <div class="question-label">PAUSE FOR A SECOND</div>
+        <p>
+          Yet your device has the network information it needs to
+          communicate with other devices and reach the internet.
+        </p>
 
-      <p>
-        When you connect your laptop to a new Wi-Fi network and it automatically
-        receives an IP address, what service might have provided it?
-      </p>
-    </section>
+        <p>
+          Something provided that configuration automatically.
+          One of the main services responsible is
+          <strong>DHCP — Dynamic Host Configuration Protocol.</strong>
+        </p>
+      </section>
 
-    <section class="section reveal">
-      <h2>One more connection</h2>
+      <section class="story-section reveal">
+        <span class="section-index">02 — The job</span>
 
-      <p>
-        We can now follow a device joining a network:
-      </p>
+        <h2>DHCP handles the setup</h2>
 
-      <div class="flow">
-        <div class="flow-row">
-          <div class="flow-item">Device joins</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item highlight">DHCP</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item">IP Address</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item">ARP</div>
-          <div class="flow-arrow">→</div>
-          <div class="flow-item">MAC</div>
+        <p>
+          DHCP automatically provides devices with network configuration
+          when they join a network.
+        </p>
+
+        <p>
+          Depending on the network, that configuration can include
+          several important pieces of information.
+        </p>
+
+        <div class="flow">
+          <div class="flow-row">
+            <div class="flow-item highlight">
+              IP address
+            </div>
+
+            <div class="flow-arrow">+</div>
+
+            <div class="flow-item">
+              Subnet mask
+            </div>
+          </div>
+
+          <div class="flow-row">
+            <div class="flow-item">
+              Default gateway
+            </div>
+
+            <div class="flow-arrow">+</div>
+
+            <div class="flow-item">
+              DNS server
+            </div>
+          </div>
         </div>
+
+        <p>
+          The IP address identifies the device at the network layer.
+          The subnet mask helps determine which addresses belong to
+          the local network. The default gateway provides a route
+          to other networks, and DNS configuration tells the device
+          which DNS resolver it can use.
+        </p>
+
+        <p>
+          In many home networks, the router also performs the DHCP
+          server role. In larger networks, DHCP may be provided by
+          a separate server or network service.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">03 — The conversation</span>
+
+        <h2>Meet DORA: DHCP's four-step process</h2>
+
+        <p>
+          When a device needs an IPv4 address, a common DHCP exchange
+          follows four steps. They are easy to remember using the
+          name <strong>DORA</strong>.
+        </p>
+
+        <div class="flow">
+          <div class="flow-row">
+            <div class="flow-item highlight">Discover</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">Offer</div>
+          </div>
+
+          <div class="flow-row">
+            <div class="flow-item">Request</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item highlight">Acknowledgement</div>
+          </div>
+        </div>
+
+        <h3>1. Discover</h3>
+
+        <p>
+          The device broadcasts a DHCP discovery message to find
+          an available DHCP server. At this point, it may not yet
+          have a usable IPv4 address for normal network communication.
+        </p>
+
+        <h3>2. Offer</h3>
+
+        <p>
+          A DHCP server responds with an offer. It proposes an
+          available IP address and can include other network settings.
+        </p>
+
+        <h3>3. Request</h3>
+
+        <p>
+          The device sends a request indicating that it wants to use
+          the offered configuration.
+        </p>
+
+        <h3>4. Acknowledgement</h3>
+
+        <p>
+          The DHCP server sends an acknowledgement, commonly called
+          a DHCPACK, confirming the assignment. The device can then
+          configure its network interface with the information received.
+        </p>
+
+        <p>
+          That's the basic exchange: the device asks, the server offers,
+          the device requests, and the server confirms.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">04 — Follow the messages</span>
+
+        <h2>Watch one device receive an address</h2>
+
+        <p>
+          Imagine a laptop joining a network where the DHCP server
+          can offer it the address <strong>192.168.1.24</strong>.
+          This simplified sequence shows how the exchange progresses.
+        </p>
+
+        <div class="email-visual" role="group" aria-label="Simplified DHCP DORA exchange between a laptop and a DHCP server">
+
+          <div class="email-top">
+            <div class="email-dots" aria-hidden="true">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+
+            <span class="email-caption">DHCP MESSAGE FLOW</span>
+          </div>
+
+          <div class="email-body">
+
+            <div class="email-from">
+              <span class="email-caption">DEVICE</span>
+              <span class="email-caption">SERVER</span>
+            </div>
+
+            <div class="email-subject">
+              01 · DHCPDISCOVER
+            </div>
+
+            <div class="email-message">
+              The laptop searches for a DHCP server.
+            </div>
+
+            <div class="email-subject">
+              02 · DHCPOFFER
+            </div>
+
+            <div class="email-message">
+              The server offers 192.168.1.24.
+            </div>
+
+            <div class="email-subject">
+              03 · DHCPREQUEST
+            </div>
+
+            <div class="email-message">
+              The laptop requests the offered configuration.
+            </div>
+
+            <div class="email-subject">
+              04 · DHCPACK
+            </div>
+
+            <div class="email-message">
+              The server confirms the assignment.
+              The laptop can configure its interface using the
+              supplied network settings.
+            </div>
+
+          </div>
+        </div>
+
+        <p class="visual-note">
+          This is a simplified view of the usual initial DHCPv4 exchange.
+          Actual packet fields and message details depend on the situation.
+        </p>
+
+        <p>
+          These messages can also appear in packet captures. Tools such
+          as Wireshark can help you examine DHCP traffic and follow
+          the exchange between a client and a server.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">05 — Not forever</span>
+
+        <h2>An IP address is often leased</h2>
+
+        <p>
+          A DHCP address is commonly assigned as a
+          <strong>lease</strong>. This means the device is allowed
+          to use the assigned configuration for a particular period.
+        </p>
+
+        <p>
+          Before the lease expires, the device can communicate with
+          the DHCP server to renew it. If the device disconnects
+          or the lease eventually expires, the address may later
+          become available for another device.
+        </p>
+
+        <p>
+          This makes address management easier when laptops, phones,
+          and other devices regularly join, leave, or move around
+          a network.
+        </p>
+
+        <div class="flow">
+          <div class="flow-row">
+            <div class="flow-item">Device joins</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item highlight">Lease assigned</div>
+          </div>
+
+          <div class="flow-row">
+            <div class="flow-item">Lease approaches expiry</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">Renewal may occur</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">06 — The bigger picture</span>
+
+        <h2>What if hundreds of devices join?</h2>
+
+        <p>
+          Imagine a college network with hundreds of laptops and phones.
+          Every day, students arrive, connect to Wi-Fi, move between
+          buildings, and leave again.
+        </p>
+
+        <p>
+          If an administrator had to configure every device manually,
+          keep track of every address, and avoid assigning the same
+          address to two devices at once, managing the network would
+          quickly become difficult.
+        </p>
+
+        <p>
+          DHCP automates much of that work. Instead of manually
+          configuring every device, the network can provide the
+          required settings through the DHCP service.
+        </p>
+
+        <div class="flow">
+          <div class="flow-row">
+            <div class="flow-item">Device joins</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item highlight">DHCP</div>
+          </div>
+
+          <div class="flow-row">
+            <div class="flow-item">Network settings</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">Communication</div>
+          </div>
+        </div>
+
+        <p>
+          The result is simpler network administration and more
+          consistent address management.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">07 — The security clue</span>
+
+        <h2>Why does DHCP matter in cybersecurity?</h2>
+
+        <p>
+          DHCP is more than a convenience. Its records can help
+          defenders understand which device was assigned an address
+          and when that assignment occurred.
+        </p>
+
+        <p>
+          Imagine an investigation where a suspicious activity log
+          contains the IP address <strong>192.168.1.24</strong>.
+          You want to determine which device was using that address
+          at the time of the event.
+        </p>
+
+        <p>
+          A DHCP lease record may help connect the IP address with
+          a client identifier or MAC address and a lease period.
+          The exact information available depends on the network's
+          configuration and logging.
+        </p>
+
+        <div class="security-note">
+          <p>
+            <strong>An IP address alone may not identify a device
+            reliably.</strong> Addresses can change, and an address
+            can be assigned to different devices at different times.
+            Investigators need to consider timestamps and other
+            supporting evidence.
+          </p>
+        </div>
+
+        <p>
+          This is why defenders correlate network events with other
+          clues rather than relying on a single IP address. DHCP
+          records can provide useful context, but they do not prove
+          by themselves that a device or user performed a particular action.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">08 — Connect the clues</span>
+
+        <h2>DHCP and ARP have different jobs</h2>
+
+        <p>
+          DHCP and ARP both help devices participate in an IPv4 network,
+          but they solve different problems.
+        </p>
+
+        <div class="flow">
+          <div class="flow-row">
+            <div class="flow-item highlight">DHCP</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">Network configuration</div>
+          </div>
+
+          <div class="flow-row">
+            <div class="flow-item highlight">ARP</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-item">Local IPv4-to-MAC resolution</div>
+          </div>
+        </div>
+
+        <p>
+          DHCP helps a device obtain configuration, commonly including
+          an IP address. ARP helps a device discover the link-layer
+          address associated with a local IPv4 address on the same
+          network segment.
+        </p>
+
+        <p>
+          Think of DHCP as helping a device get its network settings,
+          while ARP helps it find the local destination address needed
+          to deliver certain IPv4 packets over the local link.
+        </p>
+
+        <p>
+          Now that devices can receive addresses automatically, the
+          next question is how a large network can be divided into
+          smaller, manageable sections.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <span class="section-index">09 — Check your understanding</span>
+
+        <h2>One question before you move on</h2>
+
+        <div class="question">
+          <span class="question-label">PAUSE FOR A SECOND</span>
+
+          <p>
+            You connect your laptop to a new Wi-Fi network and it
+            automatically receives an IP address. Which service
+            most likely provided the network configuration?
+          </p>
+        </div>
+
+        <p>
+          The answer is <strong>DHCP</strong>. In many networks, a
+          DHCP server provides an address and other configuration
+          information without requiring you to enter everything manually.
+        </p>
+
+        <div class="takeaway">
+          <span class="takeaway-label">THE TAKEAWAY</span>
+
+          <p>
+            <strong>DHCP automatically provides devices with network
+            configuration, commonly including an IP address, subnet
+            mask, default gateway, and DNS information.</strong>
+            Its familiar four-step DHCPv4 exchange is DORA:
+            Discover, Offer, Request, and Acknowledgement. DHCP leases
+            and logs can also help administrators manage addresses and
+            investigate network activity.
+          </p>
+        </div>
+      </section>
+
+    </article>
+
+    <section class="next-article reveal">
+      <div class="next-inner">
+        <div>
+          <span class="next-label">Next clue · 021</span>
+
+          <h2 class="next-title">Subnets — Dividing a Network</h2>
+
+          <p class="next-description">
+            A network can contain hundreds or thousands of addresses.
+            Learn how subnetting divides it into smaller, manageable
+            sections.
+          </p>
+        </div>
+
+        <a class="next-link" href="subnets.html">
+          Read next <span aria-hidden="true">→</span>
+        </a>
       </div>
-
-      <p>
-        DHCP helps a device learn how it can participate in the network.
-        ARP can then help it discover the local MAC address associated with
-        another IPv4 device.
-      </p>
-
-      <p>
-        But there is still a bigger question.
-      </p>
-
-      <p>
-        If a network contains thousands of addresses, how do we divide those
-        addresses into smaller, manageable sections?
-      </p>
     </section>
-
-    <section class="takeaway reveal">
-      <div class="takeaway-label">TAKEAWAY · 020</div>
-
-      <p>
-        <strong>DHCP automatically provides devices with network configuration,
-        commonly including an IP address, subnet mask, default gateway, and DNS information.</strong>
-        Its familiar four-step process is DORA:
-        Discover, Offer, Request, and Acknowledgement.
-      </p>
-    </section>
-
-    <div class="article-next reveal">
-      <div class="article-next-label">NEXT CLUE · 021</div>
-
-      <a href="subnets.html">
-        Subnets — Dividing a Network
-        <span class="next-arrow">→</span>
-      </a>
-    </div>
 
   </main>
 
-  <footer>
-    <div class="container">
-      KSCybSec · Cybersecurity knowledge, one clue at a time.
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a class="footer-brand" href="../index.html">Veil &amp; Vector</a>
+      <p>Cybersecurity, one clue at a time.</p>
+      <a href="../index.html#articles">Explore all articles ↗</a>
     </div>
   </footer>
 
-  <script>
-    const menuButton = document.querySelector(".menu-btn");
-    const mobileMenu = document.querySelector(".mobile-menu");
-
-    if (menuButton && mobileMenu) {
-      menuButton.addEventListener("click", () => {
-        const isOpen = mobileMenu.classList.toggle("open");
-        menuButton.setAttribute("aria-expanded", String(isOpen));
-      });
-    }
-
-    const revealElements = document.querySelectorAll(".reveal");
-
-    if ("IntersectionObserver" in window) {
-      const observer = new IntersectionObserver(
-        entries => {
-          entries.forEach(entry => {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("visible");
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold: 0.12 }
-      );
-
-      revealElements.forEach(element => observer.observe(element));
-    } else {
-      revealElements.forEach(element => {
-        element.classList.add("visible");
-      });
-    }
-  </script>
+  <script src="../article.js" defer></script>
 
 </body>
 </html>
