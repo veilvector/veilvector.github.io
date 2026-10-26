@@ -1,1402 +1,613 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>How Does the Internet Actually Work? — KSCybSec</title>
+  <title>How Does the Internet Actually Work? — Veil &amp; Vector</title>
+  <meta name="description" content="Follow a simple request across the Internet and discover what happens behind the scenes when you visit a website.">
+  <meta name="theme-color" content="#11110f">
 
-  <meta
-    name="description"
-    content="Follow a simple request across the Internet and discover what actually happens when you visit a website."
-  />
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
-    rel="stylesheet"
-  />
+  <link rel="canonical" href="https://veilvector.github.io/articles/how-does-the-internet-work.html">
+  <link rel="stylesheet" href="../article.css">
 
   <style>
     :root {
-      --bg: #070B14;
-      --section: #0B1120;
-      --card: #101827;
-
-      --text: #E8EDF5;
-      --body: #C3CCDA;
-      --muted: #8995AA;
-
-      --cyan: #4DE8FF;
-      --violet: #8B7CFF;
-
-      --border: rgba(232, 237, 245, 0.08);
-      --max: 820px;
+      --internet-accent: #c6a879;
+      --internet-line: var(--border, rgba(225, 220, 205, 0.16));
+      --internet-muted: var(--muted, #aaa69a);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    .editorial-visual {
+      margin: 42px 0 52px;
+      padding: 28px 0;
+      border-top: 1px solid var(--internet-line);
+      border-bottom: 1px solid var(--internet-line);
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      background:
-        radial-gradient(
-          circle at 15% 10%,
-          rgba(77, 232, 255, 0.045),
-          transparent 28%
-        ),
-        radial-gradient(
-          circle at 85% 35%,
-          rgba(139, 124, 255, 0.035),
-          transparent 30%
-        ),
-        var(--bg);
-
-      color: var(--text);
-      font-family: "Inter", sans-serif;
-      line-height: 1.8;
-      overflow-x: hidden;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    /* =========================
-       NAVIGATION
-    ========================= */
-
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-
-      background: rgba(7, 11, 20, 0.84);
-      backdrop-filter: blur(18px);
-
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-inner {
-      width: min(1180px, calc(100% - 40px));
-      min-height: 72px;
-
-      margin: auto;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .brand {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-    }
-
-    .brand span {
-      color: var(--cyan);
-    }
-
-    .back-link {
-      color: var(--muted);
-
-      font-family: "DM Mono", monospace;
-      font-size: 0.78rem;
-
-      transition: color 0.25s ease;
-    }
-
-    .back-link:hover {
-      color: var(--cyan);
-    }
-
-    /* =========================
-       PROGRESS
-    ========================= */
-
-    .progress {
-      position: fixed;
-      top: 72px;
-      left: 0;
-
-      width: 0%;
-      height: 2px;
-
-      background: var(--cyan);
-
-      z-index: 101;
-    }
-
-    /* =========================
-       HEADER
-    ========================= */
-
-    .article-header {
-      width: min(var(--max), calc(100% - 40px));
-
-      margin: auto;
-
-      padding: 115px 0 75px;
-    }
-
-    .article-meta {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-
-      margin-bottom: 24px;
-
-      font-family: "DM Mono", monospace;
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-
-    .article-meta span:first-child {
-      color: var(--cyan);
-    }
-
-    .article-header h1 {
-      font-family: "Space Grotesk", sans-serif;
-
-      font-size: clamp(3rem, 7vw, 5.3rem);
-      line-height: 0.98;
-
-      letter-spacing: -0.065em;
-
-      margin-bottom: 30px;
-    }
-
-    .article-intro {
-      color: var(--body);
-
-      font-size: 1.15rem;
-
-      max-width: 700px;
-    }
-
-    /* =========================
-       ARTICLE
-    ========================= */
-
-    article {
-      width: min(var(--max), calc(100% - 40px));
-
-      margin: auto;
-    }
-
-    article section {
-      margin-bottom: 78px;
-    }
-
-    article p {
-      color: var(--body);
-
-      font-size: 1.05rem;
-
-      margin-bottom: 24px;
-    }
-
-    article h2 {
-      font-family: "Space Grotesk", sans-serif;
-
-      font-size: clamp(1.8rem, 4vw, 2.5rem);
-      line-height: 1.15;
-
-      letter-spacing: -0.035em;
-
-      margin-bottom: 28px;
-    }
-
-    /* =========================
-       QUESTION
-    ========================= */
-
-    .question {
-      margin: 42px 0;
-
-      padding: 25px 28px;
-
-      border-left: 1px solid rgba(77, 232, 255, 0.4);
-
-      background:
-        linear-gradient(
-          90deg,
-          rgba(77, 232, 255, 0.045),
-          transparent
-        );
-    }
-
-    .question-label {
-      display: block;
-
-      margin-bottom: 8px;
-
-      color: var(--cyan);
-
+    .visual-label {
+      margin-bottom: 25px;
+      color: var(--internet-muted);
       font-family: "DM Mono", monospace;
       font-size: 0.72rem;
-
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
     }
 
-    .question p {
-      margin: 0;
-
-      color: var(--text);
-
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.2rem;
-    }
-
-    /* =========================
-       VISUAL JOURNEY
-    ========================= */
-
-    .journey {
-      margin: 50px 0 60px;
-
-      padding: 30px;
-
-      border: 1px solid var(--border);
-      border-radius: 16px;
-
-      background: rgba(16, 24, 39, 0.45);
-    }
-
-    .journey-label {
-      color: var(--muted);
-
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-
-      margin-bottom: 28px;
-    }
-
-    .journey-line {
-      display: flex;
+    .request-flow {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
       align-items: center;
-      justify-content: space-between;
       gap: 12px;
     }
 
-    .journey-node {
+    .request-node {
+      min-width: 0;
+      padding: 14px 4px;
       text-align: center;
-      flex: 1;
     }
 
-    .node-dot {
-      width: 12px;
-      height: 12px;
-
-      margin: 0 auto 12px;
-
-      border-radius: 50%;
-
-      background: var(--cyan);
-
-      box-shadow:
-        0 0 18px rgba(77, 232, 255, 0.3);
-    }
-
-    .journey-node:last-child .node-dot {
-      background: var(--violet);
-
-      box-shadow:
-        0 0 18px rgba(139, 124, 255, 0.3);
-    }
-
-    .journey-node span {
-      color: var(--body);
-
-      font-family: "DM Mono", monospace;
-      font-size: 0.7rem;
-    }
-
-    .journey-arrow {
-      color: var(--muted);
-
-      font-family: "DM Mono", monospace;
-    }
-
-    /* =========================
-       CODE-LIKE VISUAL
-    ========================= */
-
-    .browser-bar {
-      margin: 45px 0 55px;
-
-      border: 1px solid var(--border);
-      border-radius: 14px;
-
-      overflow: hidden;
-
-      background: var(--card);
-    }
-
-    .browser-top {
-      padding: 12px 16px;
-
-      border-bottom: 1px solid var(--border);
-
-      display: flex;
-      gap: 7px;
-    }
-
-    .browser-dot {
-      width: 7px;
-      height: 7px;
-
-      border-radius: 50%;
-
-      background: var(--muted);
-      opacity: 0.5;
-    }
-
-    .address {
-      margin: 18px;
-
-      padding: 12px 15px;
-
-      border: 1px solid var(--border);
-      border-radius: 8px;
-
-      color: var(--muted);
-
+    .request-number {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--internet-accent);
       font-family: "DM Mono", monospace;
       font-size: 0.76rem;
     }
 
-    .address span {
-      color: var(--cyan);
-    }
-
-    /* =========================
-       BLOCKQUOTE
-    ========================= */
-
-    blockquote {
-      margin: 45px 0;
-
-      padding-left: 25px;
-
-      border-left: 2px solid var(--cyan);
-
-      color: var(--text);
-
+    .request-node strong {
+      display: block;
+      margin-bottom: 7px;
       font-family: "Space Grotesk", sans-serif;
-
-      font-size: clamp(1.35rem, 3vw, 1.8rem);
-      line-height: 1.4;
+      font-size: 0.96rem;
+      font-weight: 600;
     }
 
-    /* =========================
-       TAKEAWAY
-    ========================= */
-
-    .takeaway {
-      margin-top: 90px;
-
-      padding-top: 40px;
-
-      border-top: 1px solid var(--border);
+    .request-node p {
+      margin: 0;
+      color: var(--internet-muted);
+      font-size: 0.83rem;
+      line-height: 1.55;
     }
 
-    .takeaway-label {
-      font-family: "DM Mono", monospace;
-
-      color: var(--cyan);
-
-      font-size: 0.75rem;
-
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-
-      margin-bottom: 18px;
+    .request-arrow {
+      color: var(--internet-accent);
+      font-size: 1.15rem;
     }
 
-    .takeaway p {
-      color: var(--text);
-
-      font-family: "Space Grotesk", sans-serif;
-
-      font-size: clamp(1.3rem, 3vw, 1.7rem);
-
-      line-height: 1.45;
+    .visual-caption {
+      margin: 24px 0 0;
+      color: var(--internet-muted);
+      font-size: 0.86rem;
     }
 
-    /* =========================
-       NEXT ARTICLE
-    ========================= */
-
-    .next-article {
-      width: min(var(--max), calc(100% - 40px));
-
-      margin: 0 auto;
-
-      padding: 85px 0 100px;
+    .browser-example {
+      margin: 36px 0 42px;
+      padding: 20px 0;
+      border-top: 1px solid var(--internet-line);
+      border-bottom: 1px solid var(--internet-line);
     }
 
-    .next-inner {
-      border-top: 1px solid var(--border);
-
-      padding-top: 45px;
-    }
-
-    .next-label {
-      font-family: "DM Mono", monospace;
-
-      color: var(--muted);
-
-      font-size: 0.75rem;
-
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-
-      margin-bottom: 18px;
-    }
-
-    .next-title {
-      font-family: "Space Grotesk", sans-serif;
-
-      font-size: clamp(1.9rem, 4vw, 3rem);
-
-      line-height: 1.1;
-
-      letter-spacing: -0.04em;
-
-      margin-bottom: 20px;
-    }
-
-    .next-title span {
-      color: var(--cyan);
-    }
-
-    .next-description {
-      color: var(--muted);
-
-      max-width: 650px;
-
-      margin-bottom: 28px;
-    }
-
-    .next-link {
-      display: inline-flex;
-
-      align-items: center;
-      gap: 10px;
-
-      color: var(--cyan);
-
-      font-family: "DM Mono", monospace;
-      font-size: 0.8rem;
-
-      transition: gap 0.25s ease;
-    }
-
-    .next-link:hover {
-      gap: 16px;
-    }
-
-    /* =========================
-       FOOTER
-    ========================= */
-
-    footer {
-      border-top: 1px solid var(--border);
-
-      padding: 45px 0;
-    }
-
-    .footer-inner {
-      width: min(1180px, calc(100% - 40px));
-
-      margin: auto;
-
-      display: flex;
-
-      justify-content: space-between;
-
-      gap: 30px;
-
-      color: var(--muted);
-
+    .browser-caption {
+      margin-bottom: 15px;
+      color: var(--internet-muted);
       font-family: "DM Mono", monospace;
       font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
-    .footer-brand {
+    .browser-address {
+      overflow-wrap: anywhere;
+      color: var(--internet-muted);
+      font-family: "DM Mono", monospace;
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+    }
+
+    .browser-address span {
+      color: var(--internet-accent);
+    }
+
+    .concept-list {
+      margin: 34px 0 44px;
+      border-top: 1px solid var(--internet-line);
+    }
+
+    .concept-row {
+      display: grid;
+      grid-template-columns: 125px minmax(0, 1fr);
+      gap: 24px;
+      padding: 23px 0;
+      border-bottom: 1px solid var(--internet-line);
+    }
+
+    .concept-name {
+      color: var(--internet-accent);
+      font-family: "DM Mono", monospace;
+      font-size: 0.83rem;
+    }
+
+    .concept-row p {
+      margin: 0;
+    }
+
+    .concept-row strong {
       color: var(--text);
+    }
 
+    .question-prompt {
+      margin: 38px 0;
+      padding: 5px 0 5px 22px;
+      border-left: 2px solid var(--internet-accent);
+    }
+
+    .question-prompt span {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--internet-muted);
+      font-family: "DM Mono", monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .question-prompt p {
+      margin: 0;
+      color: var(--text);
       font-family: "Space Grotesk", sans-serif;
-
-      font-size: 1rem;
-      font-weight: 700;
+      font-size: 1.2rem;
+      line-height: 1.5;
     }
 
-    .footer-brand span {
-      color: var(--cyan);
+    .security-questions {
+      margin: 28px 0 0;
+      padding: 0;
+      list-style: none;
+      border-top: 1px solid var(--internet-line);
     }
 
-    /* =========================
-       REVEAL
-    ========================= */
-
-    .reveal {
-      opacity: 0;
-
-      transform: translateY(18px);
-
-      transition:
-        opacity 0.7s ease,
-        transform 0.7s ease;
+    .security-questions li {
+      display: grid;
+      grid-template-columns: 32px minmax(0, 1fr);
+      gap: 14px;
+      padding: 17px 0;
+      border-bottom: 1px solid var(--internet-line);
+      color: var(--body);
     }
 
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
+    .security-questions li span {
+      color: var(--internet-accent);
+      font-family: "DM Mono", monospace;
+      font-size: 0.78rem;
     }
 
-    /* =========================
-       MOBILE
-    ========================= */
-
-    @media (max-width: 650px) {
-
-      .nav-inner {
-        width: min(100% - 28px, 1180px);
-        min-height: 62px;
+    @media (max-width: 680px) {
+      .editorial-visual {
+        margin: 32px 0 40px;
+        padding: 23px 0;
       }
 
-      .progress {
-        top: 62px;
+      .request-flow {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2px;
       }
 
-      .article-header {
-        width: min(100% - 28px, var(--max));
-        padding: 80px 0 55px;
+      .request-node {
+        display: grid;
+        grid-template-columns: 34px minmax(0, 1fr);
+        column-gap: 12px;
+        align-items: start;
+        padding: 12px 0;
+        text-align: left;
       }
 
-      article {
-        width: min(100% - 28px, var(--max));
+      .request-number {
+        grid-row: 1 / span 2;
+        margin: 2px 0 0;
       }
 
-      article p {
-        font-size: 1rem;
+      .request-node strong {
+        margin-bottom: 4px;
       }
 
-      article section {
-        margin-bottom: 62px;
+      .request-node p {
+        grid-column: 2;
       }
 
-      .journey {
-        padding: 22px 15px;
-      }
-
-      .journey-line {
-        flex-direction: column;
-        gap: 14px;
-      }
-
-      .journey-arrow {
+      .request-arrow {
+        margin-left: 10px;
+        line-height: 1;
         transform: rotate(90deg);
+        transform-origin: left center;
+        height: 10px;
+        width: 15px;
       }
 
-      .journey-node {
-        width: 100%;
+      .concept-row {
+        grid-template-columns: 1fr;
+        gap: 7px;
+        padding: 19px 0;
       }
 
-      blockquote {
-        padding-left: 18px;
+      .question-prompt {
+        padding-left: 17px;
       }
+    }
 
-      .next-article {
-        width: min(100% - 28px, var(--max));
-      }
-
-      .footer-inner {
-        width: min(100% - 28px, 1180px);
-        flex-direction: column;
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
 
 <body>
-
-  <!-- =========================
-       NAVIGATION
-  ========================== -->
-
-  <nav>
-
+  <nav class="site-header">
     <div class="nav-inner">
-
-      <a href="../index.html" class="brand">
-        KS<span>CybSec</span>
-      </a>
-
-      <a href="../index.html" class="back-link">
-        ← Back to KSCybSec
-      </a>
-
+      <a href="../index.html" class="brand">Veil <span>&amp;</span> Vector</a>
+      <a href="../index.html" class="back-link">← Back to the archive</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch colour theme">☼</button>
     </div>
-
   </nav>
 
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress" id="progress"></div>
+  </div>
 
-  <!-- READING PROGRESS -->
-
-  <div class="progress" id="progress"></div>
-
-
-  <!-- =========================
-       ARTICLE HEADER
-  ========================== -->
-
-  <header class="article-header reveal">
-
+  <header class="article-header">
     <div class="article-meta">
-
-      <span>
-        BEGINNER PATH · 002
-      </span>
-
-      <span>·</span>
-
-      <span>
-        6–8 MIN READ
-      </span>
-
+      <span class="category">BEGINNER PATH · 002</span>
+      <span>6–8 MIN READ</span>
     </div>
 
-    <h1>
-      How Does the<br>
-      Internet Actually Work?
-    </h1>
+    <h1>How Does the Internet Actually Work?</h1>
 
     <p class="article-intro">
-      You type a website address, press Enter,
-      and a few seconds later a page appears.
-      But what actually happened in between?
+      You type a website address, press Enter, and a page appears.
+      But between those two moments, your request has to find its way
+      across a world of connected networks.
     </p>
-
   </header>
 
-
-  <!-- =========================
-       ARTICLE
-  ========================== -->
-
   <main>
-
     <article>
+      <section class="story-section reveal">
+        <div class="section-index">01 / The familiar part</div>
+        <h2>One address. One click. A lot happening.</h2>
 
+        <p>Let's try something simple.</p>
 
-      <!-- OPENING -->
+        <p>Open your browser, type a website address, and press Enter.</p>
 
-      <section class="reveal">
-
-        <p>
-          Let's try something simple.
-        </p>
-
-        <p>
-          Open your browser.
-        </p>
-
-        <p>
-          Type a website address.
-        </p>
-
-        <div class="browser-bar">
-
-          <div class="browser-top">
-
-            <span class="browser-dot"></span>
-            <span class="browser-dot"></span>
-            <span class="browser-dot"></span>
-
-          </div>
-
-          <div class="address">
-            https://<span>example.com</span>
-          </div>
-
+        <div class="browser-example" aria-label="Example website address">
+          <div class="browser-caption">A request begins here</div>
+          <div class="browser-address">https://<span>example.com</span></div>
         </div>
 
-        <p>
-          Press Enter.
-        </p>
+        <p>A moment later, the page appears. It feels almost instant.</p>
 
         <p>
-          A moment later, the website appears.
+          But your computer didn't magically know where that website was.
+          It needed to work out where to send the request, get it across
+          several networks, and receive a response from the right server.
         </p>
+
+        <div class="question-prompt">
+          <span>Think about it</span>
+          <p>If the Internet connects millions of devices, how does your computer know where to go?</p>
+        </div>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">02 / Follow the request</div>
+        <h2>Let's trace its journey</h2>
 
         <p>
-          It feels almost instant.
+          Imagine visiting a website from your laptop. Your browser starts
+          the process, but the request doesn't jump straight to its destination.
+          It moves through connected systems along the way.
         </p>
 
-        <p>
-          But your computer didn't magically know where
-          that website was.
-        </p>
+        <div class="editorial-visual">
+          <div class="visual-label">One request · Simplified journey</div>
 
-        <p>
-          It had to figure out where to send your request,
-          send the request across a network, find the right
-          computer, and receive a response.
-        </p>
+          <div class="request-flow">
+            <div class="request-node">
+              <span class="request-number">01</span>
+              <strong>Your device</strong>
+              <p>The browser starts the request.</p>
+            </div>
 
-        <div class="question">
+            <div class="request-arrow" aria-hidden="true">→</div>
 
-          <span class="question-label">
-            Think about it
-          </span>
+            <div class="request-node">
+              <span class="request-number">02</span>
+              <strong>Local network</strong>
+              <p>Wi-Fi or another connection carries the traffic onward.</p>
+            </div>
 
-          <p>
-            If the Internet is made of millions of devices,
-            how does your computer know where to go?
+            <div class="request-arrow" aria-hidden="true">→</div>
+
+            <div class="request-node">
+              <span class="request-number">03</span>
+              <strong>Other networks</strong>
+              <p>Routers forward traffic toward its destination.</p>
+            </div>
+
+            <div class="request-arrow" aria-hidden="true">→</div>
+
+            <div class="request-node">
+              <span class="request-number">04</span>
+              <strong>Web server</strong>
+              <p>The destination processes the request and responds.</p>
+            </div>
+          </div>
+
+          <p class="visual-caption">
+            This is a simplified illustration. Real requests may involve
+            additional services, connections, and network hops.
           </p>
-
         </div>
 
+        <p>
+          And the journey doesn't end at the server. The response must travel
+          back to your device, where your browser uses the returned resources
+          to display the page.
+        </p>
       </section>
 
-
-      <!-- THE JOURNEY -->
-
-      <section class="reveal">
-
-        <h2>
-          Let's follow one request
-        </h2>
+      <section class="story-section reveal">
+        <div class="section-index">03 / Connected networks</div>
+        <h2>The Internet isn't one giant computer</h2>
 
         <p>
-          Imagine you want to visit a website.
+          Your laptop might connect through home Wi-Fi. Your phone might use
+          a mobile network. A college computer might use the institution's
+          own network.
         </p>
 
         <p>
-          You type the address and press Enter.
+          These local networks can communicate with other networks through
+          equipment and services that help move data between them.
         </p>
 
         <p>
-          From your point of view, that's it.
+          Beyond your own connection are internet service providers, routers,
+          data centres, servers, and many other interconnected systems.
+        </p>
+
+        <blockquote>
+          The Internet is a network of networks.
+        </blockquote>
+
+        <p>
+          No single machine contains the entire Internet. Its connectivity
+          comes from many separate networks working together.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">04 / Finding a destination</div>
+        <h2>How does the traffic know where to go?</h2>
+
+        <p>
+          Devices need addressing information to communicate across networks.
+          One important part of that system is the <strong>IP address</strong>.
         </p>
 
         <p>
-          Behind the scenes, a small journey begins.
+          An IP address helps identify a network destination so traffic can
+          be routed toward it. You don't need to learn every detail yet;
+          we'll explore IP addresses more closely in the next article.
         </p>
 
+        <div class="question-prompt">
+          <span>A small clue</span>
+          <p>When you visit a website, do you usually type its IP address?</p>
+        </div>
 
-        <div class="journey">
+        <p>Usually, no. You type a name that's easier for people to remember.</p>
+      </section>
 
-          <div class="journey-label">
-            One simple request
+      <section class="story-section reveal">
+        <div class="section-index">05 / Names and numbers</div>
+        <h2>Meet DNS</h2>
+
+        <p>
+          Imagine having to memorise the numerical address of every website
+          you wanted to visit. That would get tiring very quickly.
+        </p>
+
+        <p>
+          Instead, we use domain names, such as
+          <strong>example.com</strong>.
+        </p>
+
+        <p>
+          Your device needs the information required to locate the destination
+          associated with that name. This is where DNS — the
+          <strong>Domain Name System</strong> — comes in.
+        </p>
+
+        <blockquote>
+          “I know the name. Where can I find it?”
+        </blockquote>
+
+        <p>
+          DNS helps resolve domain names into records, often including IP
+          addresses that a client can use to continue connecting. The exact
+          process can vary depending on cached information and the network
+          configuration.
+        </p>
+
+        <p>
+          Once the browser has the information it needs, the connection process
+          can continue.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">06 / Across the Internet</div>
+        <h2>Routers help traffic find its way</h2>
+
+        <p>
+          Your request doesn't necessarily travel in a straight line from
+          your device to the server.
+        </p>
+
+        <p>
+          <strong>Routers</strong> connect networks and forward packets toward
+          their destinations. Each router uses routing information to decide
+          where to send traffic next.
+        </p>
+
+        <p>
+          Your traffic may pass through several routers before reaching the
+          destination network. The exact route can change depending on network
+          conditions and routing decisions.
+        </p>
+
+        <blockquote>
+          The Internet hides enormous complexity behind a very simple experience.
+        </blockquote>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">07 / The response</div>
+        <h2>What happens when the request arrives?</h2>
+
+        <p>
+          Somewhere at the other end, a web server is ready to handle incoming
+          requests. Your browser asks for a resource, and the server processes
+          that request.
+        </p>
+
+        <p>
+          If everything works as expected, the server sends a response.
+          That response might include HTML, images, stylesheets, JavaScript,
+          or other resources used to build the page.
+        </p>
+
+        <div class="concept-list">
+          <div class="concept-row">
+            <div class="concept-name">REQUEST</div>
+            <p>Your browser asks the server for a resource.</p>
           </div>
 
-          <div class="journey-line">
-
-            <div class="journey-node">
-
-              <div class="node-dot"></div>
-
-              <span>
-                Your device
-              </span>
-
-            </div>
-
-            <div class="journey-arrow">
-              →
-            </div>
-
-            <div class="journey-node">
-
-              <div class="node-dot"></div>
-
-              <span>
-                Network
-              </span>
-
-            </div>
-
-            <div class="journey-arrow">
-              →
-            </div>
-
-            <div class="journey-node">
-
-              <div class="node-dot"></div>
-
-              <span>
-                Internet
-              </span>
-
-            </div>
-
-            <div class="journey-arrow">
-              →
-            </div>
-
-            <div class="journey-node">
-
-              <div class="node-dot"></div>
-
-              <span>
-                Web server
-              </span>
-
-            </div>
-
+          <div class="concept-row">
+            <div class="concept-name">PROCESS</div>
+            <p>The server handles the request according to the application and its rules.</p>
           </div>
 
+          <div class="concept-row">
+            <div class="concept-name">RESPONSE</div>
+            <p>The server returns a result, which may include content or an error.</p>
+          </div>
+
+          <div class="concept-row">
+            <div class="concept-name">DISPLAY</div>
+            <p>Your browser interprets the returned resources and renders the page.</p>
+          </div>
         </div>
 
         <p>
-          Your request travels through several systems before
-          reaching the server that can answer it.
+          That is why a website is more than a picture stored somewhere.
+          It is the result of devices, networks, protocols, servers, and
+          browsers exchanging information.
         </p>
-
-        <p>
-          And the interesting part?
-        </p>
-
-        <p>
-          The response has to make its way back too.
-        </p>
-
       </section>
 
-
-      <!-- NETWORK -->
-
-      <section class="reveal">
-
-        <h2>
-          Your computer isn't alone
-        </h2>
+      <section class="story-section reveal">
+        <div class="section-index">08 / The security connection</div>
+        <h2>Now look at the journey like a cybersecurity investigator</h2>
 
         <p>
-          Your laptop or phone is connected to a network.
+          Understanding how the Internet works gives us more than networking
+          knowledge. It helps us ask better security questions.
+        </p>
+
+        <ul class="security-questions">
+          <li>
+            <span>01</span>
+            <div>Is the connection protected against someone reading or altering the traffic?</div>
+          </li>
+          <li>
+            <span>02</span>
+            <div>Did the domain resolve to an expected destination?</div>
+          </li>
+          <li>
+            <span>03</span>
+            <div>Is the server legitimate, or could it be impersonating another service?</div>
+          </li>
+          <li>
+            <span>04</span>
+            <div>Does the server have a vulnerability that could be exploited?</div>
+          </li>
+          <li>
+            <span>05</span>
+            <div>What can network logs reveal about the connection and its timing?</div>
+          </li>
+        </ul>
+
+        <p>
+          These questions connect networking to traffic analysis, secure
+          communications, incident investigation, and understanding how
+          attacks move through systems.
         </p>
 
         <p>
-          Maybe that's your home Wi-Fi.
+          The goal isn't to memorise every component at once. It's to understand
+          the journey well enough to recognise when something about it looks
+          unusual.
         </p>
-
-        <p>
-          Maybe it's a mobile network.
-        </p>
-
-        <p>
-          Maybe you're connected to a university or company
-          network.
-        </p>
-
-        <p>
-          That network gives your device a way to communicate
-          with other devices.
-        </p>
-
-        <p>
-          But your home network can't contain the entire
-          Internet.
-        </p>
-
-        <p>
-          Somewhere beyond it are other networks, routers,
-          servers and countless other devices.
-        </p>
-
-        <blockquote>
-          The Internet isn't one giant computer.
-          It's a network of networks.
-        </blockquote>
-
       </section>
-
-
-      <!-- IP ADDRESS -->
-
-      <section class="reveal">
-
-        <h2>
-          So how does a device know where to send something?
-        </h2>
-
-        <p>
-          This is where addresses become important.
-        </p>
-
-        <p>
-          Computers communicating across networks need
-          addresses that help identify where data should go.
-        </p>
-
-        <p>
-          These are called <strong>IP addresses</strong>.
-        </p>
-
-        <p>
-          You don't need to memorise all the details yet.
-        </p>
-
-        <p>
-          For now, think of an IP address like an address
-          that helps network traffic find the right destination.
-        </p>
-
-        <div class="question">
-
-          <span class="question-label">
-            A small clue
-          </span>
-
-          <p>
-            But when you type a website name, do you really
-            type an IP address?
-          </p>
-
-        </div>
-
-        <p>
-          Usually, no.
-        </p>
-
-        <p>
-          You type something much easier to remember:
-          a domain name.
-        </p>
-
-        <p>
-          That's where another important piece of the
-          Internet appears.
-        </p>
-
-      </section>
-
-
-      <!-- DNS -->
-
-      <section class="reveal">
-
-        <h2>
-          The Internet has a name problem
-        </h2>
-
-        <p>
-          Imagine having to remember the numerical address
-          of every website you wanted to visit.
-        </p>
-
-        <p>
-          That would get annoying very quickly.
-        </p>
-
-        <p>
-          Instead, we use names.
-        </p>
-
-        <p>
-          You type something like:
-        </p>
-
-        <blockquote>
-          example.com
-        </blockquote>
-
-        <p>
-          But somewhere along the way, your device needs
-          to discover the network address associated with
-          that name.
-        </p>
-
-        <p>
-          This is where <strong>DNS</strong> comes in.
-        </p>
-
-        <p>
-          DNS — the Domain Name System — helps translate
-          human-friendly domain names into information that
-          computers can use to locate the destination.
-        </p>
-
-        <p>
-          Think of it like asking:
-        </p>
-
-        <blockquote>
-          “I know the name. Where is this?”
-        </blockquote>
-
-        <p>
-          Once your device has the information it needs,
-          the request can continue its journey.
-        </p>
-
-      </section>
-
-
-      <!-- ROUTERS -->
-
-      <section class="reveal">
-
-        <h2>
-          Your request has to travel
-        </h2>
-
-        <p>
-          Now your request needs to get from your device
-          to the destination.
-        </p>
-
-        <p>
-          It doesn't simply travel in one straight line.
-        </p>
-
-        <p>
-          Along the way, network devices called
-          <strong>routers</strong> help move traffic between
-          different networks.
-        </p>
-
-        <p>
-          A router looks at information about where traffic
-          needs to go and forwards it toward the next destination.
-        </p>
-
-        <p>
-          Your request might pass through several network
-          devices before reaching the server.
-        </p>
-
-        <p>
-          You don't see any of this happening.
-        </p>
-
-        <p>
-          You simply see the website load.
-        </p>
-
-        <blockquote>
-          The Internet hides an enormous amount of complexity
-          behind a very simple experience.
-        </blockquote>
-
-      </section>
-
-
-      <!-- SERVER -->
-
-      <section class="reveal">
-
-        <h2>
-          Eventually, your request reaches a server
-        </h2>
-
-        <p>
-          Somewhere on the other side is a computer
-          prepared to respond to requests.
-        </p>
-
-        <p>
-          That's the basic idea behind a web server.
-        </p>
-
-        <p>
-          Your browser asks for something.
-        </p>
-
-        <p>
-          The server receives the request.
-        </p>
-
-        <p>
-          It processes it.
-        </p>
-
-        <p>
-          Then it sends a response back.
-        </p>
-
-        <p>
-          That response might contain HTML, images,
-          stylesheets, JavaScript and other resources
-          needed to build the page you're looking at.
-        </p>
-
-        <p>
-          Your browser takes those pieces and turns them
-          into the website you see.
-        </p>
-
-      </section>
-
-
-      <!-- RETURN JOURNEY -->
-
-      <section class="reveal">
-
-        <h2>
-          And then the journey happens again
-        </h2>
-
-        <p>
-          Remember that request we sent?
-        </p>
-
-        <p>
-          The server's response has to travel back.
-        </p>
-
-        <p>
-          It moves through networks and devices until
-          the information reaches your computer.
-        </p>
-
-        <p>
-          Your browser receives it.
-        </p>
-
-        <p>
-          It puts everything together.
-        </p>
-
-        <p>
-          And suddenly:
-        </p>
-
-        <blockquote>
-          The website appears.
-        </blockquote>
-
-        <p>
-          All of that can happen in a fraction of a second.
-        </p>
-
-      </section>
-
-
-      <!-- SECURITY CONNECTION -->
-
-      <section class="reveal">
-
-        <h2>
-          Now think like someone learning cybersecurity
-        </h2>
-
-        <p>
-          At first, this might sound like networking.
-        </p>
-
-        <p>
-          And it is.
-        </p>
-
-        <p>
-          But cybersecurity starts becoming much more
-          interesting when you ask questions about what
-          happens along the way.
-        </p>
-
-        <p>
-          What if someone intercepts the traffic?
-        </p>
-
-        <p>
-          What if you connect to the wrong server?
-        </p>
-
-        <p>
-          What if someone redirects you somewhere malicious?
-        </p>
-
-        <p>
-          What if the server itself has a vulnerability?
-        </p>
-
-        <p>
-          What if someone is watching the network?
-        </p>
-
-        <p>
-          Suddenly, understanding how the Internet works
-          becomes part of understanding how attacks work.
-        </p>
-
-        <p>
-          And that's why networking is one of the foundations
-          of cybersecurity.
-        </p>
-
-      </section>
-
-
-      <!-- TAKEAWAY -->
 
       <section class="takeaway reveal">
-
-        <div class="takeaway-label">
-          Remember this
-        </div>
+        <div class="section-index">The takeaway</div>
+        <h2>A website visit is a conversation</h2>
 
         <p>
-          When you visit a website, your device doesn't
-          simply “go to the Internet.” It communicates across
-          networks, finds a destination, sends a request,
-          receives a response, and turns that response into
-          the page you see.
+          When you visit a website, your device uses network information to
+          locate a destination, sends a request across connected networks,
+          receives a response, and turns the returned resources into the page
+          you see.
         </p>
 
+        <p>
+          Every step leaves us with another clue about how digital systems
+          communicate — and how they can be protected.
+        </p>
       </section>
-
     </article>
 
-
-    <!-- =========================
-         NEXT ARTICLE
-    ========================== -->
-
-    <div class="next-article reveal">
-
-      <div class="next-inner">
-
-        <div class="next-label">
-          Beginner Path · Next
-        </div>
-
-        <h2 class="next-title">
-          What Is an
-          <span>IP Address?</span>
-        </h2>
-
-        <p class="next-description">
-          We've mentioned IP addresses a few times.
-          Now let's slow down and understand what they
-          actually are, why they exist, and what they
-          can — and can't — tell us.
-        </p>
-
-        <a
-          href="what-is-an-ip-address.html"
-          class="next-link"
-        >
-          Continue the investigation
-          <span>→</span>
-        </a>
-
-      </div>
-
-    </div>
-
+    <section class="next-article reveal">
+      <div class="next-label">Beginner Path · Next guide</div>
+      <h2>What Is an IP Address?</h2>
+      <p>
+        We've mentioned IP addresses throughout this journey. Next, let's
+        explore what they are, why devices use them, and what they can — and
+        cannot — tell us.
+      </p>
+      <a class="next-link" href="what-is-an-ip-address.html">
+        Continue to the next guide <span aria-hidden="true">→</span>
+      </a>
+    </section>
   </main>
 
-
-  <!-- =========================
-       FOOTER
-  ========================== -->
-
-  <footer>
-
+  <footer class="site-footer">
     <div class="footer-inner">
-
-      <div class="footer-brand">
-        KS<span>CybSec</span>
-      </div>
-
-      <div>
-        Learn · Try · Think · Verify
-      </div>
-
-      <div>
-        © 2026 KSCybSec
-      </div>
-
+      <a href="../index.html" class="footer-brand">Veil &amp; Vector</a>
+      <p>Learn · Investigate · Understand</p>
+      <p>© 2026 Veil &amp; Vector</p>
     </div>
-
   </footer>
 
-
-  <!-- =========================
-       JAVASCRIPT
-  ========================== -->
-
-  <script>
-
-    /* Reading progress */
-
-    const progress =
-      document.getElementById("progress");
-
-    window.addEventListener("scroll", () => {
-
-      const scrollTop =
-        window.scrollY;
-
-      const documentHeight =
-        document.documentElement.scrollHeight -
-        window.innerHeight;
-
-      const percentage =
-        (scrollTop / documentHeight) * 100;
-
-      progress.style.width =
-        percentage + "%";
-
-    });
-
-
-    /* Scroll reveal */
-
-    const revealElements =
-      document.querySelectorAll(".reveal");
-
-    const observer =
-      new IntersectionObserver(
-        (entries) => {
-
-          entries.forEach((entry) => {
-
-            if (entry.isIntersecting) {
-
-              entry.target.classList.add("visible");
-
-              observer.unobserve(entry.target);
-
-            }
-
-          });
-
-        },
-        {
-          threshold: 0.08
-        }
-      );
-
-
-    revealElements.forEach((element) => {
-
-      observer.observe(element);
-
-    });
-
-  </script>
-
+  <script src="../article.js"></script>
 </body>
 </html>
-ho
