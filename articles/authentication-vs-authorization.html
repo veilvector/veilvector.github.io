@@ -10,6 +10,7 @@
   <meta name="author" content="Veil &amp; Vector">
   <meta name="theme-color" content="#11100f">
   <meta name="robots" content="index, follow">
+
   <link rel="canonical" href="https://veilvector.github.io/articles/authentication-vs-authorization.html">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,14 +18,203 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../article.css">
+
+  <style>
+    .editorial-visual {
+      margin: 2.4rem 0;
+      padding: 1.4rem 0;
+      border-top: 1px solid var(--border, rgba(180, 165, 140, 0.25));
+      border-bottom: 1px solid var(--border, rgba(180, 165, 140, 0.25));
+    }
+
+    .visual-label,
+    .mini-label {
+      display: block;
+      margin-bottom: 1.1rem;
+      font-family: "DM Mono", monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted, #a7a095);
+    }
+
+    .concept-flow {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      width: 100%;
+    }
+
+    .concept-step {
+      flex: 1 1 0;
+      min-width: 0;
+      padding: 0.8rem 1rem;
+      border-left: 1px solid var(--border, rgba(180, 165, 140, 0.25));
+    }
+
+    .concept-step:first-child {
+      padding-left: 0;
+      border-left: 0;
+    }
+
+    .concept-step:last-child {
+      padding-right: 0;
+    }
+
+    .concept-step strong {
+      display: block;
+      margin-bottom: 0.45rem;
+      font-family: "DM Mono", monospace;
+      font-size: 0.9rem;
+      font-weight: 500;
+      overflow-wrap: anywhere;
+    }
+
+    .concept-step p {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--muted, #a7a095);
+    }
+
+    .concept-arrow {
+      align-self: center;
+      flex: 0 0 auto;
+      padding: 0 0.65rem;
+      color: var(--accent, #c4a879);
+    }
+
+    .flow-caption {
+      margin: 1.1rem 0 0;
+      color: var(--muted, #a7a095);
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+
+    .detail-list {
+      margin: 1.5rem 0;
+    }
+
+    .detail-row {
+      display: grid;
+      grid-template-columns: minmax(135px, 0.7fr) minmax(0, 1.5fr);
+      gap: 1.2rem;
+      padding: 1.1rem 0;
+      border-top: 1px solid var(--border, rgba(180, 165, 140, 0.25));
+    }
+
+    .detail-row:last-child {
+      border-bottom: 1px solid var(--border, rgba(180, 165, 140, 0.25));
+    }
+
+    .detail-name {
+      font-family: "DM Mono", monospace;
+      font-size: 0.85rem;
+      color: var(--accent, #c4a879);
+    }
+
+    .detail-copy strong {
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+
+    .detail-copy p {
+      margin: 0;
+      font-size: 0.94rem;
+      line-height: 1.75;
+      color: var(--muted, #a7a095);
+    }
+
+    .investigation-list {
+      margin: 1.5rem 0;
+    }
+
+    .investigation-row {
+      display: grid;
+      grid-template-columns: minmax(120px, 0.7fr) minmax(0, 1.5fr);
+      gap: 1rem;
+      padding: 1rem 0;
+      border-top: 1px solid var(--border, rgba(180, 165, 140, 0.25));
+    }
+
+    .investigation-row:last-child {
+      border-bottom: 1px solid var(--border, rgba(180, 165, 140, 0.25));
+    }
+
+    .investigation-row strong {
+      font-weight: 600;
+    }
+
+    .investigation-row p {
+      margin: 0;
+      color: var(--muted, #a7a095);
+      font-size: 0.94rem;
+      line-height: 1.7;
+    }
+
+    .principle-note {
+      margin: 2rem 0;
+      padding: 1rem 0 1rem 1.1rem;
+      border-left: 2px solid var(--accent, #c4a879);
+    }
+
+    .principle-note p {
+      margin: 0.35rem 0;
+    }
+
+    .question-prompt {
+      margin: 2rem 0;
+      padding: 1.2rem 0;
+      border-top: 1px solid var(--border, rgba(180, 165, 140, 0.25));
+      border-bottom: 1px solid var(--border, rgba(180, 165, 140, 0.25));
+    }
+
+    .question-prompt p {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 640px) {
+      .editorial-visual {
+        margin: 2rem 0;
+        padding: 1.15rem 0;
+      }
+
+      .concept-flow {
+        flex-direction: column;
+      }
+
+      .concept-step,
+      .concept-step:first-child,
+      .concept-step:last-child {
+        width: 100%;
+        padding: 0.9rem 0;
+        border-left: 0;
+        border-bottom: 1px solid var(--border, rgba(180, 165, 140, 0.25));
+      }
+
+      .concept-step:last-child {
+        border-bottom: 0;
+      }
+
+      .concept-arrow {
+        align-self: flex-start;
+        padding: 0.1rem 0;
+        transform: rotate(90deg);
+      }
+
+      .detail-row,
+      .investigation-row {
+        grid-template-columns: 1fr;
+        gap: 0.35rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
-
   <header class="site-header">
     <div class="nav-inner">
       <a class="brand" href="../index.html" aria-label="Veil & Vector homepage">
-      
         <span>Veil &amp; Vector</span>
       </a>
 
@@ -50,7 +240,6 @@
   </div>
 
   <main>
-
     <header class="article-header">
       <div class="article-meta">
         <span class="category">Security Fundamentals · Beginner</span>
@@ -67,16 +256,15 @@
       </p>
 
       <div class="article-meta">
-        <span>Beginner's guide</span>
+        <span>BEGINNER'S GUIDE</span>
         <span aria-hidden="true">·</span>
-        <span>Identity and access</span>
+        <span>IDENTITY AND ACCESS</span>
       </div>
     </header>
 
     <article>
-
       <section class="story-section reveal">
-        <span class="section-index">01 — The login</span>
+        <div class="section-index">01 / THE LOGIN</div>
 
         <h2>You're inside. But what can you access?</h2>
 
@@ -109,7 +297,7 @@
       </section>
 
       <section class="story-section reveal">
-        <span class="section-index">02 — First question</span>
+        <div class="section-index">02 / FIRST QUESTION</div>
 
         <h2>Authentication: who are you?</h2>
 
@@ -124,64 +312,69 @@
           password, a security key, or a biometric check.
         </p>
 
-        <div class="email-visual" role="img" aria-label="Illustration of a login screen showing identity verification">
+        <div class="editorial-visual">
+          <div class="visual-label">IDENTITY CHECK · SIGN-IN REQUEST</div>
 
-          <div class="email-top">
-            <div class="email-dots" aria-hidden="true">
-              <span></span>
-              <span></span>
-              <span></span>
+          <div class="concept-flow">
+            <div class="concept-step">
+              <strong>01 · Claim</strong>
+              <p>The user identifies the account they want to access.</p>
             </div>
-            <span class="email-caption">IDENTITY CHECK</span>
+
+            <div class="concept-arrow" aria-hidden="true">→</div>
+
+            <div class="concept-step">
+              <strong>02 · Evidence</strong>
+              <p>The system checks credentials or another authentication factor.</p>
+            </div>
+
+            <div class="concept-arrow" aria-hidden="true">→</div>
+
+            <div class="concept-step">
+              <strong>03 · Result</strong>
+              <p>The system accepts or rejects the authentication attempt.</p>
+            </div>
           </div>
 
-          <div class="email-body">
-            <div class="email-from">
-              <span class="email-caption">SIGN-IN REQUEST</span>
-              <span class="status-indicator" aria-hidden="true"></span>
-            </div>
+          <p class="flow-caption">
+            Authentication answers: “Can the system verify the identity
+            being claimed?”
+          </p>
+        </div>
 
-            <div class="email-subject">
-              Verify your identity
-            </div>
+        <p>There are three common categories of authentication factors.</p>
 
-            <div class="email-message">
-              The system checks the credentials or other authentication
-              evidence supplied during sign-in.
+        <div class="detail-list">
+          <div class="detail-row">
+            <div class="detail-name">Something you know</div>
+            <div class="detail-copy">
+              <strong>A password or PIN</strong>
+              <p>The evidence is information you know.</p>
             </div>
+          </div>
 
-            <div class="fake-button">
-              <span aria-hidden="true">◇</span>
-              Authentication
+          <div class="detail-row">
+            <div class="detail-name">Something you have</div>
+            <div class="detail-copy">
+              <strong>A security key or authenticator device</strong>
+              <p>
+                The evidence comes from a device or possession associated
+                with the account.
+              </p>
+            </div>
+          </div>
+
+          <div class="detail-row">
+            <div class="detail-name">Something you are</div>
+            <div class="detail-copy">
+              <strong>A biometric characteristic</strong>
+              <p>
+                A supported fingerprint or facial recognition system can
+                be used as a biometric factor.
+              </p>
             </div>
           </div>
         </div>
-
-        <p class="visual-note">
-          Authentication answers: “Can the system verify the identity
-          being claimed?”
-        </p>
-
-        <p>
-          There are three common categories of authentication factors:
-        </p>
-
-        <h3>Something you know</h3>
-        <p>
-          A password or PIN. The evidence is information you know.
-        </p>
-
-        <h3>Something you have</h3>
-        <p>
-          A hardware security key or an authenticator device that provides
-          a code or approves a sign-in.
-        </p>
-
-        <h3>Something you are</h3>
-        <p>
-          A biometric characteristic, such as a fingerprint or facial
-          recognition, supported by the device.
-        </p>
 
         <p>
           Multi-factor authentication combines factors from different
@@ -191,7 +384,7 @@
       </section>
 
       <section class="story-section reveal">
-        <span class="section-index">03 — Second question</span>
+        <div class="section-index">03 / SECOND QUESTION</div>
 
         <h2>Authorization: what are you allowed to do?</h2>
 
@@ -201,21 +394,30 @@
           to access.
         </p>
 
-        <p>
-          That decision is called <strong>authorization</strong>.
-        </p>
+        <p>That decision is called <strong>authorization</strong>.</p>
 
-        <div class="flow">
-          <div class="flow-row">
-            <div class="flow-item">Verified identity</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item highlight">Check permissions</div>
-          </div>
+        <div class="editorial-visual">
+          <div class="visual-label">THE PERMISSION CHECK</div>
 
-          <div class="flow-row">
-            <div class="flow-item">Requested resource</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item highlight">Allow or deny</div>
+          <div class="concept-flow">
+            <div class="concept-step">
+              <strong>Identity</strong>
+              <p>A user or account has been identified.</p>
+            </div>
+
+            <div class="concept-arrow" aria-hidden="true">→</div>
+
+            <div class="concept-step">
+              <strong>Request</strong>
+              <p>The user tries to open a resource or perform an action.</p>
+            </div>
+
+            <div class="concept-arrow" aria-hidden="true">→</div>
+
+            <div class="concept-step">
+              <strong>Permission</strong>
+              <p>The system allows or denies the requested action.</p>
+            </div>
           </div>
         </div>
 
@@ -225,23 +427,40 @@
           responsibilities.
         </p>
 
-        <h3>A student</h3>
-        <p>
-          May view their own attendance, timetable, and results, but should
-          not be able to change official marks.
-        </p>
+        <div class="detail-list">
+          <div class="detail-row">
+            <div class="detail-name">Student</div>
+            <div class="detail-copy">
+              <strong>View their own academic information</strong>
+              <p>
+                May view their attendance, timetable, and results, but
+                shouldn't be able to change official marks.
+              </p>
+            </div>
+          </div>
 
-        <h3>A lecturer</h3>
-        <p>
-          May enter or update marks for assigned classes, subject to the
-          college's rules and the lecturer's permissions.
-        </p>
+          <div class="detail-row">
+            <div class="detail-name">Lecturer</div>
+            <div class="detail-copy">
+              <strong>Manage assigned academic records</strong>
+              <p>
+                May enter or update marks for assigned classes, subject
+                to the college's rules and their permissions.
+              </p>
+            </div>
+          </div>
 
-        <h3>An administrator</h3>
-        <p>
-          May manage accounts and system settings within their assigned
-          administrative responsibilities.
-        </p>
+          <div class="detail-row">
+            <div class="detail-name">Administrator</div>
+            <div class="detail-copy">
+              <strong>Manage approved system functions</strong>
+              <p>
+                May manage accounts and settings within their assigned
+                administrative responsibilities.
+              </p>
+            </div>
+          </div>
+        </div>
 
         <p>
           All three users can successfully authenticate. Their permissions
@@ -250,7 +469,7 @@
       </section>
 
       <section class="story-section reveal">
-        <span class="section-index">04 — Connect the clues</span>
+        <div class="section-index">04 / CONNECT THE CLUES</div>
 
         <h2>One login, two separate decisions</h2>
 
@@ -258,31 +477,36 @@
           Let's follow a request to view a student's marks.
         </p>
 
-        <div class="flow">
-          <div class="flow-row">
-            <div class="flow-item">Sign-in attempt</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item highlight">Authentication</div>
+        <div class="editorial-visual">
+          <div class="visual-label">FROM SIGN-IN TO ACCESS</div>
+
+          <div class="concept-flow">
+            <div class="concept-step">
+              <strong>01 · Sign in</strong>
+              <p>The user submits authentication evidence.</p>
+            </div>
+
+            <div class="concept-arrow" aria-hidden="true">→</div>
+
+            <div class="concept-step">
+              <strong>02 · Verify</strong>
+              <p>The system checks the claimed identity.</p>
+            </div>
+
+            <div class="concept-arrow" aria-hidden="true">→</div>
+
+            <div class="concept-step">
+              <strong>03 · Authorize</strong>
+              <p>The requested action is checked against permissions.</p>
+            </div>
           </div>
 
-          <div class="flow-row">
-            <div class="flow-item">Identity verified</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item highlight">Authorization check</div>
-          </div>
-
-          <div class="flow-row">
-            <div class="flow-item">Permission decision</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item">Resource access</div>
-          </div>
+          <p class="flow-caption">
+            Authentication and authorization are distinct checks. A system
+            may establish a session at sign-in and then evaluate permissions
+            whenever a protected resource or action is requested.
+          </p>
         </div>
-
-        <p>
-          First, the system verifies the identity. Then, when the user
-          requests a resource, the system checks whether that identity
-          has permission to perform the requested action.
-        </p>
 
         <p>
           The precise implementation varies. Authorization can depend on
@@ -293,7 +517,7 @@
       </section>
 
       <section class="story-section reveal">
-        <span class="section-index">05 — The security problem</span>
+        <div class="section-index">05 / THE SECURITY PROBLEM</div>
 
         <h2>What if someone steals a password?</h2>
 
@@ -315,18 +539,18 @@
           account to the resources and actions it is authorized to use.
         </p>
 
-        <div class="security-note">
+        <div class="principle-note">
+          <p><strong>Two controls, two jobs</strong></p>
           <p>
-            <strong>Two controls, two jobs:</strong> authentication helps
-            establish identity; authorization limits access. Strong
-            authentication helps protect accounts, while correct
-            authorization helps prevent accounts from accessing resources
-            they shouldn't.
+            Authentication helps establish identity; authorization limits
+            access. Strong authentication helps protect accounts, while
+            correct authorization helps prevent accounts from accessing
+            resources they shouldn't.
           </p>
         </div>
 
         <p>
-          This is also why defenders investigate more than whether a login
+          This is why defenders investigate more than whether a login
           succeeded. They look at which account was used, what resources
           were accessed, whether the activity was expected, and whether
           permissions were appropriate.
@@ -334,7 +558,7 @@
       </section>
 
       <section class="story-section reveal">
-        <span class="section-index">06 — Think like an analyst</span>
+        <div class="section-index">06 / THINK LIKE AN ANALYST</div>
 
         <h2>A sensitive file was opened. Now what?</h2>
 
@@ -348,28 +572,33 @@
           A security analyst builds context by asking a few questions.
         </p>
 
-        <div class="email-visual" role="group" aria-label="Investigation checklist for a sensitive file access event">
+        <div class="editorial-visual">
+          <div class="visual-label">INVESTIGATION NOTES · ACCESS EVENT</div>
 
-          <div class="email-top">
-            <div class="email-dots" aria-hidden="true">
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-            <span class="email-caption">INVESTIGATION NOTES</span>
-          </div>
-
-          <div class="email-body">
-            <div class="email-subject">
-              Review the access event
+          <div class="investigation-list">
+            <div class="investigation-row">
+              <strong>Identity</strong>
+              <p>Which account performed the action?</p>
             </div>
 
-            <div class="email-message">
-              <p><strong>Identity:</strong> Which account performed the action?</p>
-              <p><strong>Authentication:</strong> How did the session begin?</p>
-              <p><strong>Resource:</strong> Which file or record was accessed?</p>
-              <p><strong>Authorization:</strong> Was this account permitted to access it?</p>
-              <p><strong>Context:</strong> Was the activity expected?</p>
+            <div class="investigation-row">
+              <strong>Authentication</strong>
+              <p>How did the session begin? Was there anything unusual about the sign-in?</p>
+            </div>
+
+            <div class="investigation-row">
+              <strong>Resource</strong>
+              <p>Which file or record was accessed?</p>
+            </div>
+
+            <div class="investigation-row">
+              <strong>Authorization</strong>
+              <p>Was this account permitted to access it?</p>
+            </div>
+
+            <div class="investigation-row">
+              <strong>Context</strong>
+              <p>Was the activity expected for this user, time, and task?</p>
             </div>
           </div>
         </div>
@@ -382,76 +611,87 @@
       </section>
 
       <section class="story-section reveal">
-        <span class="section-index">07 — One last distinction</span>
+        <div class="section-index">07 / ONE LAST DISTINCTION</div>
 
         <h2>Remember these two questions</h2>
 
-        <div class="flow">
-          <div class="flow-row">
-            <div class="flow-item">
-              **Authentication**
+        <div class="editorial-visual">
+          <div class="concept-flow">
+            <div class="concept-step">
+              <strong>Authentication</strong>
               <p>Who are you?</p>
             </div>
 
-            <div class="flow-arrow">+</div>
+            <div class="concept-arrow" aria-hidden="true">+</div>
 
-            <div class="flow-item">
-              **Authorization**
+            <div class="concept-step">
+              <strong>Authorization</strong>
               <p>What are you allowed to do?</p>
             </div>
           </div>
         </div>
 
-        <div class="question">
-          <span class="question-label">PAUSE FOR A SECOND</span>
+        <div class="question-prompt">
+          <span class="mini-label">PAUSE AND THINK</span>
           <p>
             A student signs in successfully but tries to change their
             official marks. Which security process should determine
             whether that action is permitted?
           </p>
         </div>
-
-        <div class="takeaway">
-          <span class="takeaway-label">THE TAKEAWAY</span>
-          <p>
-            <strong>Authentication verifies identity. Authorization
-            determines access.</strong> A secure system needs both:
-            it should verify who is signing in and enforce what that
-            identity is allowed to see or do.
-          </p>
-        </div>
       </section>
 
+      <section class="takeaway reveal">
+        <div class="takeaway-label">TAKEAWAY</div>
+
+        <h2>Verify the identity. Enforce the permissions.</h2>
+
+        <p>
+          <strong>Authentication verifies identity.</strong> It checks
+          whether the evidence supports the identity being claimed.
+        </p>
+
+        <p>
+          <strong>Authorization determines access.</strong> It decides
+          which resources and actions that identity is permitted to use.
+        </p>
+
+        <p>
+          A secure system needs both: it should verify who is signing in
+          and enforce what that identity is allowed to see or do.
+        </p>
+      </section>
     </article>
 
     <section class="next-article reveal">
       <div class="next-inner">
-        <div>
-          <span class="next-label">Continue exploring</span>
-          <h2 class="next-title">Encryption, Hashing &amp; Encoding</h2>
-          <p class="next-description">
-            Three ways of transforming data, three different purposes.
-            Learn why the distinctions matter in cybersecurity.
-          </p>
-        </div>
+        <div class="next-label">CONTINUE EXPLORING</div>
+
+        <h2 class="next-title">Encryption, Hashing &amp; Encoding</h2>
+
+        <p class="next-description">
+          Three ways of transforming data, three different purposes.
+          Learn why the distinctions matter in cybersecurity.
+        </p>
 
         <a class="next-link" href="encryption-hashing-encoding.html">
           Read next <span aria-hidden="true">→</span>
         </a>
       </div>
     </section>
-
   </main>
 
   <footer class="site-footer">
     <div class="footer-inner">
       <a class="footer-brand" href="../index.html">Veil &amp; Vector</a>
-      <p>Cybersecurity, one clue at a time.</p>
-      <a href="../index.html#articles">Explore all articles ↗</a>
+
+      <div class="footer-links">
+        <a href="../index.html#articles">All articles</a>
+        <a href="../index.html#learning-paths">Learning paths</a>
+      </div>
     </div>
   </footer>
 
   <script src="../article.js" defer></script>
-
 </body>
 </html>
