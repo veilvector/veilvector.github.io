@@ -18,6 +18,213 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../article.css">
+
+  <style>
+    /* Open, editorial visuals specific to this article */
+
+    .editorial-visual {
+      margin: 2rem 0;
+      padding: 1.4rem 0;
+      border-top: 1px solid var(--line, rgba(180, 160, 130, 0.28));
+      border-bottom: 1px solid var(--line, rgba(180, 160, 130, 0.28));
+    }
+
+    .visual-label,
+    .mini-label {
+      display: block;
+      font-family: "DM Mono", monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--muted, #a49a8b);
+    }
+
+    .visual-label {
+      margin-bottom: 1.2rem;
+    }
+
+    .concept-flow {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .concept-step {
+      min-width: 0;
+    }
+
+    .concept-step strong {
+      display: block;
+      margin: 0.4rem 0;
+      font-size: 1.02rem;
+      overflow-wrap: anywhere;
+    }
+
+    .concept-step p {
+      margin: 0;
+      color: var(--muted, #a49a8b);
+      font-size: 0.9rem;
+    }
+
+    .concept-step.emphasis strong {
+      color: var(--accent, #c5a878);
+    }
+
+    .concept-arrow {
+      color: var(--accent, #c5a878);
+      font-size: 1.4rem;
+      text-align: center;
+    }
+
+    .flow-caption,
+    .visual-note {
+      margin: 1rem 0 0;
+      color: var(--muted, #a49a8b);
+      font-size: 0.9rem;
+    }
+
+    .dora-list {
+      list-style: none;
+      padding: 0;
+      margin: 1.8rem 0;
+      counter-reset: dora;
+    }
+
+    .dora-list li {
+      counter-increment: dora;
+      display: grid;
+      grid-template-columns: 2.5rem minmax(0, 1fr);
+      gap: 0.9rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line, rgba(180, 160, 130, 0.28));
+    }
+
+    .dora-list li:first-child {
+      border-top: 1px solid var(--line, rgba(180, 160, 130, 0.28));
+    }
+
+    .dora-list li::before {
+      content: "0" counter(dora);
+      font-family: "DM Mono", monospace;
+      font-size: 0.8rem;
+      color: var(--accent, #c5a878);
+      padding-top: 0.15rem;
+    }
+
+    .dora-list h3 {
+      margin: 0 0 0.35rem;
+    }
+
+    .dora-list p {
+      margin: 0;
+    }
+
+    .message-flow {
+      margin: 1.5rem 0;
+    }
+
+    .message-event {
+      display: grid;
+      grid-template-columns: minmax(110px, 0.75fr) minmax(0, 1.5fr);
+      gap: 1.2rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line, rgba(180, 160, 130, 0.28));
+    }
+
+    .message-event:first-child {
+      border-top: 1px solid var(--line, rgba(180, 160, 130, 0.28));
+    }
+
+    .message-name {
+      font-family: "DM Mono", monospace;
+      font-size: 0.85rem;
+      color: var(--accent, #c5a878);
+      overflow-wrap: anywhere;
+    }
+
+    .message-event p {
+      margin: 0;
+    }
+
+    .message-event small {
+      display: block;
+      margin-top: 0.3rem;
+      color: var(--muted, #a49a8b);
+      font-size: 0.85rem;
+    }
+
+    .comparison-list {
+      margin: 1.8rem 0;
+    }
+
+    .comparison-row {
+      display: grid;
+      grid-template-columns: minmax(110px, 0.7fr) minmax(0, 1.7fr);
+      gap: 1.2rem;
+      padding: 1rem 0;
+      border-bottom: 1px solid var(--line, rgba(180, 160, 130, 0.28));
+    }
+
+    .comparison-row:first-child {
+      border-top: 1px solid var(--line, rgba(180, 160, 130, 0.28));
+    }
+
+    .comparison-row strong {
+      color: var(--accent, #c5a878);
+    }
+
+    .comparison-row p {
+      margin: 0;
+    }
+
+    .quick-check {
+      margin: 2rem 0;
+      padding: 1.1rem 0 1.1rem 1.2rem;
+      border-left: 2px solid var(--accent, #c5a878);
+    }
+
+    .quick-check .question-label {
+      display: block;
+      margin-bottom: 0.6rem;
+      font-family: "DM Mono", monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--accent, #c5a878);
+    }
+
+    .quick-check p {
+      margin: 0;
+    }
+
+    @media (max-width: 640px) {
+      .concept-flow {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.7rem;
+      }
+
+      .concept-arrow {
+        text-align: left;
+        line-height: 1;
+      }
+
+      .concept-arrow span {
+        display: inline-block;
+        transform: rotate(90deg);
+      }
+
+      .message-event,
+      .comparison-row {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.35rem;
+      }
+
+      .editorial-visual {
+        padding: 1.1rem 0;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -74,14 +281,13 @@
 
     <article>
 
+      <!-- 01: Introduction -->
       <section class="story-section reveal">
         <span class="section-index">01 — Joining the network</span>
 
         <h2>You connected. But who gave you an address?</h2>
 
-        <p>
-          You connect your laptop to Wi-Fi.
-        </p>
+        <p>You connect your laptop to Wi-Fi.</p>
 
         <p>
           You didn't manually type an IP address. You didn't choose
@@ -101,6 +307,7 @@
         </p>
       </section>
 
+      <!-- 02: The job -->
       <section class="story-section reveal">
         <span class="section-index">02 — The job</span>
 
@@ -116,39 +323,31 @@
           several important pieces of information.
         </p>
 
-        <div class="flow">
-          <div class="flow-row">
-            <div class="flow-item highlight">
-              IP address
+        <div class="editorial-visual">
+          <span class="visual-label">A few things DHCP can provide</span>
+
+          <div class="comparison-list">
+            <div class="comparison-row">
+              <strong>IP address</strong>
+              <p>Identifies the device's network-layer address.</p>
             </div>
 
-            <div class="flow-arrow">+</div>
-
-            <div class="flow-item">
-              Subnet mask
-            </div>
-          </div>
-
-          <div class="flow-row">
-            <div class="flow-item">
-              Default gateway
+            <div class="comparison-row">
+              <strong>Subnet mask</strong>
+              <p>Helps determine which addresses belong to the local subnet.</p>
             </div>
 
-            <div class="flow-arrow">+</div>
+            <div class="comparison-row">
+              <strong>Default gateway</strong>
+              <p>Provides a route to destinations outside the local network.</p>
+            </div>
 
-            <div class="flow-item">
-              DNS server
+            <div class="comparison-row">
+              <strong>DNS server</strong>
+              <p>Identifies a resolver the device can use for name lookups.</p>
             </div>
           </div>
         </div>
-
-        <p>
-          The IP address identifies the device at the network layer.
-          The subnet mask helps determine which addresses belong to
-          the local network. The default gateway provides a route
-          to other networks, and DNS configuration tells the device
-          which DNS resolver it can use.
-        </p>
 
         <p>
           In many home networks, the router also performs the DHCP
@@ -157,6 +356,7 @@
         </p>
       </section>
 
+      <!-- 03: DORA -->
       <section class="story-section reveal">
         <span class="section-index">03 — The conversation</span>
 
@@ -168,49 +368,89 @@
           name <strong>DORA</strong>.
         </p>
 
-        <div class="flow">
-          <div class="flow-row">
-            <div class="flow-item highlight">Discover</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item">Offer</div>
+        <div class="editorial-visual">
+          <span class="visual-label">DORA · DHCPv4</span>
+
+          <div class="concept-flow">
+            <div class="concept-step emphasis">
+              <span class="mini-label">01</span>
+              <strong>Discover</strong>
+              <p>The client searches for a DHCP server.</p>
+            </div>
+
+            <div class="concept-arrow" aria-hidden="true">
+              <span>→</span>
+            </div>
+
+            <div class="concept-step">
+              <span class="mini-label">02</span>
+              <strong>Offer</strong>
+              <p>A server proposes an address and settings.</p>
+            </div>
           </div>
 
-          <div class="flow-row">
-            <div class="flow-item">Request</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item highlight">Acknowledgement</div>
+          <div class="concept-flow">
+            <div class="concept-step">
+              <span class="mini-label">03</span>
+              <strong>Request</strong>
+              <p>The client requests the offered configuration.</p>
+            </div>
+
+            <div class="concept-arrow" aria-hidden="true">
+              <span>→</span>
+            </div>
+
+            <div class="concept-step emphasis">
+              <span class="mini-label">04</span>
+              <strong>Acknowledgement</strong>
+              <p>The server confirms the assignment.</p>
+            </div>
           </div>
         </div>
 
-        <h3>1. Discover</h3>
+        <ol class="dora-list">
+          <li>
+            <div>
+              <h3>Discover</h3>
+              <p>
+                The device broadcasts a DHCP discovery message to find
+                an available DHCP server. At this point, it may not yet
+                have a usable IPv4 address for normal network communication.
+              </p>
+            </div>
+          </li>
 
-        <p>
-          The device broadcasts a DHCP discovery message to find
-          an available DHCP server. At this point, it may not yet
-          have a usable IPv4 address for normal network communication.
-        </p>
+          <li>
+            <div>
+              <h3>Offer</h3>
+              <p>
+                A DHCP server responds with an offer. It proposes an
+                available IP address and can include other network settings.
+              </p>
+            </div>
+          </li>
 
-        <h3>2. Offer</h3>
+          <li>
+            <div>
+              <h3>Request</h3>
+              <p>
+                The device sends a request indicating that it wants to use
+                the offered configuration.
+              </p>
+            </div>
+          </li>
 
-        <p>
-          A DHCP server responds with an offer. It proposes an
-          available IP address and can include other network settings.
-        </p>
-
-        <h3>3. Request</h3>
-
-        <p>
-          The device sends a request indicating that it wants to use
-          the offered configuration.
-        </p>
-
-        <h3>4. Acknowledgement</h3>
-
-        <p>
-          The DHCP server sends an acknowledgement, commonly called
-          a DHCPACK, confirming the assignment. The device can then
-          configure its network interface with the information received.
-        </p>
+          <li>
+            <div>
+              <h3>Acknowledgement</h3>
+              <p>
+                The server sends an acknowledgement, commonly called
+                DHCPACK, confirming the assignment. The device can then
+                configure its network interface with the information received.
+              </p>
+            </div>
+          </li>
+        </ol>
 
         <p>
           That's the basic exchange: the device asks, the server offers,
@@ -218,6 +458,7 @@
         </p>
       </section>
 
+      <!-- 04: Message sequence -->
       <section class="story-section reveal">
         <span class="section-index">04 — Follow the messages</span>
 
@@ -229,66 +470,48 @@
           This simplified sequence shows how the exchange progresses.
         </p>
 
-        <div class="email-visual" role="group" aria-label="Simplified DHCP DORA exchange between a laptop and a DHCP server">
+        <div class="editorial-visual">
+          <span class="visual-label">DHCP message flow · Laptop ↔ Server</span>
 
-          <div class="email-top">
-            <div class="email-dots" aria-hidden="true">
-              <span></span>
-              <span></span>
-              <span></span>
+          <div class="message-flow">
+            <div class="message-event">
+              <span class="message-name">01 · DISCOVER</span>
+              <p>
+                Laptop searches for a DHCP server.
+                <small>Client → network</small>
+              </p>
             </div>
 
-            <span class="email-caption">DHCP MESSAGE FLOW</span>
+            <div class="message-event">
+              <span class="message-name">02 · OFFER</span>
+              <p>
+                Server offers 192.168.1.24 and may provide other settings.
+                <small>Server → client</small>
+              </p>
+            </div>
+
+            <div class="message-event">
+              <span class="message-name">03 · REQUEST</span>
+              <p>
+                Laptop requests the offered configuration.
+                <small>Client → network</small>
+              </p>
+            </div>
+
+            <div class="message-event">
+              <span class="message-name">04 · DHCPACK</span>
+              <p>
+                Server confirms the assignment.
+                <small>Server → client</small>
+              </p>
+            </div>
           </div>
 
-          <div class="email-body">
-
-            <div class="email-from">
-              <span class="email-caption">DEVICE</span>
-              <span class="email-caption">SERVER</span>
-            </div>
-
-            <div class="email-subject">
-              01 · DHCPDISCOVER
-            </div>
-
-            <div class="email-message">
-              The laptop searches for a DHCP server.
-            </div>
-
-            <div class="email-subject">
-              02 · DHCPOFFER
-            </div>
-
-            <div class="email-message">
-              The server offers 192.168.1.24.
-            </div>
-
-            <div class="email-subject">
-              03 · DHCPREQUEST
-            </div>
-
-            <div class="email-message">
-              The laptop requests the offered configuration.
-            </div>
-
-            <div class="email-subject">
-              04 · DHCPACK
-            </div>
-
-            <div class="email-message">
-              The server confirms the assignment.
-              The laptop can configure its interface using the
-              supplied network settings.
-            </div>
-
-          </div>
+          <p class="flow-caption">
+            This is a simplified view of the usual initial DHCPv4 exchange.
+            Actual packet fields and message details depend on the situation.
+          </p>
         </div>
-
-        <p class="visual-note">
-          This is a simplified view of the usual initial DHCPv4 exchange.
-          Actual packet fields and message details depend on the situation.
-        </p>
 
         <p>
           These messages can also appear in packet captures. Tools such
@@ -297,15 +520,16 @@
         </p>
       </section>
 
+      <!-- 05: Leases -->
       <section class="story-section reveal">
         <span class="section-index">05 — Not forever</span>
 
         <h2>An IP address is often leased</h2>
 
         <p>
-          A DHCP address is commonly assigned as a
-          <strong>lease</strong>. This means the device is allowed
-          to use the assigned configuration for a particular period.
+          A DHCP address is commonly assigned as a <strong>lease</strong>.
+          This means the device is allowed to use the assigned configuration
+          for a particular period.
         </p>
 
         <p>
@@ -321,21 +545,30 @@
           a network.
         </p>
 
-        <div class="flow">
-          <div class="flow-row">
-            <div class="flow-item">Device joins</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item highlight">Lease assigned</div>
-          </div>
+        <div class="editorial-visual">
+          <span class="visual-label">A simplified lease lifecycle</span>
 
-          <div class="flow-row">
-            <div class="flow-item">Lease approaches expiry</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item">Renewal may occur</div>
+          <div class="concept-flow">
+            <div class="concept-step">
+              <span class="mini-label">Start</span>
+              <strong>Device joins</strong>
+              <p>Configuration is assigned.</p>
+            </div>
+
+            <div class="concept-arrow" aria-hidden="true">
+              <span>→</span>
+            </div>
+
+            <div class="concept-step emphasis">
+              <span class="mini-label">During lease</span>
+              <strong>Renewal</strong>
+              <p>The client may renew the lease before expiry.</p>
+            </div>
           </div>
         </div>
       </section>
 
+      <!-- 06: Scale -->
       <section class="story-section reveal">
         <span class="section-index">06 — The bigger picture</span>
 
@@ -360,26 +593,13 @@
           required settings through the DHCP service.
         </p>
 
-        <div class="flow">
-          <div class="flow-row">
-            <div class="flow-item">Device joins</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item highlight">DHCP</div>
-          </div>
-
-          <div class="flow-row">
-            <div class="flow-item">Network settings</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item">Communication</div>
-          </div>
-        </div>
-
         <p>
           The result is simpler network administration and more
           consistent address management.
         </p>
       </section>
 
+      <!-- 07: Security -->
       <section class="story-section reveal">
         <span class="section-index">07 — The security clue</span>
 
@@ -423,6 +643,7 @@
         </p>
       </section>
 
+      <!-- 08: DHCP and ARP -->
       <section class="story-section reveal">
         <span class="section-index">08 — Connect the clues</span>
 
@@ -433,26 +654,23 @@
           but they solve different problems.
         </p>
 
-        <div class="flow">
-          <div class="flow-row">
-            <div class="flow-item highlight">DHCP</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item">Network configuration</div>
+        <div class="comparison-list">
+          <div class="comparison-row">
+            <strong>DHCP</strong>
+            <p>
+              Helps a device obtain network configuration, commonly
+              including an IP address.
+            </p>
           </div>
 
-          <div class="flow-row">
-            <div class="flow-item highlight">ARP</div>
-            <div class="flow-arrow">→</div>
-            <div class="flow-item">Local IPv4-to-MAC resolution</div>
+          <div class="comparison-row">
+            <strong>ARP</strong>
+            <p>
+              Helps resolve a local IPv4 address to a link-layer
+              address on the same network segment.
+            </p>
           </div>
         </div>
-
-        <p>
-          DHCP helps a device obtain configuration, commonly including
-          an IP address. ARP helps a device discover the link-layer
-          address associated with a local IPv4 address on the same
-          network segment.
-        </p>
 
         <p>
           Think of DHCP as helping a device get its network settings,
@@ -467,14 +685,14 @@
         </p>
       </section>
 
+      <!-- 09: Check understanding -->
       <section class="story-section reveal">
         <span class="section-index">09 — Check your understanding</span>
 
         <h2>One question before you move on</h2>
 
-        <div class="question">
+        <div class="quick-check">
           <span class="question-label">PAUSE FOR A SECOND</span>
-
           <p>
             You connect your laptop to a new Wi-Fi network and it
             automatically receives an IP address. Which service
