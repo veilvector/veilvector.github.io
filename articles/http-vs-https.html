@@ -1,1110 +1,711 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <meta name="description" content="What is HTTP and HTTPS? Learn how browsers communicate with web servers, what HTTPS protects, and why it matters in cybersecurity." />
-  <meta name="theme-color" content="#070B14" />
+  <title>HTTP vs HTTPS — Veil &amp; Vector</title>
+  <meta name="description" content="Understand HTTP and HTTPS, how browsers communicate with web servers, what TLS protects, and why it matters in cybersecurity.">
+  <meta name="theme-color" content="#11110f">
 
-  <title>HTTP vs HTTPS — KSCybSec</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="canonical" href="https://veilvector.github.io/articles/http-vs-https.html">
+  <link rel="stylesheet" href="../article.css">
 
   <style>
     :root {
-      --bg: #070B14;
-      --section: #0B1120;
-      --surface: #101827;
-      --text: #E8EDF5;
-      --muted: #8995AA;
-      --cyan: #4DE8FF;
-      --violet: #8B7CFF;
-      --border: rgba(232, 237, 245, 0.09);
-      --max: 850px;
+      --web-accent: #c6a879;
+      --web-line: var(--border, rgba(225, 220, 205, 0.16));
+      --web-muted: var(--muted, #aaa69a);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    .editorial-visual {
+      margin: 38px 0 48px;
+      padding: 25px 0;
+      border-top: 1px solid var(--web-line);
+      border-bottom: 1px solid var(--web-line);
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      background:
-        radial-gradient(circle at 80% 5%, rgba(77, 232, 255, 0.055), transparent 28%),
-        radial-gradient(circle at 10% 30%, rgba(139, 124, 255, 0.045), transparent 30%),
-        var(--bg);
-      color: var(--text);
-      font-family: "Inter", sans-serif;
-      line-height: 1.8;
-      overflow-x: hidden;
-    }
-
-    ::selection {
-      background: rgba(77, 232, 255, 0.2);
-      color: var(--text);
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    /* NAV */
-
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      height: 68px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 6%;
-      background: rgba(7, 11, 20, 0.84);
-      backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .brand {
-      font-family: "Space Grotesk", sans-serif;
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      font-size: 1.05rem;
-    }
-
-    .brand span {
-      color: var(--cyan);
-    }
-
-    .nav-back {
-      color: var(--muted);
-      font-size: 0.85rem;
-      transition: color 0.2s ease;
-    }
-
-    .nav-back:hover {
-      color: var(--cyan);
-    }
-
-    /* PROGRESS */
-
-    .progress {
-      position: fixed;
-      top: 67px;
-      left: 0;
-      width: 0%;
-      height: 2px;
-      background: linear-gradient(90deg, var(--cyan), var(--violet));
-      z-index: 60;
-    }
-
-    /* HERO */
-
-    .hero {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 105px 24px 75px;
-    }
-
-    .eyebrow {
-      font-family: "DM Mono", monospace;
-      color: var(--cyan);
-      font-size: 0.72rem;
-      letter-spacing: 0.13em;
-      text-transform: uppercase;
-      margin-bottom: 24px;
-    }
-
-    h1 {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: clamp(3rem, 8vw, 5.8rem);
-      line-height: 0.98;
-      letter-spacing: -0.055em;
-      max-width: 800px;
-      margin-bottom: 28px;
-    }
-
-    .hero-subtitle {
-      max-width: 650px;
-      color: var(--muted);
-      font-size: 1.15rem;
-      line-height: 1.75;
-    }
-
-    /* ARTICLE */
-
-    article {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 0 24px 100px;
-    }
-
-    .section {
-      margin: 0 0 82px;
-    }
-
-    .section h2 {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: clamp(1.8rem, 4vw, 2.5rem);
-      letter-spacing: -0.035em;
-      line-height: 1.15;
-      margin-bottom: 25px;
-    }
-
-    .section p {
-      color: #c4ccda;
-      font-size: 1.02rem;
+    .visual-label {
       margin-bottom: 22px;
-    }
-
-    .section strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    /* OPENING VISUAL */
-
-    .web-journey {
-      margin: 45px 0 70px;
-      padding: 34px 25px;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 14px;
-      flex-wrap: wrap;
-    }
-
-    .node {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      min-width: 125px;
-    }
-
-    .node-icon {
-      width: 54px;
-      height: 54px;
-      border: 1px solid rgba(77, 232, 255, 0.25);
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      color: var(--cyan);
+      color: var(--web-muted);
       font-family: "DM Mono", monospace;
       font-size: 0.72rem;
-      background: rgba(77, 232, 255, 0.035);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
     }
 
-    .node-label {
-      font-size: 0.78rem;
-      color: var(--muted);
+    .journey-flow {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+      align-items: center;
+      gap: 15px;
+    }
+
+    .journey-node {
+      min-width: 0;
       text-align: center;
     }
 
-    .arrow {
-      color: rgba(77, 232, 255, 0.5);
+    .journey-number {
+      display: block;
+      margin-bottom: 11px;
+      color: var(--web-accent);
       font-family: "DM Mono", monospace;
-      font-size: 1.1rem;
+      font-size: 0.76rem;
     }
 
-    /* QUESTION */
-
-    .question {
-      margin: 35px 0 45px;
-      padding: 24px 26px;
-      border-left: 2px solid var(--cyan);
-      background: rgba(77, 232, 255, 0.035);
+    .journey-node strong {
+      display: block;
+      margin-bottom: 6px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 0.95rem;
     }
 
-    .question p {
+    .journey-node p {
       margin: 0;
-      color: var(--text);
-      font-size: 1.08rem;
+      color: var(--web-muted);
+      font-size: 0.82rem;
+      line-height: 1.55;
     }
 
-    /* REQUEST VISUAL */
-
-    .request-flow {
-      margin: 38px 0 55px;
-      padding: 28px;
-      background: rgba(16, 24, 39, 0.62);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-    }
-
-    .flow-line {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 18px;
-      flex-wrap: wrap;
-    }
-
-    .flow-box {
-      padding: 14px 18px;
-      border: 1px solid rgba(232, 237, 245, 0.1);
-      border-radius: 8px;
+    .journey-arrow {
+      color: var(--web-accent);
       font-family: "DM Mono", monospace;
-      font-size: 0.78rem;
-      color: #cbd4e2;
-      background: rgba(255, 255, 255, 0.015);
     }
 
-    .flow-box.highlight {
-      color: var(--cyan);
-      border-color: rgba(77, 232, 255, 0.25);
+    .visual-caption {
+      margin: 23px 0 0;
+      color: var(--web-muted);
+      font-size: 0.85rem;
     }
 
-    .flow-arrow {
-      color: var(--muted);
+    .request-example {
+      margin: 32px 0 40px;
+      padding: 19px 0;
+      border-top: 1px solid var(--web-line);
+      border-bottom: 1px solid var(--web-line);
     }
 
-    /* CODE */
+    .example-label {
+      margin-bottom: 12px;
+      color: var(--web-muted);
+      font-family: "DM Mono", monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
 
-    .code-example {
-      margin: 30px 0 42px;
-      padding: 22px 24px;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: #080D18;
+    .request-example pre {
       overflow-x: auto;
-    }
-
-    .code-example code {
+      color: var(--body);
       font-family: "DM Mono", monospace;
-      font-size: 0.78rem;
-      color: #b8c4d7;
-      line-height: 1.8;
+      font-size: 0.82rem;
+      line-height: 1.9;
       white-space: pre;
     }
 
-    .code-accent {
-      color: var(--cyan);
+    .request-example code {
+      font-family: inherit;
     }
 
-    /* COMPARISON */
+    .code-accent {
+      color: var(--web-accent);
+    }
 
     .comparison {
-      margin: 40px 0 55px;
-      border-top: 1px solid var(--border);
+      margin: 34px 0 45px;
+      border-top: 1px solid var(--web-line);
     }
 
     .comparison-row {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      border-bottom: 1px solid var(--border);
+      grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+      gap: 20px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--web-line);
     }
 
-    .comparison-cell {
-      padding: 18px 16px;
-      color: #bfc9d8;
-      font-size: 0.93rem;
+    .comparison-term {
+      color: var(--text);
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 600;
     }
 
-    .comparison-cell:first-child {
-      border-right: 1px solid var(--border);
+    .comparison-detail {
+      color: var(--body);
+      font-size: 0.94rem;
     }
 
     .comparison-heading {
-      color: var(--text);
-      font-family: "Space Grotesk", sans-serif;
-      font-weight: 600;
-    }
-
-    .http-heading {
-      color: #c2cbd8;
-    }
-
-    .https-heading {
-      color: var(--cyan);
-    }
-
-    /* STORY QUOTE */
-
-    .story-line {
-      margin: 42px 0;
-      padding-left: 25px;
-      border-left: 1px solid rgba(139, 124, 255, 0.45);
-      color: #d3d9e4;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.18rem;
-      line-height: 1.65;
-    }
-
-    /* TAKEAWAY */
-
-    .takeaway {
-      margin-top: 95px;
-      padding-top: 38px;
-      border-top: 1px solid var(--border);
-    }
-
-    .takeaway-label {
+      color: var(--web-muted);
       font-family: "DM Mono", monospace;
-      color: var(--cyan);
       font-size: 0.72rem;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 17px;
     }
 
-    .takeaway p {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: 1.35rem;
-      line-height: 1.55;
+    .status-list {
+      margin: 30px 0 42px;
+      border-top: 1px solid var(--web-line);
+    }
+
+    .status-row {
+      display: grid;
+      grid-template-columns: 70px minmax(0, 1fr);
+      gap: 18px;
+      padding: 17px 0;
+      border-bottom: 1px solid var(--web-line);
+    }
+
+    .status-code {
+      color: var(--web-accent);
+      font-family: "DM Mono", monospace;
+    }
+
+    .status-description {
+      color: var(--body);
+    }
+
+    .status-description strong {
       color: var(--text);
     }
 
-    /* NEXT */
-
-    .next {
-      margin-top: 95px;
-      padding: 42px 0;
-      border-top: 1px solid var(--border);
+    .question-prompt {
+      margin: 34px 0 42px;
+      padding: 5px 0 5px 20px;
+      border-left: 2px solid var(--web-accent);
     }
 
-    .next-label {
-      color: var(--muted);
+    .question-prompt span {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--web-muted);
       font-family: "DM Mono", monospace;
       font-size: 0.7rem;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
-      margin-bottom: 12px;
     }
 
-    .next-link {
-      display: inline-block;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: clamp(1.5rem, 4vw, 2.2rem);
-      font-weight: 600;
-      letter-spacing: -0.035em;
-      transition: color 0.25s ease;
-    }
-
-    .next-link:hover {
-      color: var(--cyan);
-    }
-
-    /* FOOTER */
-
-    footer {
-      border-top: 1px solid var(--border);
-      padding: 35px 24px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.78rem;
-    }
-
-    footer strong {
+    .question-prompt p {
+      margin: 0;
       color: var(--text);
       font-family: "Space Grotesk", sans-serif;
+      font-size: 1.16rem;
+      line-height: 1.55;
     }
 
-    /* REVEAL */
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(18px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+    .security-chain {
+      margin: 32px 0 40px;
+      padding: 19px 0;
+      border-top: 1px solid var(--web-line);
+      border-bottom: 1px solid var(--web-line);
+      color: var(--text);
+      font-family: "DM Mono", monospace;
+      font-size: 0.84rem;
+      line-height: 2;
+      overflow-wrap: anywhere;
     }
 
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
+    .security-chain span {
+      color: var(--web-accent);
     }
 
-    /* MOBILE */
-
-    @media (max-width: 650px) {
-      nav {
-        padding: 0 20px;
+    @media (max-width: 640px) {
+      .editorial-visual {
+        margin: 30px 0 38px;
       }
 
-      .hero {
-        padding-top: 75px;
+      .journey-flow {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 15px;
       }
 
-      h1 {
-        font-size: clamp(2.7rem, 14vw, 4rem);
+      .journey-node {
+        display: grid;
+        grid-template-columns: 35px minmax(0, 1fr);
+        column-gap: 12px;
+        text-align: left;
       }
 
-      .web-journey {
-        gap: 10px;
+      .journey-number {
+        grid-row: 1 / span 2;
+        margin: 2px 0 0;
       }
 
-      .node {
-        min-width: 90px;
+      .journey-node strong {
+        margin-bottom: 3px;
       }
 
-      .arrow {
-        font-size: 0.8rem;
+      .journey-node p {
+        grid-column: 2;
       }
 
-      .comparison-cell {
-        padding: 14px 11px;
-        font-size: 0.82rem;
+      .journey-arrow {
+        margin-left: 10px;
+        transform: rotate(90deg);
+        transform-origin: left center;
+        height: 10px;
+        width: 15px;
       }
 
-      .request-flow {
-        padding: 20px 14px;
+      .comparison-row {
+        grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+        gap: 12px;
+      }
+
+      .comparison-detail {
+        font-size: 0.87rem;
+      }
+
+      .status-row {
+        grid-template-columns: 55px minmax(0, 1fr);
+        gap: 12px;
       }
     }
   </style>
 </head>
 
 <body>
-
-  <nav>
-    <a href="../index.html" class="brand">KSCyb<span>Sec</span></a>
-    <a href="../index.html" class="nav-back">← Back to KSCybSec</a>
+  <nav class="site-header">
+    <div class="nav-inner">
+      <a href="../index.html" class="brand">Veil <span>&amp;</span> Vector</a>
+      <a href="../index.html" class="back-link">← Back to the archive</a>
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch colour theme">☼</button>
+    </div>
   </nav>
 
-  <div class="progress" id="progress"></div>
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress" id="progress"></div>
+  </div>
 
-  <header class="hero reveal">
-    <div class="eyebrow">Beginner Path · 007</div>
+  <header class="article-header">
+    <div class="article-meta">
+      <span class="category">BEGINNER PATH · 007</span>
+      <span>6–8 MIN READ</span>
+    </div>
 
     <h1>HTTP vs HTTPS</h1>
 
-    <p class="hero-subtitle">
-      Your browser has found the server. Now something else has to happen:
-      they need to communicate.
+    <p class="article-intro">
+      Your browser has found a destination. Now it needs to communicate
+      with the server — and that conversation needs rules and protection.
     </p>
   </header>
 
-  <article>
+  <main>
+    <article>
+      <section class="story-section reveal">
+        <div class="section-index">01 / Picking up the trail</div>
+        <h2>Finding a server is only the beginning</h2>
 
-    <section class="section reveal">
+        <p>
+          In the previous guides, we explored domain names, DNS, IP addresses,
+          and ports. Each concept helps explain another part of how a browser
+          reaches a web service.
+        </p>
 
-      <p>
-        In the last article, we followed a domain name through DNS and eventually
-        reached an IP address.
-      </p>
+        <p>
+          Imagine we're back at that moment. Your browser has a destination
+          in mind, and now it needs to ask for something — perhaps a webpage,
+          an image, or some data.
+        </p>
 
-      <p>
-        Then we learned about ports.
-      </p>
+        <div class="editorial-visual">
+          <div class="visual-label">A simplified web journey</div>
 
-      <p>
-        So imagine we're back at that moment.
-      </p>
+          <div class="journey-flow">
+            <div class="journey-node">
+              <span class="journey-number">01</span>
+              <strong>Browser</strong>
+              <p>You request a website.</p>
+            </div>
 
-      <div class="web-journey">
+            <div class="journey-arrow" aria-hidden="true">→</div>
 
-        <div class="node">
-          <div class="node-icon">YOU</div>
-          <div class="node-label">Your browser</div>
-        </div>
+            <div class="journey-node">
+              <span class="journey-number">02</span>
+              <strong>Destination</strong>
+              <p>DNS and network routing help reach the service.</p>
+            </div>
 
-        <div class="arrow">→</div>
+            <div class="journey-arrow" aria-hidden="true">→</div>
 
-        <div class="node">
-          <div class="node-icon">DNS</div>
-          <div class="node-label">Find the IP</div>
-        </div>
-
-        <div class="arrow">→</div>
-
-        <div class="node">
-          <div class="node-icon">443</div>
-          <div class="node-label">Web service</div>
-        </div>
-
-        <div class="arrow">→</div>
-
-        <div class="node">
-          <div class="node-icon">WEB</div>
-          <div class="node-label">Server</div>
-        </div>
-
-      </div>
-
-      <p>
-        Your browser has found the destination.
-      </p>
-
-      <p>
-        But now it has to ask for something.
-      </p>
-
-      <p>
-        Maybe a webpage.
-        Maybe an image.
-        Maybe some data.
-      </p>
-
-      <p>
-        And the server needs to know what the browser is asking for.
-      </p>
-
-      <p>
-        This is where <strong>HTTP</strong> enters the story.
-      </p>
-
-    </section>
-
-
-    <section class="section reveal">
-
-      <h2>So what is HTTP?</h2>
-
-      <p>
-        HTTP stands for <strong>Hypertext Transfer Protocol</strong>.
-      </p>
-
-      <p>
-        Don't let the name make it sound more complicated than it is.
-      </p>
-
-      <p>
-        Think of HTTP as a set of rules that helps a browser and a web server
-        communicate.
-      </p>
-
-      <p>
-        The browser makes a request.
-        The server processes it.
-        Then the server sends a response.
-      </p>
-
-      <div class="request-flow">
-
-        <div class="flow-line">
-
-          <div class="flow-box highlight">
-            Browser
+            <div class="journey-node">
+              <span class="journey-number">03</span>
+              <strong>Web server</strong>
+              <p>The server receives and handles the request.</p>
+            </div>
           </div>
 
-          <div class="flow-arrow">→ request →</div>
-
-          <div class="flow-box">
-            Web Server
-          </div>
-
-          <div class="flow-arrow">→ response →</div>
-
-          <div class="flow-box highlight">
-            Browser
-          </div>
-
+          <p class="visual-caption">
+            This is a simplified overview. DNS resolution and connection setup
+            involve additional steps that may vary with caching and protocol.
+          </p>
         </div>
 
-      </div>
+        <p>
+          Your browser and the server need a common way to describe requests
+          and responses. That is where HTTP enters the story.
+        </p>
+      </section>
 
-      <p>
-        That's the basic idea behind a huge amount of what happens when you use
-        the web.
-      </p>
+      <section class="story-section reveal">
+        <div class="section-index">02 / The conversation</div>
+        <h2>So, what is HTTP?</h2>
 
-    </section>
+        <p>
+          HTTP stands for <strong>Hypertext Transfer Protocol</strong>.
+          It defines how a client, such as your browser, sends requests and
+          receives responses from a server.
+        </p>
 
+        <p>
+          The basic idea is straightforward: the browser asks for a resource,
+          and the server returns a response. The response might contain the
+          requested content, or it might explain why the request could not
+          be fulfilled.
+        </p>
 
-    <section class="section reveal">
+        <div class="editorial-visual">
+          <div class="visual-label">Request and response</div>
 
-      <h2>What does a request look like?</h2>
+          <div class="journey-flow">
+            <div class="journey-node">
+              <span class="journey-number">SEND</span>
+              <strong>Browser</strong>
+              <p>Requests a resource</p>
+            </div>
 
-      <p>
-        You don't normally see it happening.
-      </p>
+            <div class="journey-arrow" aria-hidden="true">→</div>
 
-      <p>
-        You type a website address, press Enter, and your browser handles the
-        communication for you.
-      </p>
+            <div class="journey-node">
+              <span class="journey-number">HANDLE</span>
+              <strong>Server</strong>
+              <p>Processes the request</p>
+            </div>
 
-      <p>
-        Underneath that simple action, the browser can send an HTTP request
-        asking the server for a resource.
-      </p>
+            <div class="journey-arrow" aria-hidden="true">→</div>
 
-      <div class="code-example">
-        <code><span class="code-accent">GET</span> /index.html HTTP/1.1
-Host: example.com</code>
-      </div>
+            <div class="journey-node">
+              <span class="journey-number">RETURN</span>
+              <strong>Browser</strong>
+              <p>Receives the response</p>
+            </div>
+          </div>
+        </div>
 
-      <p>
-        You don't need to memorize that yet.
-      </p>
+        <p>
+          Your browser handles this exchange behind the scenes. You don't
+          have to manually write requests every time you visit a page.
+        </p>
+      </section>
 
-      <p>
-        The important idea is simply:
-        <strong>the browser is asking the server for something.</strong>
-      </p>
+      <section class="story-section reveal">
+        <div class="section-index">03 / Under the surface</div>
+        <h2>What does a request look like?</h2>
 
-      <p>
-        The server then sends a response.
-      </p>
+        <p>
+          When you enter a URL and press Enter, your browser may send a request
+          similar to this one. It asks for the resource at <code>/index.html</code>.
+        </p>
 
-      <div class="code-example">
-        <code><span class="code-accent">HTTP/1.1 200 OK</span>
+        <div class="request-example">
+          <div class="example-label">Example HTTP request · HTTP/1.1</div>
+          <pre><code><span class="code-accent">GET</span> /index.html HTTP/1.1
+Host: example.com</code></pre>
+        </div>
+
+        <p>
+          The server can respond with a status line and the requested content.
+          A simplified successful response might look like this:
+        </p>
+
+        <div class="request-example">
+          <div class="example-label">Example HTTP response · HTTP/1.1</div>
+          <pre><code><span class="code-accent">HTTP/1.1 200 OK</span>
+Content-Type: text/html
 
 &lt;html&gt;
   ...
-&lt;/html&gt;</code>
-      </div>
-
-      <p>
-        The browser receives that response and uses it to build what you see on
-        the screen.
-      </p>
-
-    </section>
-
-
-    <section class="section reveal">
-
-      <h2>And sometimes the answer is not “yes.”</h2>
-
-      <p>
-        A server doesn't always return the page you asked for.
-      </p>
-
-      <p>
-        Maybe the page doesn't exist.
-      </p>
-
-      <p>
-        Maybe the server encountered a problem.
-      </p>
-
-      <p>
-        That's where HTTP status codes become useful.
-      </p>
-
-      <div class="comparison">
-
-        <div class="comparison-row">
-          <div class="comparison-cell comparison-heading">Code</div>
-          <div class="comparison-cell comparison-heading">Meaning</div>
+&lt;/html&gt;</code></pre>
         </div>
 
-        <div class="comparison-row">
-          <div class="comparison-cell">200</div>
-          <div class="comparison-cell">The request succeeded.</div>
-        </div>
-
-        <div class="comparison-row">
-          <div class="comparison-cell">404</div>
-          <div class="comparison-cell">The requested resource wasn't found.</div>
-        </div>
-
-        <div class="comparison-row">
-          <div class="comparison-cell">500</div>
-          <div class="comparison-cell">The server encountered an error.</div>
-        </div>
-
-      </div>
-
-      <p>
-        These codes are incredibly useful when troubleshooting websites,
-        investigating applications, or looking at security logs.
-      </p>
-
-    </section>
-
-
-    <section class="section reveal">
-
-      <h2>But there's a problem with plain HTTP.</h2>
-
-      <p>
-        Imagine you're sending a letter.
-      </p>
-
-      <p>
-        The letter reaches its destination, and the communication works.
-      </p>
-
-      <p>
-        But what if someone along the way could read what was written inside?
-      </p>
-
-      <p>
-        That's one of the problems HTTPS is designed to address.
-      </p>
-
-      <div class="question">
         <p>
-          <strong>Think about this:</strong> If you were entering a password on
-          a website, would you want that password traveling across the network
-          in a form that an observer could simply read?
+          These are illustrative HTTP/1.1 examples, not a complete exchange.
+          Other HTTP versions use different on-the-wire formats.
         </p>
-      </div>
+      </section>
 
-      <p>
-        Obviously not.
-      </p>
+      <section class="story-section reveal">
+        <div class="section-index">04 / When things go wrong</div>
+        <h2>Not every response means success</h2>
 
-      <p>
-        This is where the extra <strong>S</strong> becomes important.
-      </p>
-
-    </section>
-
-
-    <section class="section reveal">
-
-      <h2>HTTPS adds protection</h2>
-
-      <p>
-        HTTPS stands for <strong>Hypertext Transfer Protocol Secure</strong>.
-      </p>
-
-      <p>
-        At a high level, HTTPS uses <strong>TLS</strong> to protect the
-        communication between your browser and the server.
-      </p>
-
-      <p>
-        TLS helps provide three important properties:
-      </p>
-
-      <p>
-        <strong>Confidentiality</strong> — other people on the network should not
-        be able to simply read the protected data.
-      </p>
-
-      <p>
-        <strong>Integrity</strong> — the communication should not be silently
-        modified while traveling between the browser and server.
-      </p>
-
-      <p>
-        <strong>Authentication</strong> — the browser can verify information
-        about the server through its digital certificate.
-      </p>
-
-      <p>
-        You don't need to understand every cryptographic detail yet.
-      </p>
-
-      <p>
-        For now, remember the bigger picture:
-      </p>
-
-      <div class="story-line">
-        HTTPS doesn't change the fact that your browser is talking to a web
-        server. It adds a protected way for that conversation to happen.
-      </div>
-
-    </section>
-
-
-    <section class="section reveal">
-
-      <h2>So HTTP and HTTPS aren't two completely different worlds</h2>
-
-      <p>
-        They both support communication between web clients and servers.
-      </p>
-
-      <p>
-        The important difference is how that communication is protected.
-      </p>
-
-      <div class="comparison">
-
-        <div class="comparison-row">
-          <div class="comparison-cell comparison-heading http-heading">
-            HTTP
-          </div>
-
-          <div class="comparison-cell comparison-heading https-heading">
-            HTTPS
-          </div>
-        </div>
-
-        <div class="comparison-row">
-          <div class="comparison-cell">
-            Web communication protocol
-          </div>
-
-          <div class="comparison-cell">
-            HTTP protected with TLS
-          </div>
-        </div>
-
-        <div class="comparison-row">
-          <div class="comparison-cell">
-            Communication is not protected by TLS
-          </div>
-
-          <div class="comparison-cell">
-            Provides confidentiality and integrity for the connection
-          </div>
-        </div>
-
-        <div class="comparison-row">
-          <div class="comparison-cell">
-            Historically associated with port 80
-          </div>
-
-          <div class="comparison-cell">
-            Commonly associated with port 443
-          </div>
-        </div>
-
-      </div>
-
-      <p>
-        Notice something important here.
-      </p>
-
-      <p>
-        <strong>HTTPS protects the connection. It does not automatically make
-        the website trustworthy.</strong>
-      </p>
-
-    </section>
-
-
-    <section class="section reveal">
-
-      <h2>Wait. Then what does the padlock actually mean?</h2>
-
-      <p>
-        You've probably seen the padlock icon in your browser.
-      </p>
-
-      <p>
-        It's easy to interpret that symbol as:
-      </p>
-
-      <p>
-        “This website is safe.”
-      </p>
-
-      <p>
-        But that's not what HTTPS guarantees.
-      </p>
-
-      <p>
-        A phishing website can use HTTPS too.
-      </p>
-
-      <p>
-        The connection between you and that phishing site can be encrypted
-        while the site is still trying to trick you.
-      </p>
-
-      <p>
-        HTTPS helps protect the communication channel.
-        It doesn't decide whether the person on the other end has good
-        intentions.
-      </p>
-
-      <div class="question">
         <p>
-          <strong>So if a suspicious login page uses HTTPS, should you
-          automatically trust it?</strong>
+          A server doesn't always return the page you requested. Perhaps
+          the resource doesn't exist, or the server encountered a problem.
+          HTTP status codes help describe the result.
         </p>
-      </div>
 
+        <div class="status-list">
+          <div class="status-row">
+            <div class="status-code">200</div>
+            <div class="status-description">
+              <strong>OK</strong> — the request succeeded.
+            </div>
+          </div>
+
+          <div class="status-row">
+            <div class="status-code">404</div>
+            <div class="status-description">
+              <strong>Not Found</strong> — the requested resource wasn't found.
+            </div>
+          </div>
+
+          <div class="status-row">
+            <div class="status-code">500</div>
+            <div class="status-description">
+              <strong>Internal Server Error</strong> — the server encountered
+              an unexpected condition.
+            </div>
+          </div>
+        </div>
+
+        <p>
+          For developers and security analysts, status codes are useful clues.
+          In logs, they can help reveal errors, unusual request patterns,
+          or repeated attempts to access unavailable resources. A status code
+          alone, however, rarely tells the whole story.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">05 / The security problem</div>
+        <h2>What if someone could read the conversation?</h2>
+
+        <p>
+          Imagine sending a letter that reaches its destination, but someone
+          along the way can read or alter its contents. The communication
+          worked — but it wasn't private or protected from interference.
+        </p>
+
+        <p>
+          Plain HTTP does not itself provide TLS encryption for the connection.
+          Depending on the network and circumstances, traffic may be exposed
+          to interception or modification.
+        </p>
+
+        <div class="question-prompt">
+          <span>Think about it</span>
+          <p>Would you want your password travelling across a network in a form an observer could simply read?</p>
+        </div>
+
+        <p>
+          This is one reason HTTPS matters.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">06 / Adding protection</div>
+        <h2>HTTPS protects the conversation</h2>
+
+        <p>
+          HTTPS means <strong>HTTP over TLS</strong> — Transport Layer Security.
+          TLS helps protect the communication between a browser and a server.
+        </p>
+
+        <div class="concept-list">
+          <div class="concept-row">
+            <div class="concept-name">CONFIDENTIALITY</div>
+            <p>
+              Encryption helps prevent network observers from simply reading
+              the protected contents of the connection.
+            </p>
+          </div>
+
+          <div class="concept-row">
+            <div class="concept-name">INTEGRITY</div>
+            <p>
+              TLS helps detect unauthorised changes to protected data while
+              it is being transmitted.
+            </p>
+          </div>
+
+          <div class="concept-row">
+            <div class="concept-name">AUTHENTICATION</div>
+            <p>
+              Certificate validation helps the browser verify the identity
+              associated with the server it intended to reach.
+            </p>
+          </div>
+        </div>
+
+        <p>
+          The exact details depend on the TLS version and configuration,
+          but the core idea is that HTTPS adds protection to web communication.
+        </p>
+
+        <blockquote>
+          HTTPS doesn't change the purpose of the conversation. It adds
+          a protected way for that conversation to happen.
+        </blockquote>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">07 / Comparing the two</div>
+        <h2>HTTP and HTTPS aren't two unrelated protocols</h2>
+
+        <p>
+          Both are used for communication between web clients and servers.
+          The important distinction is whether the connection uses TLS
+          protection.
+        </p>
+
+        <div class="comparison">
+          <div class="comparison-row">
+            <div class="comparison-heading">HTTP</div>
+            <div class="comparison-heading">HTTPS</div>
+          </div>
+
+          <div class="comparison-row">
+            <div class="comparison-detail">Web communication without TLS protection.</div>
+            <div class="comparison-detail">HTTP communication protected by TLS.</div>
+          </div>
+
+          <div class="comparison-row">
+            <div class="comparison-detail">Commonly associated with port 80.</div>
+            <div class="comparison-detail">Commonly associated with port 443.</div>
+          </div>
+
+          <div class="comparison-row">
+            <div class="comparison-detail">Does not itself provide TLS confidentiality or integrity.</div>
+            <div class="comparison-detail">TLS provides confidentiality and integrity for the connection.</div>
+          </div>
+        </div>
+
+        <p>
+          Ports 80 and 443 are the conventional defaults, not unbreakable rules.
+          Services can be configured to use other ports.
+        </p>
+
+        <p>
+          One important detail: <strong>HTTPS does not automatically mean a
+          website is trustworthy.</strong>
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">08 / A common misconception</div>
+        <h2>Does the padlock mean a website is safe?</h2>
+
+        <p>
+          It's tempting to treat a browser's security indicator as a guarantee
+          that a website is legitimate. But HTTPS is not a judgement about
+          the site's intentions.
+        </p>
+
+        <p>
+          A phishing website can use HTTPS, too. Its connection may be encrypted
+          even while the site is trying to steal credentials.
+        </p>
+
+        <div class="question-prompt">
+          <span>Make the distinction</span>
+          <p>If a suspicious login page uses HTTPS, should you automatically trust it?</p>
+        </div>
+
+        <p>
+          No. Check the domain carefully, consider how you reached the page,
+          and look for other warning signs. HTTPS helps protect the connection;
+          it does not prove that a website is honest or harmless.
+        </p>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">09 / The investigator's view</div>
+        <h2>Follow the clues in a real incident</h2>
+
+        <p>
+          Imagine a user reports clicking a link in an email and entering
+          their password. The investigation shouldn't stop at whether the
+          page used HTTPS.
+        </p>
+
+        <p>Useful questions include:</p>
+
+        <div class="concept-list">
+          <div class="concept-row">
+            <div class="concept-name">DOMAIN</div>
+            <p>Which domain did the link point to, and did it resemble a legitimate service?</p>
+          </div>
+
+          <div class="concept-row">
+            <div class="concept-name">DNS / IP</div>
+            <p>What destination information was observed, and when did the connection occur?</p>
+          </div>
+
+          <div class="concept-row">
+            <div class="concept-name">WEB REQUESTS</div>
+            <p>What requests were made, and what responses followed?</p>
+          </div>
+
+          <div class="concept-row">
+            <div class="concept-name">AFTERWARD</div>
+            <p>Were there suspicious sign-ins or other activity after the credentials were submitted?</p>
+          </div>
+        </div>
+
+        <p>
+          These clues connect networking concepts to web traffic analysis
+          and incident response. A single clue rarely proves what happened;
+          investigators build a timeline from multiple sources.
+        </p>
+
+        <div class="security-chain">
+          Domain <span>→</span> DNS <span>→</span> IP address
+          <span>→</span> Port <span>→</span> HTTP/HTTPS
+          <span>→</span> Request and response
+        </div>
+      </section>
+
+      <section class="takeaway reveal">
+        <div class="section-index">The takeaway</div>
+        <h2>Understand the conversation — and its protection</h2>
+
+        <p>
+          HTTP defines how browsers and web servers exchange requests and
+          responses. HTTPS uses TLS to help protect that communication through
+          encryption, integrity protection, and server authentication.
+        </p>
+
+        <p>
+          But a protected connection is not the same as a trustworthy website.
+          In cybersecurity, the surrounding evidence still matters.
+        </p>
+      </section>
+    </article>
+
+    <section class="next-article reveal">
+      <div class="next-label">Beginner Path · 008</div>
+      <h2>What Happens When You Visit a Website?</h2>
       <p>
-        No.
+        Bring DNS, IP addresses, ports, and web requests together to trace
+        what happens from the moment you enter a URL.
       </p>
-
-      <p>
-        You still need to look at the domain, context, certificate information,
-        page behavior, and other clues.
-      </p>
-
-    </section>
-
-
-    <section class="section reveal">
-
-      <h2>Now think like a security analyst</h2>
-
-      <p>
-        Imagine you're investigating an incident.
-      </p>
-
-      <p>
-        A user says:
-      </p>
-
-      <div class="story-line">
-        “I clicked a link in an email and entered my password.”
-      </div>
-
-      <p>
-        That's already interesting.
-      </p>
-
-      <p>
-        You might want to know:
-      </p>
-
-      <p>
-        What domain did the link point to?
-      </p>
-
-      <p>
-        Was HTTPS being used?
-      </p>
-
-      <p>
-        What IP address did the domain resolve to?
-      </p>
-
-      <p>
-        What requests did the browser make?
-      </p>
-
-      <p>
-        What happened after the credentials were submitted?
-      </p>
-
-      <p>
-        Suddenly, all those concepts we've been learning start connecting.
-      </p>
-
-      <p>
-        <strong>Domain → DNS → IP → Port → HTTP/HTTPS → Request → Response</strong>
-      </p>
-
-      <p>
-        That's the beginning of understanding web traffic from a security
-        perspective.
-      </p>
-
-    </section>
-
-
-    <section class="section reveal">
-
-      <h2>And this is where the story gets bigger</h2>
-
-      <p>
-        At the beginning of this path, visiting a website seemed almost
-        instantaneous.
-      </p>
-
-      <p>
-        Type a name.
-      </p>
-
-      <p>
-        Press Enter.
-      </p>
-
-      <p>
-        Page appears.
-      </p>
-
-      <p>
-        But now we can see the trail underneath it.
-      </p>
-
-      <p>
-        Your browser needs a destination.
-      </p>
-
-      <p>
-        DNS helps find it.
-      </p>
-
-      <p>
-        An IP address identifies where network traffic should go.
-      </p>
-
-      <p>
-        A port identifies the communication endpoint.
-      </p>
-
-      <p>
-        TCP or UDP provides the transport.
-      </p>
-
-      <p>
-        And HTTP or HTTPS defines how the browser and web server communicate.
-      </p>
-
-      <p>
-        What looked like one simple action is actually a chain of events.
-      </p>
-
-    </section>
-
-
-    <section class="takeaway reveal">
-
-      <div class="takeaway-label">Remember this</div>
-
-      <p>
-        HTTP lets browsers and web servers communicate.
-        HTTPS adds TLS protection to that communication.
-      </p>
-
-    </section>
-
-
-    <section class="next reveal">
-
-      <div class="next-label">Next → Beginner Path · 008</div>
-
-      <a href="what-happens-when-you-visit-a-website.html" class="next-link">
-        What Happens When You Visit a Website? →
+      <a class="next-link" href="what-happens-when-you-visit-a-website.html">
+        Continue the investigation <span aria-hidden="true">→</span>
       </a>
-
     </section>
+  </main>
 
-  </article>
-
-
-  <footer>
-    <strong>KSCybSec</strong> — Cybersecurity knowledge, one clue at a time.
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a href="../index.html" class="footer-brand">Veil &amp; Vector</a>
+      <p>Learn · Investigate · Understand</p>
+      <p>© 2026 Veil &amp; Vector</p>
+    </div>
   </footer>
 
-
-  <script>
-    // Reading progress
-    const progress = document.getElementById("progress");
-
-    window.addEventListener("scroll", () => {
-      const scrollTop = window.scrollY;
-      const height =
-        document.documentElement.scrollHeight - window.innerHeight;
-
-      const percentage = height > 0
-        ? (scrollTop / height) * 100
-        : 0;
-
-      progress.style.width = percentage + "%";
-    });
-
-    // Reveal sections
-    const observer = new IntersectionObserver(
-      entries => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      {
-        threshold: 0.08
-      }
-    );
-
-    document.querySelectorAll(".reveal").forEach(el => {
-      observer.observe(el);
-    });
-  </script>
-
+  <script src="../article.js"></script>
 </body>
 </html>
-
