@@ -1,938 +1,789 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>How Cyber Attacks Actually Happen · KSCybSec</title>
-
+  <title>How Cyber Attacks Actually Happen · Veil &amp; Vector</title>
   <meta
     name="description"
-    content="Understand how cyber attacks actually happen, from initial access to impact, through a simple investigation-driven story."
+    content="Understand how cyber attacks unfold, from initial access to impact, and learn how defenders connect suspicious events into an investigation."
   />
+  <link rel="canonical" href="https://veilvector.github.io/articles/how-cyber-attacks-happen.html" />
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap"
     rel="stylesheet"
   />
 
+  <link rel="stylesheet" href="../article.css" />
+  <script src="../article.js" defer></script>
+
+  <!-- Article-specific visuals. Shared site styles remain in article.css. -->
   <style>
-    :root {
-      --bg: #070B14;
-      --surface: #0B1120;
-      --surface-2: #101827;
-      --text: #E8EDF5;
-      --muted: #8995AA;
-      --cyan: #4DE8FF;
-      --purple: #8B7CFF;
-      --border: rgba(232, 237, 245, 0.10);
-      --border-bright: rgba(77, 232, 255, 0.25);
+    .attack-visual {
+      margin: 2.5rem 0 3.5rem;
+      padding: clamp(1.1rem, 3vw, 2rem);
+      border: 1px solid var(--article-border, var(--border, rgba(128,128,128,.25)));
+      border-radius: 4px;
+      background: var(--article-panel, rgba(128,128,128,.055));
+      overflow: hidden;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      background:
-        radial-gradient(circle at 20% 10%, rgba(77, 232, 255, 0.05), transparent 28%),
-        radial-gradient(circle at 85% 30%, rgba(139, 124, 255, 0.05), transparent 30%),
-        var(--bg);
-      color: var(--text);
-      font-family: "Inter", sans-serif;
-      line-height: 1.75;
-    }
-
-    nav {
-      width: min(1100px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 28px 0;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .brand {
-      font-family: "Space Grotesk", sans-serif;
-      font-weight: 700;
-      color: var(--text);
-      text-decoration: none;
-      font-size: 1.05rem;
-      letter-spacing: -0.02em;
-    }
-
-    .brand span {
-      color: var(--cyan);
-    }
-
-    .nav-back {
-      color: var(--muted);
-      text-decoration: none;
+    .attack-visual-label,
+    .custom-label {
+      margin: 0 0 1.4rem;
       font-family: "DM Mono", monospace;
-      font-size: 0.78rem;
-      transition: color 0.2s ease;
-    }
-
-    .nav-back:hover {
-      color: var(--cyan);
-    }
-
-    main {
-      width: min(820px, calc(100% - 40px));
-      margin: 0 auto;
-      padding-bottom: 100px;
-    }
-
-    .meta {
-      margin-top: 70px;
-      margin-bottom: 22px;
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      color: var(--cyan);
-    }
-
-    h1 {
-      font-family: "Space Grotesk", sans-serif;
-      font-size: clamp(2.7rem, 7vw, 5rem);
-      line-height: 1.02;
-      letter-spacing: -0.055em;
-      max-width: 780px;
-      margin-bottom: 28px;
-    }
-
-    .hero-subtitle {
-      color: var(--muted);
-      font-size: 1.18rem;
-      max-width: 680px;
-      line-height: 1.8;
-      margin-bottom: 70px;
-    }
-
-    .question {
-      margin: 70px 0 28px;
-      font-family: "Space Grotesk", sans-serif;
-      font-size: clamp(1.55rem, 3vw, 2.1rem);
-      line-height: 1.3;
-      letter-spacing: -0.025em;
-    }
-
-    p {
-      color: var(--muted);
-      margin-bottom: 24px;
-      font-size: 1rem;
-    }
-
-    strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    .visual {
-      margin: 42px 0 54px;
-      padding: 30px;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      background: rgba(11, 17, 32, 0.72);
-    }
-
-    .visual-label {
-      font-family: "DM Mono", monospace;
-      color: var(--muted);
-      font-size: 0.68rem;
-      letter-spacing: 0.1em;
-      margin-bottom: 24px;
+      font-size: .7rem;
+      line-height: 1.6;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--article-accent, var(--accent, #b7a16b));
     }
 
     .attack-flow {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
-      align-items: center;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+      gap: .8rem;
+      align-items: stretch;
     }
 
     .attack-step {
-      min-height: 92px;
-      padding: 18px 12px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
+      min-width: 0;
+      min-height: 115px;
+      padding: 1rem .8rem;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      border: 1px solid var(--article-border, var(--border, rgba(128,128,128,.25)));
+      background: var(--article-card, rgba(128,128,128,.04));
       text-align: center;
-      background: var(--surface);
+      overflow-wrap: anywhere;
     }
 
-    .attack-step .number {
+    .attack-step-number {
+      display: block;
+      margin-bottom: .65rem;
       font-family: "DM Mono", monospace;
-      font-size: 0.68rem;
-      color: var(--cyan);
-      margin-bottom: 8px;
+      font-size: .68rem;
+      letter-spacing: .08em;
+      color: var(--article-accent, var(--accent, #b7a16b));
     }
 
     .attack-step strong {
-      font-size: 0.86rem;
-      line-height: 1.35;
+      display: block;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: .92rem;
+      line-height: 1.4;
     }
 
-    .flow-arrow {
-      text-align: center;
-      color: var(--cyan);
-      font-size: 1.1rem;
+    .attack-step small {
+      display: block;
+      margin-top: .45rem;
+      font-size: .78rem;
+      line-height: 1.5;
+      color: var(--article-muted, var(--muted, #999));
     }
 
-    .story {
-      border-left: 2px solid var(--border-bright);
-      padding-left: 24px;
-      margin: 38px 0 46px;
+    .attack-arrow {
+      align-self: center;
+      color: var(--article-accent, var(--accent, #b7a16b));
+      font-size: 1.15rem;
     }
 
-    .story p:last-child {
+    .attack-story {
+      margin: 2rem 0 2.5rem;
+      padding: .3rem 0 .3rem 1.4rem;
+      border-left: 2px solid var(--article-accent, var(--accent, #b7a16b));
+    }
+
+    .attack-story p:last-child {
       margin-bottom: 0;
     }
 
-    .investigation {
-      margin: 44px 0;
-      padding: 28px 30px;
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      background: rgba(16, 24, 39, 0.55);
+    .investigation-panel {
+      margin: 2.5rem 0;
+      padding: clamp(1.2rem, 3vw, 1.8rem);
+      border: 1px solid var(--article-border, var(--border, rgba(128,128,128,.25)));
+      background: var(--article-panel, rgba(128,128,128,.055));
     }
 
-    .investigation-label {
-      font-family: "DM Mono", monospace;
-      color: var(--cyan);
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      margin-bottom: 18px;
+    .investigation-panel h3,
+    .warning-panel h3 {
+      margin: 0 0 1rem;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.1rem;
     }
 
-    .investigation ul {
+    .investigation-panel ul {
+      margin: 1.2rem 0 0;
+      padding: 0;
       list-style: none;
-      display: grid;
-      gap: 12px;
     }
 
-    .investigation li {
-      color: var(--muted);
-      padding-left: 22px;
+    .investigation-panel li {
       position: relative;
+      padding: .65rem 0 .65rem 1.6rem;
+      border-bottom: 1px solid var(--article-border, var(--border, rgba(128,128,128,.18)));
+      color: var(--article-muted, var(--muted, #999));
     }
 
-    .investigation li::before {
+    .investigation-panel li:last-child {
+      border-bottom: 0;
+    }
+
+    .investigation-panel li::before {
       content: "→";
       position: absolute;
       left: 0;
-      color: var(--cyan);
+      color: var(--article-accent, var(--accent, #b7a16b));
+    }
+
+    .warning-panel {
+      margin: 2.5rem 0;
+      padding: 1.4rem 1.5rem;
+      border-left: 3px solid var(--article-accent, var(--accent, #b7a16b));
+      background: var(--article-panel, rgba(128,128,128,.055));
+    }
+
+    .warning-panel p:last-child {
+      margin-bottom: 0;
     }
 
     .clue-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      margin: 36px 0 46px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1px;
+      margin: 2.2rem 0 3rem;
+      border: 1px solid var(--article-border, var(--border, rgba(128,128,128,.25)));
+      background: var(--article-border, var(--border, rgba(128,128,128,.25)));
     }
 
-    .clue {
-      padding: 22px;
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      background: rgba(11, 17, 32, 0.6);
+    .clue-card {
+      min-width: 0;
+      padding: 1.35rem;
+      background: var(--article-background, var(--bg, #171717));
     }
 
-    .clue-number {
-      font-family: "DM Mono", monospace;
-      color: var(--purple);
-      font-size: 0.7rem;
-      margin-bottom: 10px;
-    }
-
-    .clue strong {
+    .clue-card-number {
       display: block;
-      margin-bottom: 7px;
-      font-family: "Space Grotesk", sans-serif;
-    }
-
-    .clue p {
-      margin: 0;
-      font-size: 0.9rem;
-    }
-
-    .warning {
-      margin: 44px 0;
-      padding: 26px 28px;
-      border-left: 2px solid var(--purple);
-      background: rgba(139, 124, 255, 0.05);
-    }
-
-    .warning strong {
-      display: block;
-      margin-bottom: 8px;
-      font-family: "Space Grotesk", sans-serif;
-    }
-
-    .takeaway {
-      margin-top: 80px;
-      padding: 34px;
-      border: 1px solid var(--border-bright);
-      border-radius: 18px;
-      background: rgba(77, 232, 255, 0.035);
-    }
-
-    .takeaway-label {
+      margin-bottom: .8rem;
       font-family: "DM Mono", monospace;
-      font-size: 0.7rem;
-      letter-spacing: 0.1em;
-      color: var(--cyan);
-      margin-bottom: 14px;
+      font-size: .68rem;
+      letter-spacing: .08em;
+      color: var(--article-accent, var(--accent, #b7a16b));
     }
 
-    .takeaway p {
-      color: var(--text);
-      font-size: 1.05rem;
-      margin: 0;
-    }
-
-    .article-next {
-      margin-top: 80px;
-      padding-top: 32px;
-      border-top: 1px solid var(--border);
-    }
-
-    .article-next-label {
-      font-family: "DM Mono", monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 12px;
-    }
-
-    .article-next a {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      color: var(--text);
-      text-decoration: none;
+    .clue-card h3 {
+      margin: 0 0 .5rem;
       font-family: "Space Grotesk", sans-serif;
-      font-size: 1.15rem;
-      transition: color 0.2s ease;
-    }
-
-    .article-next a:hover {
-      color: var(--cyan);
-    }
-
-    .article-next .next-arrow {
-      color: var(--cyan);
       font-size: 1rem;
     }
 
-    footer {
-      width: min(820px, calc(100% - 40px));
-      margin: 0 auto;
-      padding: 30px 0 50px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.82rem;
-      text-align: center;
+    .clue-card p {
+      margin: 0;
+      font-size: .9rem;
+      color: var(--article-muted, var(--muted, #999));
+    }
+
+    .timeline {
+      position: relative;
+      display: grid;
+      gap: 0;
+      margin: 2rem 0 3rem;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 95px minmax(0, 1fr);
+      gap: 1rem;
+      padding: 1.1rem 0;
+      border-bottom: 1px solid var(--article-border, var(--border, rgba(128,128,128,.2)));
+    }
+
+    .timeline-item:last-child {
+      border-bottom: 0;
+    }
+
+    .timeline-time {
+      font-family: "DM Mono", monospace;
+      font-size: .72rem;
+      color: var(--article-accent, var(--accent, #b7a16b));
+    }
+
+    .timeline-item strong {
+      display: block;
+      margin-bottom: .25rem;
+    }
+
+    .timeline-item p {
+      margin: 0;
+      font-size: .92rem;
+      color: var(--article-muted, var(--muted, #999));
+    }
+
+    .attack-takeaway {
+      margin: 4rem 0 0;
+      padding: clamp(1.5rem, 4vw, 2.2rem);
+      border: 1px solid var(--article-accent, var(--accent, #b7a16b));
+      background: var(--article-panel, rgba(128,128,128,.055));
+    }
+
+    .attack-takeaway .custom-label {
+      margin-bottom: 1rem;
+    }
+
+    .attack-takeaway p {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+
+    .attack-next {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--article-border, var(--border, rgba(128,128,128,.25)));
+    }
+
+    .attack-next a {
+      display: inline-flex;
+      gap: .6rem;
+      align-items: baseline;
+      color: inherit;
+      text-decoration-color: var(--article-accent, var(--accent, #b7a16b));
+      text-underline-offset: .3em;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.15rem;
+    }
+
+    .attack-next a:hover {
+      opacity: .75;
     }
 
     @media (max-width: 700px) {
-      nav {
-        width: min(100% - 28px, 1100px);
-      }
-
-      main {
-        width: min(100% - 28px, 820px);
-      }
-
-      .meta {
-        margin-top: 45px;
-      }
-
-      .hero-subtitle {
-        margin-bottom: 50px;
-      }
-
-      .visual {
-        padding: 20px;
-      }
-
       .attack-flow {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
+        gap: .55rem;
       }
 
-      .flow-arrow {
+      .attack-step {
+        min-height: 0;
+        padding: 1rem;
+      }
+
+      .attack-arrow {
+        justify-self: center;
         transform: rotate(90deg);
       }
 
       .clue-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: minmax(0, 1fr);
       }
 
-      .takeaway {
-        padding: 26px;
+      .timeline-item {
+        grid-template-columns: 72px minmax(0, 1fr);
+        gap: .7rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .attack-next a {
+        transition: none;
       }
     }
   </style>
 </head>
 
 <body>
+  <header class="site-header">
+    <nav class="nav-inner">
+      <a href="../index.html" class="brand">Veil <span>&amp;</span> Vector</a>
+      <div class="nav-actions">
+        <a href="../index.html" class="back-link">← All articles</a>
+        <button
+          class="theme-toggle"
+          id="theme-toggle"
+          type="button"
+          aria-label="Toggle light and dark theme"
+        >◐</button>
+      </div>
+    </nav>
+  </header>
 
-  <nav>
-    <a href="../index.html" class="brand">KS<span>CybSec</span></a>
-    <a href="../index.html" class="nav-back">← KSCybSec</a>
-  </nav>
+  <div class="progress-track" aria-hidden="true">
+    <div class="progress" id="progress"></div>
+  </div>
 
   <main>
-
-    <div class="meta">BEGINNER PATH · 015</div>
-
-    <h1>How Cyber Attacks Actually Happen</h1>
-
-    <p class="hero-subtitle">
-      Cyber attacks rarely begin with the dramatic moment people imagine.
-      Usually, they begin with something much smaller — a message, a mistake,
-      an exposed service, a stolen password, or a weakness someone discovers.
-    </p>
-
-
-    <h2 class="question">
-      So how does an attack actually unfold?
-    </h2>
-
-    <p>
-      Imagine a company notices something unusual on one of its computers.
-      A new account appeared. A strange process is running. And the machine
-      has started communicating with an unfamiliar server.
-    </p>
-
-    <p>
-      The important question isn't simply:
-      <strong>“Was the system attacked?”</strong>
-    </p>
-
-    <p>
-      The better question is:
-      <strong>“What happened, step by step?”</strong>
-    </p>
-
-
-    <div class="visual">
-
-      <div class="visual-label">A SIMPLIFIED ATTACK JOURNEY</div>
-
-      <div class="attack-flow">
-
-        <div class="attack-step">
-          <div class="number">01</div>
-          <strong>Initial Access</strong>
-        </div>
-
-        <div class="flow-arrow">→</div>
-
-        <div class="attack-step">
-          <div class="number">02</div>
-          <strong>Execution</strong>
-        </div>
-
-        <div class="flow-arrow">→</div>
-
-        <div class="attack-step">
-          <div class="number">03</div>
-          <strong>Persistence</strong>
-        </div>
-
-        <div class="flow-arrow">→</div>
-
-        <div class="attack-step">
-          <div class="number">04</div>
-          <strong>Discovery</strong>
-        </div>
-
-        <div class="flow-arrow">→</div>
-
-        <div class="attack-step">
-          <div class="number">05</div>
-          <strong>Impact</strong>
-        </div>
-
+    <header class="article-header reveal">
+      <div class="article-meta">
+        <span class="category">BEGINNER PATH</span>
+        <span>GUIDE 015</span>
       </div>
 
-    </div>
+      <h1>How Cyber Attacks Actually Happen</h1>
 
-
-    <h2 class="question">
-      01 · Initial access
-    </h2>
-
-    <div class="story">
-
-      <p>
-        An employee receives an email that appears to come from a familiar
-        service.
+      <p class="article-intro">
+        Cyber attacks rarely begin with the dramatic moment people imagine.
+        Usually, they begin with something much smaller — a message, a mistake,
+        an exposed service, a stolen password, or a weakness someone discovers.
       </p>
+    </header>
 
-      <p>
-        The message contains a link asking them to sign in.
-        They click it and enter their credentials.
-      </p>
+    <article>
+      <section class="story-section reveal">
+        <div class="section-index">01 / THE BIG QUESTION</div>
 
-      <p>
-        The attacker now has a possible way into the environment.
-      </p>
+        <h2>So how does an attack actually unfold?</h2>
 
-    </div>
-
-    <p>
-      This is called <strong>initial access</strong> — the point where an
-      attacker first gains a foothold or access to a target environment.
-    </p>
-
-    <p>
-      Phishing is one possible route. But it isn't the only one.
-      Other routes can involve stolen credentials, exposed services,
-      vulnerable software, malicious files, or compromised accounts.
-    </p>
-
-
-    <div class="visual">
-
-      <div class="visual-label">ONE POSSIBLE ENTRY PATH</div>
-
-      <div class="attack-flow">
-
-        <div class="attack-step">
-          <div class="number">01</div>
-          <strong>Fake Email</strong>
-        </div>
-
-        <div class="flow-arrow">→</div>
-
-        <div class="attack-step">
-          <div class="number">02</div>
-          <strong>Victim Clicks</strong>
-        </div>
-
-        <div class="flow-arrow">→</div>
-
-        <div class="attack-step">
-          <div class="number">03</div>
-          <strong>Credentials Stolen</strong>
-        </div>
-
-        <div class="flow-arrow">→</div>
-
-        <div class="attack-step">
-          <div class="number">04</div>
-          <strong>Account Access</strong>
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <h2 class="question">
-      02 · Execution
-    </h2>
-
-    <p>
-      Getting access is not necessarily the same thing as accomplishing
-      anything useful.
-    </p>
-
-    <p>
-      The attacker may need something to actually run:
-      a command, script, malicious program, or another action.
-    </p>
-
-    <p>
-      This is where <strong>execution</strong> becomes important.
-    </p>
-
-    <p>
-      From a defender's perspective, this can create valuable clues:
-      processes starting unexpectedly, unusual commands, scripts running
-      at strange times, or applications behaving differently.
-    </p>
-
-
-    <div class="investigation">
-
-      <div class="investigation-label">INVESTIGATOR'S QUESTION</div>
-
-      <p>
-        A new process suddenly appears on a workstation.
-        What would you want to know?
-      </p>
-
-      <ul>
-        <li>What process started?</li>
-        <li>Which user started it?</li>
-        <li>What launched it?</li>
-        <li>When did it start?</li>
-        <li>What did it communicate with?</li>
-      </ul>
-
-    </div>
-
-
-    <h2 class="question">
-      03 · Persistence
-    </h2>
-
-    <p>
-      An attacker may not want to lose access simply because the computer
-      restarts or the current session ends.
-    </p>
-
-    <p>
-      They may attempt to maintain access through mechanisms that cause
-      something to run again or preserve access to an account or system.
-    </p>
-
-    <p>
-      This is broadly known as <strong>persistence</strong>.
-    </p>
-
-    <div class="warning">
-
-      <strong>Important distinction</strong>
-
-      <p>
-        Persistence does not mean every unusual startup item or scheduled
-        task is malicious. Legitimate software also creates services,
-        scheduled tasks, and startup entries.
-      </p>
-
-      <p>
-        Context matters.
-      </p>
-
-    </div>
-
-
-    <h2 class="question">
-      04 · Discovery
-    </h2>
-
-    <p>
-      Once inside, an attacker may need to understand the environment.
-    </p>
-
-    <p>
-      What systems exist? Which accounts are available?
-      What information is stored here? What other machines can be reached?
-    </p>
-
-    <p>
-      This stage is about <strong>learning about the environment</strong>.
-    </p>
-
-
-    <div class="clue-grid">
-
-      <div class="clue">
-        <div class="clue-number">CLUE 01</div>
-        <strong>Users</strong>
         <p>
-          Which accounts exist and which account is currently being used?
+          Imagine a company notices something unusual on one of its computers.
+          A new account appeared. A strange process is running. And the machine
+          has started communicating with an unfamiliar server.
         </p>
-      </div>
 
-      <div class="clue">
-        <div class="clue-number">CLUE 02</div>
-        <strong>Processes</strong>
         <p>
-          What software is running on the system?
+          The important question isn't simply:
+          <strong>“Was the system attacked?”</strong>
+          The better question is:
+          <strong>“What happened, step by step?”</strong>
         </p>
-      </div>
 
-      <div class="clue">
-        <div class="clue-number">CLUE 03</div>
-        <strong>Network</strong>
+        <div class="attack-visual">
+          <div class="attack-visual-label">A simplified attack journey</div>
+
+          <div class="attack-flow">
+            <div class="attack-step">
+              <span class="attack-step-number">01 / ENTRY</span>
+              <strong>Initial access</strong>
+              <small>Finding a way in</small>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">02 / ACTION</span>
+              <strong>Execution</strong>
+              <small>Making something run</small>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">03 / STAY</span>
+              <strong>Persistence</strong>
+              <small>Trying to maintain access</small>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">04 / LEARN</span>
+              <strong>Discovery</strong>
+              <small>Exploring the environment</small>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">05 / RESULT</span>
+              <strong>Impact</strong>
+              <small>Attempting to reach an objective</small>
+            </div>
+          </div>
+        </div>
+
         <p>
-          Which systems or services is the machine communicating with?
+          This is a simplified example, not a fixed recipe. Real attacks may
+          skip stages, repeat them, or follow a different order.
         </p>
-      </div>
+      </section>
 
-      <div class="clue">
-        <div class="clue-number">CLUE 04</div>
-        <strong>Files</strong>
+      <section class="story-section reveal">
+        <div class="section-index">02 / INITIAL ACCESS</div>
+
+        <h2>First, someone finds a way in.</h2>
+
+        <div class="attack-story">
+          <p>
+            An employee receives an email that appears to come from a familiar
+            service.
+          </p>
+          <p>
+            The message contains a link asking them to sign in. They click it
+            and enter their credentials.
+          </p>
+          <p>
+            If the page is controlled by an attacker, those credentials may
+            now be exposed — potentially giving the attacker a route into the
+            environment.
+          </p>
+        </div>
+
         <p>
-          What information and resources are available?
+          This is called <strong>initial access</strong> — the point where an
+          attacker first gains a foothold in a target environment.
         </p>
-      </div>
 
-    </div>
-
-
-    <h2 class="question">
-      05 · Impact
-    </h2>
-
-    <p>
-      Eventually, an attack may reach its intended objective.
-    </p>
-
-    <p>
-      That objective depends on the attacker and the environment.
-      It could involve stealing information, disrupting services,
-      encrypting files, changing data, or abusing an account.
-    </p>
-
-    <p>
-      This is where the earlier concepts from the Beginner Path start
-      connecting together.
-    </p>
-
-
-    <div class="visual">
-
-      <div class="visual-label">CONNECTING THE CLUES</div>
-
-      <div class="attack-flow">
-
-        <div class="attack-step">
-          <div class="number">ACCESS</div>
-          <strong>Stolen Account</strong>
-        </div>
-
-        <div class="flow-arrow">→</div>
-
-        <div class="attack-step">
-          <div class="number">SYSTEM</div>
-          <strong>Process Runs</strong>
-        </div>
-
-        <div class="flow-arrow">→</div>
-
-        <div class="attack-step">
-          <div class="number">NETWORK</div>
-          <strong>Connection</strong>
-        </div>
-
-        <div class="flow-arrow">→</div>
-
-        <div class="attack-step">
-          <div class="number">DATA</div>
-          <strong>Information Accessed</strong>
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <h2 class="question">
-      But attacks aren't always this simple.
-    </h2>
-
-    <p>
-      Real incidents can involve multiple systems, accounts, techniques,
-      and stages.
-    </p>
-
-    <p>
-      An attacker might enter through phishing, move to another system,
-      discover additional accounts, obtain higher privileges, access
-      sensitive information, and attempt to hide their activity.
-    </p>
-
-    <p>
-      The exact sequence can vary.
-      That's why defenders don't simply memorize one attack pattern.
-    </p>
-
-    <p>
-      They investigate the <strong>evidence left behind by activity</strong>.
-    </p>
-
-
-    <div class="investigation">
-
-      <div class="investigation-label">THE DEFENDER'S VIEW</div>
-
-      <p>
-        Imagine you are investigating the incident from the other side.
-      </p>
-
-      <ul>
-        <li>A suspicious email was received.</li>
-        <li>An account logged in unexpectedly.</li>
-        <li>A new process appeared.</li>
-        <li>The machine contacted an unfamiliar IP address.</li>
-        <li>Files were accessed shortly afterwards.</li>
-      </ul>
-
-      <p>
-        Each event by itself may not prove an attack.
-        Together, however, they form a timeline worth investigating.
-      </p>
-
-    </div>
-
-
-    <h2 class="question">
-      This is where cybersecurity becomes investigation.
-    </h2>
-
-    <p>
-      Remember the clues you've collected throughout this path.
-    </p>
-
-    <div class="clue-grid">
-
-      <div class="clue">
-        <div class="clue-number">01 · NETWORKING</div>
-        <strong>IP + Port</strong>
         <p>
-          Where is the system communicating, and which service is involved?
+          Phishing is one possible route, but not the only one. Stolen
+          credentials, exposed services, vulnerable software, malicious files,
+          and compromised accounts can also provide entry.
         </p>
-      </div>
 
-      <div class="clue">
-        <div class="clue-number">02 · DNS</div>
-        <strong>Domain → IP</strong>
+        <div class="attack-visual">
+          <div class="attack-visual-label">One possible entry path</div>
+
+          <div class="attack-flow">
+            <div class="attack-step">
+              <span class="attack-step-number">01</span>
+              <strong>Fake email</strong>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">02</span>
+              <strong>Link opened</strong>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">03</span>
+              <strong>Credentials exposed</strong>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">04</span>
+              <strong>Possible account access</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">03 / EXECUTION</div>
+
+        <h2>Getting access isn't the same as getting something done.</h2>
+
         <p>
-          What destination is a system trying to reach?
+          Access alone may not accomplish the attacker's objective. They may
+          need a command, script, malicious program, or another action to run.
+          This is where <strong>execution</strong> becomes important.
         </p>
-      </div>
 
-      <div class="clue">
-        <div class="clue-number">03 · MALWARE</div>
-        <strong>Process + Behaviour</strong>
         <p>
-          What changed on the system?
+          From a defender's perspective, this can leave useful clues:
+          processes starting unexpectedly, unusual commands, scripts running
+          at strange times, or applications behaving differently.
         </p>
-      </div>
 
-      <div class="clue">
-        <div class="clue-number">04 · IDENTITY</div>
-        <strong>Authentication + Authorization</strong>
+        <div class="investigation-panel">
+          <div class="custom-label">INVESTIGATOR'S QUESTION</div>
+          <h3>A new process suddenly appears on a workstation. What would you want to know?</h3>
+
+          <ul>
+            <li>What process started?</li>
+            <li>Which user started it?</li>
+            <li>What launched it?</li>
+            <li>When did it start?</li>
+            <li>What did it communicate with?</li>
+          </ul>
+        </div>
+
         <p>
-          Who accessed the system and what were they allowed to do?
+          One process name rarely tells the whole story. Its parent process,
+          command line, user, timing, and network activity can help explain
+          whether it belongs to normal work or deserves closer investigation.
         </p>
-      </div>
+      </section>
 
-    </div>
+      <section class="story-section reveal">
+        <div class="section-index">04 / PERSISTENCE</div>
 
+        <h2>What if the attacker wants to stay?</h2>
 
-    <p>
-      And then there are the security goals:
-      <strong>confidentiality, integrity, and availability.</strong>
-    </p>
+        <p>
+          An attacker may not want to lose access when a computer restarts or
+          a session ends. They may attempt to maintain access through an
+          account, service, scheduled task, or another mechanism.
+        </p>
 
-    <p>
-      An incident can affect one, two, or all three.
-    </p>
+        <p>
+          This is broadly known as <strong>persistence</strong>.
+        </p>
 
-    <p>
-      The more pieces you understand, the easier it becomes to see the
-      bigger picture.
-    </p>
+        <div class="warning-panel">
+          <div class="custom-label">IMPORTANT DISTINCTION</div>
+          <h3>Unusual doesn't automatically mean malicious.</h3>
+          <p>
+            Legitimate software also creates services, scheduled tasks, and
+            startup entries. A defender needs to examine who created an item,
+            when it appeared, what it runs, and whether it makes sense for
+            that system.
+          </p>
+        </div>
+      </section>
 
+      <section class="story-section reveal">
+        <div class="section-index">05 / DISCOVERY</div>
 
-    <div class="visual">
+        <h2>Now the environment becomes the target of curiosity.</h2>
 
-      <div class="visual-label">THE BIGGER PICTURE</div>
+        <p>
+          Once inside, an attacker may need to understand the environment.
+          What systems exist? Which accounts are available? What information
+          is stored here? What other machines can be reached?
+        </p>
 
-      <div class="attack-flow">
+        <p>
+          This stage is called <strong>discovery</strong>: learning about the
+          systems, users, software, and resources around them.
+        </p>
 
-        <div class="attack-step">
-          <div class="number">ENTRY</div>
-          <strong>Phishing / Vulnerability / Credentials</strong>
+        <div class="clue-grid">
+          <div class="clue-card">
+            <span class="clue-card-number">CLUE 01 / IDENTITY</span>
+            <h3>Users</h3>
+            <p>Which accounts exist, and which account is currently in use?</p>
+          </div>
+          <div class="clue-card">
+            <span class="clue-card-number">CLUE 02 / SYSTEM</span>
+            <h3>Processes</h3>
+            <p>What software is running on the system?</p>
+          </div>
+          <div class="clue-card">
+            <span class="clue-card-number">CLUE 03 / NETWORK</span>
+            <h3>Connections</h3>
+            <p>Which systems or services is the machine communicating with?</p>
+          </div>
+          <div class="clue-card">
+            <span class="clue-card-number">CLUE 04 / DATA</span>
+            <h3>Files</h3>
+            <p>What information and resources are available?</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">06 / IMPACT</div>
+
+        <h2>Eventually, the activity may reach an objective.</h2>
+
+        <p>
+          The objective depends on the attacker and the environment. It could
+          involve stealing information, disrupting services, encrypting files,
+          changing data, or abusing an account.
+        </p>
+
+        <p>
+          This is where the earlier concepts from the Beginner Path start
+          connecting together.
+        </p>
+
+        <div class="attack-visual">
+          <div class="attack-visual-label">Connecting the clues</div>
+
+          <div class="attack-flow">
+            <div class="attack-step">
+              <span class="attack-step-number">ACCESS</span>
+              <strong>Stolen account</strong>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">SYSTEM</span>
+              <strong>Unexpected process</strong>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">NETWORK</span>
+              <strong>Unfamiliar connection</strong>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">DATA</span>
+              <strong>Information accessed</strong>
+            </div>
+          </div>
         </div>
 
-        <div class="flow-arrow">→</div>
+        <p>
+          This is an illustrative sequence, not proof of an attack. Each event
+          needs context, and the relationship between events matters.
+        </p>
+      </section>
 
-        <div class="attack-step">
-          <div class="number">ACTIVITY</div>
-          <strong>Processes / Accounts / Network</strong>
+      <section class="story-section reveal">
+        <div class="section-index">07 / REAL INCIDENTS</div>
+
+        <h2>But attacks aren't always this simple.</h2>
+
+        <p>
+          Real incidents can involve multiple systems, accounts, techniques,
+          and stages. An attacker might enter through phishing, move to another
+          system, discover additional accounts, obtain higher privileges,
+          access sensitive information, and attempt to hide their activity.
+        </p>
+
+        <p>
+          The exact sequence can vary. Defenders don't simply memorize one
+          attack pattern. They investigate the
+          <strong>evidence left behind by activity</strong>.
+        </p>
+
+        <div class="investigation-panel">
+          <div class="custom-label">THE DEFENDER'S VIEW</div>
+          <h3>Imagine these events appear during an investigation.</h3>
+
+          <div class="timeline">
+            <div class="timeline-item">
+              <span class="timeline-time">EVENT 01</span>
+              <div>
+                <strong>Suspicious email</strong>
+                <p>A user receives a message that may be phishing.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <span class="timeline-time">EVENT 02</span>
+              <div>
+                <strong>Unexpected login</strong>
+                <p>An account signs in at an unusual time or from an unfamiliar source.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <span class="timeline-time">EVENT 03</span>
+              <div>
+                <strong>New process</strong>
+                <p>A process appears that needs further investigation.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <span class="timeline-time">EVENT 04</span>
+              <div>
+                <strong>Network connection</strong>
+                <p>The machine contacts an unfamiliar IP address.</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <span class="timeline-time">EVENT 05</span>
+              <div>
+                <strong>File activity</strong>
+                <p>Files are accessed shortly afterwards.</p>
+              </div>
+            </div>
+          </div>
+
+          <p>
+            Each event alone may have a legitimate explanation. Together,
+            they form a timeline worth investigating.
+          </p>
+        </div>
+      </section>
+
+      <section class="story-section reveal">
+        <div class="section-index">08 / CONNECTING THE CLUES</div>
+
+        <h2>This is where cybersecurity becomes investigation.</h2>
+
+        <p>
+          Remember the clues you've collected throughout this path. Each
+          concept helps answer a different question about the same incident.
+        </p>
+
+        <div class="clue-grid">
+          <div class="clue-card">
+            <span class="clue-card-number">01 / NETWORKING</span>
+            <h3>IP address + port</h3>
+            <p>Where is the system communicating, and which service is involved?</p>
+          </div>
+          <div class="clue-card">
+            <span class="clue-card-number">02 / DNS</span>
+            <h3>Domain → IP</h3>
+            <p>What destination is a system trying to reach?</p>
+          </div>
+          <div class="clue-card">
+            <span class="clue-card-number">03 / SYSTEM ACTIVITY</span>
+            <h3>Process + behaviour</h3>
+            <p>What changed on the system?</p>
+          </div>
+          <div class="clue-card">
+            <span class="clue-card-number">04 / IDENTITY</span>
+            <h3>Authentication + authorization</h3>
+            <p>Who accessed the system, and what were they allowed to do?</p>
+          </div>
         </div>
 
-        <div class="flow-arrow">→</div>
+        <p>
+          And then there are the security goals:
+          <strong>confidentiality, integrity, and availability.</strong>
+          An incident can affect one, two, or all three.
+        </p>
 
-        <div class="attack-step">
-          <div class="number">DISCOVERY</div>
-          <strong>Systems / Users / Data</strong>
+        <p>
+          The more pieces you understand, the easier it becomes to see the
+          bigger picture.
+        </p>
+
+        <div class="attack-visual">
+          <div class="attack-visual-label">The bigger picture</div>
+
+          <div class="attack-flow">
+            <div class="attack-step">
+              <span class="attack-step-number">ENTRY</span>
+              <strong>Phishing, vulnerability, or credentials</strong>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">ACTIVITY</span>
+              <strong>Processes, accounts, and network</strong>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">DISCOVERY</span>
+              <strong>Systems, users, and data</strong>
+            </div>
+            <span class="attack-arrow" aria-hidden="true">→</span>
+            <div class="attack-step">
+              <span class="attack-step-number">IMPACT</span>
+              <strong>Data, systems, or services</strong>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <div class="flow-arrow">→</div>
+      <section class="story-section reveal">
+        <div class="section-index">09 / THE LESSON</div>
 
-        <div class="attack-step">
-          <div class="number">IMPACT</div>
-          <strong>Data / Systems / Services</strong>
+        <h2>A cyber attack is rarely one magical action.</h2>
+
+        <p>
+          It is a sequence of actions and events. Attackers try to move from
+          one step to another. Defenders try to detect, understand, interrupt,
+          and contain those steps.
+        </p>
+
+        <p>And every step can leave clues.</p>
+
+        <div class="attack-takeaway">
+          <div class="custom-label">TAKEAWAY / BEGINNER PATH COMPLETE</div>
+          <p>
+            Cyber attacks can involve initial access, execution, persistence,
+            discovery, and impact. The exact path varies, but understanding
+            the sequence helps defenders turn individual events into a
+            meaningful investigation.
+          </p>
         </div>
+      </section>
 
-      </div>
-
-    </div>
-
-
-    <h2 class="question">
-      The important lesson
-    </h2>
-
-    <p>
-      A cyber attack is not usually one magical action.
-    </p>
-
-    <p>
-      It is a sequence of actions and events.
-    </p>
-
-    <p>
-      Attackers try to move from one step to another.
-      Defenders try to detect, understand, interrupt, and contain those steps.
-    </p>
-
-    <p>
-      And every step can leave clues.
-    </p>
-
-
-    <div class="takeaway">
-
-      <div class="takeaway-label">TAKEAWAY · BEGINNER PATH COMPLETE</div>
-
-      <p>
-        Cyber attacks can involve initial access, execution, persistence,
-        discovery, and impact. The exact path varies, but understanding
-        the sequence helps defenders turn individual events into a
-        meaningful investigation.
-      </p>
-
-    </div>
-
-
-    <div class="article-next">
-
-      <div class="article-next-label">NEXT CLUE · 016</div>
-
-      <a href="beginner-challenge.html">
-        The Beginner Cybersecurity Challenge
-        <span class="next-arrow">→</span>
-      </a>
-
-    </div>
-
+      <section class="attack-next reveal">
+        <div class="custom-label">NEXT CLUE / 016</div>
+        <h2>The Beginner Cybersecurity Challenge</h2>
+        <p>
+          Ready to connect what you've learned? Put the clues together in a
+          beginner-friendly challenge.
+        </p>
+        <a href="beginner-challenge.html">
+          Continue to the challenge <span aria-hidden="true">→</span>
+        </a>
+      </section>
+    </article>
   </main>
 
-
-  <footer>
-    KSCybSec — Cybersecurity knowledge, one clue at a time.
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <a href="../index.html" class="footer-brand">Veil &amp; Vector</a>
+    </div>
   </footer>
-
 </body>
 </html>
